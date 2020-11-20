@@ -1,0 +1,11 @@
+header {
+    width: 100%;
+    height: 50px;
+    background-color: orange;
+}
+
+footer {
+    width: 100%;
+    height: 50px;
+    background-color: #f2f2f2;    
+}
