@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: var(--bg-base);
+  --color-line: var(--border-line);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-accent: var(--accent-orange);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+  :root {
+    /* Paleta Blueprint - Variables CSS para la escalabilidad de temas */
+    --bg-base: #050505; /* Fondo casi negro */
+    --border-line: rgba(255, 255, 255, 0.15); /* Gris oscuro/transparente para líneas */
+    --text-primary: #e5e5e5;
+    --text-secondary: #8a8a8a;
+    --accent-orange: #ff6b00; /* Naranja vibrante de acento */
+  }
+
+  body {
+    @apply bg-base text-primary font-mono antialiased;
+  }
+}
+
+@layer utilities {
+  /* Fondo simulado de plano (grid) usando CSS gradients */
+  .bg-blueprint-grid {
+    background-image: 
+      linear-gradient(var(--border-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
+    background-size: 40px 40px; /* Tamaño de la cuadrícula */
+    background-position: center center;
+  }
+}
