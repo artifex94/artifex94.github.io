@@ -21,12 +21,12 @@ export const Hero: React.FC = () => {
             </span>
           </div>
           
-          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-tight h-[48px] md:h-[60px]">
+          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-tight min-h-[80px] md:min-h-[60px]">
             {/* Nombre tipeado después del alias */}
             <Typewriter text={personal.name} delay={1.2} />
           </h1>
           
-          <h2 className="text-lg md:text-xl text-secondary border-b border-dashed border-line pb-4 mb-4 h-[30px] md:h-[36px]">
+          <h2 className="text-lg md:text-xl text-secondary border-b border-dashed border-line pb-4 mb-4 min-h-[40px] md:min-h-[36px]">
             &gt; <Typewriter text={personal.title} delay={2.5} speed="fast" />
           </h2>
           
