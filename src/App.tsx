@@ -5,6 +5,7 @@ import { Projects } from './components/Projects';
 import { BlueprintBox } from './components/BlueprintBox';
 import { data } from './data/data';
 import { motion } from 'framer-motion';
+import { Typewriter } from './components/Typewriter';
 
 function App() {
   return (
@@ -28,10 +29,11 @@ function App() {
           </div>
 
           <div className="lg:col-span-2 flex flex-col gap-8">
-            {/* Le pasamos delay={0.2} para que cargue después de Experiencia */}
+            {/* Componente rápido de Skills inyectado en un BlueprintBox */}
             <BlueprintBox coords={{ x: 20, y: 30 }} className="flex-grow" delay={0.2}>
               <h3 className="text-xl font-bold text-accent mb-6 flex items-center gap-2">
-                <span className="text-secondary text-sm">##</span> System_Skills
+                <span className="text-secondary text-sm">##</span> 
+                <Typewriter text="System_Skills" delay={0.7} speed="fast" />
               </h3>
               
               <div className="flex flex-col gap-6">
