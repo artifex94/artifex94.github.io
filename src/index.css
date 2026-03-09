@@ -25,12 +25,50 @@
 }
 
 @layer utilities {
-  /* Fondo simulado de plano (grid) usando CSS gradients */
+  /* 1. Animación usando background-position para evitar el desenfoque de subpíxeles */
+  @keyframes move-blueprint {
+    0% {
+      background-position: 0px 0px;
+    }
+    100% {
+      background-position: 40px 40px;
+    }
+  }
+
+  /* 2. El contenedor principal solo provee el color de fondo base */
   .bg-blueprint-grid {
+    position: relative;
+    background-color: var(--bg-base);
+    /* CORRECCIÓN: z-index: 0 crea un nuevo contexto de apilamiento. 
+       Esto evita que el pseudo-elemento con z-index: -1 se oculte detrás del color de fondo de este contenedor. */
+    z-index: 0;
+  }
+
+  /* 3. El pseudo-elemento renderiza la grilla y la mueve con la GPU */
+  .bg-blueprint-grid::before {
+    content: '';
+    /* Se fija detrás de todo el contenido */
+    position: fixed;
+    /* Ocupa toda la pantalla (ya no necesitamos el margen extra porque el fondo se repite) */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    
     background-image: 
       linear-gradient(var(--border-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--border-line) 1px, transparent 1px);
-    background-size: 40px 40px; /* Tamaño de la cuadrícula */
-    background-position: center center;
+    background-size: 40px 40px;
+    
+    /* Lo enviamos al fondo y evitamos que interfiera con los clics */
+    z-index: -1;
+    pointer-events: none;
+    
+    /* Aplicamos la animación: 1.8 segundos es un buen balance entre notorio y sutil */
+    animation: move-blueprint 1.8s linear infinite;
+    
+    /* OPTIMIZACIÓN: Avisa al navegador que priorice el renderizado de esta propiedad.
+       Ayuda a evitar tirones en dispositivos móviles al preparar la GPU/CPU. */
+    will-change: background-position;
   }
 }

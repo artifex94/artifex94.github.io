@@ -1,6 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { cn } from '../utils/cn';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { 
+  motion, 
+  useMotionValue, 
+  useSpring, 
+  useTransform, 
+  useScroll, 
+  useVelocity 
+} from 'framer-motion';
 
 interface BlueprintBoxProps {
   children: React.ReactNode;
@@ -15,35 +22,64 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   coords = { x: 10, y: 20 },
   delay = 0 
 }) => {
-  // Referencia al contenedor para calcular sus dimensiones exactas
   const ref = useRef<HTMLDivElement>(null);
 
-  // Valores de movimiento para rastrear la posición X e Y del ratón
+  // ==========================================
+  // 1. LÓGICA DE ESCRITORIO (Ratón)
+  // ==========================================
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Aplicamos un "resorte" (spring) a los valores para que el movimiento sea fluido y no robótico
   const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
   const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
 
-  // Transformamos la posición del ratón en grados de rotación.
-  // Limitamos a 5 grados (-5deg a 5deg) para mantener la legibilidad profesional.
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const rotateXDesktop = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateYDesktop = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
 
-  // Función que se ejecuta al mover el ratón sobre la caja
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  // ==========================================
+  // 2. LÓGICA MÓVIL (Scroll Velocity)
+  // ==========================================
+  const { scrollY } = useScroll();
+  // Extraemos la velocidad del scroll actual
+  const scrollVelocity = useVelocity(scrollY);
+  // Suavizamos esa velocidad para que el movimiento no sea brusco
+  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
+  
+  // Transformamos la velocidad (-1000px/s a 1000px/s) en grados de rotación (X)
+  // Esto hará que cabecee hacia arriba/abajo al hacer scroll rápido
+  const rotateXMobile = useTransform(smoothVelocity, [-1000, 0, 1000], ["5deg", "0deg", "-5deg"]);
+
+  // ==========================================
+  // 3. DETECCIÓN DE ENTORNO
+  // ==========================================
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    // Media query nativa para saber si el dispositivo carece de ratón
+    const checkTouch = () => {
+      setIsTouchDevice(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+    };
+    checkTouch();
+    window.addEventListener('resize', checkTouch);
+    return () => window.removeEventListener('resize', checkTouch);
+  }, []);
+
+  // ==========================================
+  // 4. MANEJADORES DE EVENTOS FILTRADOS
+  // ==========================================
+  // Usamos onPointerMove en lugar de onMouseMove para detectar el tipo de input
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    // ¡CLAVE! Si el input es táctil (dedo), ignoramos el evento por completo
+    if (e.pointerType !== "mouse") return;
+
     if (!ref.current) return;
-
     const rect = ref.current.getBoundingClientRect();
     
-    // Calculamos la posición del ratón relativa a la caja
     const width = rect.width;
     const height = rect.height;
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     
-    // Normalizamos los valores entre -0.5 y 0.5
     const xPct = mouseX / width - 0.5;
     const yPct = mouseY / height - 0.5;
     
@@ -51,15 +87,14 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
     y.set(yPct);
   };
 
-  // Función para resetear la rotación cuando el ratón sale de la caja
-  const handleMouseLeave = () => {
+  const handlePointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse") return;
     x.set(0);
     y.set(0);
   };
 
   return (
     <motion.div 
-      // Contenedor principal: Maneja la entrada general a la pantalla y la perspectiva 3D
       style={{ perspective: 1200 }}
       initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -69,30 +104,26 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
     >
       <motion.div
         ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        // Aplicamos la rotación 3D calculada por Framer Motion
+        // Asignamos los nuevos eventos Pointer
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
         style={{ 
-          rotateX, 
-          rotateY,
+          // Asignamos dinámicamente el valor de rotación dependiendo del dispositivo
+          rotateX: isTouchDevice ? rotateXMobile : rotateXDesktop, 
+          rotateY: isTouchDevice ? 0 : rotateYDesktop, // En móvil solo rota en el eje X para el bamboleo
           transformStyle: "preserve-3d" 
         }}
-        // Añadimos una transición de color en el borde al hacer hover para reforzar la interactividad
         className="relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40"
       >
-        {/* Marcadores de cruces en las esquinas */}
-        {/* Usamos translateZ para que las cruces "floten" un poco por encima de la caja en 3D */}
         <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>
 
-        {/* Etiqueta técnica superior de coordenadas */}
         <div style={{ transform: "translateZ(30px)" }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
           [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
         </div>
 
-        {/* Contenido inyectado, elevado en el eje Z para crear efecto de profundidad (Parallax) */}
         <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
           {children}
         </div>
