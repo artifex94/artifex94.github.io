@@ -55,7 +55,7 @@ export const data: PortfolioData = {
       github: "https://github.com/artifex94",
       linkedin: "https://www.linkedin.com/in/ramiroescobar",
     },
-    aboutMe: "Desarrollador orientado a soluciones con un fuerte background en administración de sistemas e integración de software. Combino mi experiencia técnica en redes, domótica y bases de datos con el desarrollo moderno frontend y backend para crear herramientas eficientes y escalables.",
+    aboutMe: "Desarrollador orientado a soluciones con un fuerte background en administración de sistemas e integración de software. Combino mi experiencia técnica en redes y bases de datos con el desarrollo moderno frontend y backend para crear herramientas eficientes y escalables.",
   },
   
   experience: [
