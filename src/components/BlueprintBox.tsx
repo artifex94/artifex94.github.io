@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { cn } from '../utils/cn';
 import { 
   motion, 
@@ -25,7 +25,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   const ref = useRef<HTMLDivElement>(null);
 
   // ==========================================
-  // 1. LÓGICA DE ESCRITORIO (Ratón)
+  // 1. LÓGICA DE PUNTERO (Ratón y Táctil)
   // ==========================================
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -33,45 +33,36 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
   const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
 
-  const rotateXDesktop = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateYDesktop = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  // Calculamos grados numéricos (sin "deg") para poder sumarlos después
+  const rotateXPointer = useTransform(mouseYSpring, [-0.5, 0.5], [5, -5]);
+  const rotateYPointer = useTransform(mouseXSpring, [-0.5, 0.5], [-5, 5]);
 
   // ==========================================
-  // 2. LÓGICA MÓVIL (Scroll Velocity)
+  // 2. LÓGICA DE SCROLL (Velocidad)
   // ==========================================
   const { scrollY } = useScroll();
-  // Extraemos la velocidad del scroll actual
   const scrollVelocity = useVelocity(scrollY);
-  // Suavizamos esa velocidad para que el movimiento no sea brusco
   const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
   
-  // Transformamos la velocidad (-1000px/s a 1000px/s) en grados de rotación (X)
-  // Esto hará que cabecee hacia arriba/abajo al hacer scroll rápido
-  const rotateXMobile = useTransform(smoothVelocity, [-1000, 0, 1000], ["5deg", "0deg", "-5deg"]);
+  // Calculamos grados numéricos basados en la velocidad del scroll
+  const rotateXScroll = useTransform(smoothVelocity, [-1000, 0, 1000], [5, 0, -5]);
 
   // ==========================================
-  // 3. DETECCIÓN DE ENTORNO
+  // 3. COMBINACIÓN DE EFECTOS
   // ==========================================
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  useEffect(() => {
-    // Media query nativa para saber si el dispositivo carece de ratón
-    const checkTouch = () => {
-      setIsTouchDevice(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
-    };
-    checkTouch();
-    window.addEventListener('resize', checkTouch);
-    return () => window.removeEventListener('resize', checkTouch);
-  }, []);
+  // Sumamos la rotación del puntero + la del scroll para el eje X
+  const rotateX = useTransform(
+    [rotateXPointer, rotateXScroll],
+    ([pointer, scroll]: any[]) => `${pointer + scroll}deg`
+  );
+  
+  // El eje Y solo responde al puntero (mouse/dedo)
+  const rotateY = useTransform(rotateYPointer, (val) => `${val}deg`);
 
   // ==========================================
-  // 4. MANEJADORES DE EVENTOS FILTRADOS
+  // 4. MANEJADORES DE EVENTOS
   // ==========================================
-  // Usamos onPointerMove en lugar de onMouseMove para detectar el tipo de input
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    // ¡CLAVE! Si el input es táctil (dedo), ignoramos el evento por completo
-    if (e.pointerType !== "mouse") return;
-
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     
@@ -87,8 +78,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
     y.set(yPct);
   };
 
-  const handlePointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType !== "mouse") return;
+  const handlePointerReset = () => {
     x.set(0);
     y.set(0);
   };
@@ -104,13 +94,13 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
     >
       <motion.div
         ref={ref}
-        // Asignamos los nuevos eventos Pointer
         onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
+        onPointerLeave={handlePointerReset}
+        onPointerUp={handlePointerReset}     // Reset al levantar el dedo (permite clic)
+        onPointerCancel={handlePointerReset} // Reset si el navegador toma el control (scroll nativo)
         style={{ 
-          // Asignamos dinámicamente el valor de rotación dependiendo del dispositivo
-          rotateX: isTouchDevice ? rotateXMobile : rotateXDesktop, 
-          rotateY: isTouchDevice ? 0 : rotateYDesktop, // En móvil solo rota en el eje X para el bamboleo
+          rotateX, 
+          rotateY,
           transformStyle: "preserve-3d" 
         }}
         className="relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40"
