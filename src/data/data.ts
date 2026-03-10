@@ -48,7 +48,7 @@ export const data: PortfolioData = {
     aka: "Artifex Dev",
     title: "Software Solution Developer",
     emails: {
-      professional: "admin@instalacionescob.ar",
+      professional: "dev@artifex.click",
       personal: "ramiroesc18@gmail.com",
     },
     social: {
