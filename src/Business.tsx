@@ -4,7 +4,7 @@ import { BlueprintBox } from './components/BlueprintBox';
 import { PricingBox, type PricingTier } from './components/PricingBox';
 import { MessageCircle } from 'lucide-react';
 
-const WHATSAPP_URL = "https://wa.me/5493XXXXXXXXX?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
+const WHATSAPP_URL = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
 
 const pricingTiers: PricingTier[] = [
   {

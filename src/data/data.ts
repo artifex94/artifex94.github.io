@@ -54,7 +54,7 @@ export const data: PortfolioData = {
     social: {
       github: "https://github.com/artifex94",
       linkedin: "https://www.linkedin.com/in/ramiroescobar",
-      whatsapp: "https://wa.me/5493XXXXXXXXX?text=Hola%20Ramiro%2C%20vi%20tu%20portfolio%20y%20me%20interesa%20hablar%20sobre%20un%20proyecto.",
+      whatsapp: "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20tu%20portfolio%20y%20me%20interesa%20hablar%20sobre%20un%20proyecto.",
     },
     aboutMe:
       "Desarrollo plataformas digitales a medida para empresas, negocios y emprendedores que necesitan software que funcione. Combino ingeniería de software moderna con visión de negocio para entregar sistemas que generan resultados reales: más clientes, operaciones más eficientes y presencia digital que convierte.",
