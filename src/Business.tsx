@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BlueprintBox } from './components/BlueprintBox';
 import { PricingBox, type PricingTier } from './components/PricingBox';
@@ -46,12 +47,12 @@ const onboardingSteps = [
 ];
 
 const targetSegments = [
-  { icon: "🏢", title: "Inmobiliarias", desc: "Catálogo de propiedades, filtros y contacto directo." },
-  { icon: "🩺", title: "Profesionales", desc: "Médicos, abogados y contadores que necesitan captar clientes online." },
-  { icon: "🍽️", title: "Gastronomía", desc: "Menú digital, pedidos por WhatsApp y presencia local." },
-  { icon: "🛍️", title: "Comercios", desc: "Catálogo digital para tiendas que venden por WhatsApp." },
-  { icon: "🚀", title: "Emprendedores", desc: "MVP o landing page para validar una idea rápido." },
-  { icon: "⚙️", title: "Empresas", desc: "Sistemas internos, dashboards y automatizaciones a medida." },
+  { icon: "🏢", title: "Inmobiliarias", desc: "Catálogo de propiedades, filtros y contacto directo.", demo: "/business/inmobiliarias" },
+  { icon: "🩺", title: "Profesionales", desc: "Médicos, abogados y contadores que necesitan captar clientes online.", demo: "/business/profesionales" },
+  { icon: "🍽️", title: "Gastronomía", desc: "Menú digital, pedidos por WhatsApp y presencia local.", demo: "/business/gastronomia" },
+  { icon: "🛍️", title: "Comercios", desc: "Catálogo digital para tiendas que venden por WhatsApp.", demo: "/business/comercios" },
+  { icon: "🚀", title: "Emprendedores", desc: "MVP o landing page para validar una idea rápido.", demo: null },
+  { icon: "⚙️", title: "Empresas", desc: "Sistemas internos, dashboards y automatizaciones a medida.", demo: null },
 ];
 
 export const Business: React.FC = () => {
@@ -98,14 +99,27 @@ export const Business: React.FC = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {targetSegments.map((seg, idx) => (
-              <div
-                key={idx}
-                className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors"
-              >
-                <span className="text-2xl mb-3 block">{seg.icon}</span>
-                <h4 className="text-white font-bold mb-1">{seg.title}</h4>
-                <p className="text-xs text-[#a3a3a3]">{seg.desc}</p>
-              </div>
+              seg.demo ? (
+                <Link
+                  key={idx}
+                  to={seg.demo}
+                  className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors group block"
+                >
+                  <span className="text-2xl mb-3 block">{seg.icon}</span>
+                  <h4 className="text-white font-bold mb-1 group-hover:text-[#E67E32] transition-colors">{seg.title}</h4>
+                  <p className="text-xs text-[#a3a3a3] mb-2">{seg.desc}</p>
+                  <span className="text-xs text-[#E67E32] font-semibold">Ver demo →</span>
+                </Link>
+              ) : (
+                <div
+                  key={idx}
+                  className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors"
+                >
+                  <span className="text-2xl mb-3 block">{seg.icon}</span>
+                  <h4 className="text-white font-bold mb-1">{seg.title}</h4>
+                  <p className="text-xs text-[#a3a3a3]">{seg.desc}</p>
+                </div>
+              )
             ))}
           </div>
         </section>
