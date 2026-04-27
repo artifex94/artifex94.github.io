@@ -2,145 +2,183 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BlueprintBox } from './components/BlueprintBox';
 import { PricingBox, type PricingTier } from './components/PricingBox';
+import { MessageCircle } from 'lucide-react';
+
+const WHATSAPP_URL = "https://wa.me/5493XXXXXXXXX?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
 
 const pricingTiers: PricingTier[] = [
   {
-    name: "Growth Headless",
-    target: "Marcas DTC preparadas para dar el gran salto (Shopify Basic).",
-    setupPrice: "~$2.8M ARS",
-    retainerPrice: "~$250K ARS",
+    name: "Presencia Digital Express",
+    target: "Para negocios, profesionales y emprendedores que necesitan presencia web rápida y efectiva.",
+    setupPrice: "$200.000 – $400.000 ARS",
+    retainerPrice: "$50.000 ARS",
     features: [
-      "Arquitectura Headless (Next.js + Shopify)",
-      "Diseño UI/UX orientado a conversión",
-      "Optimización Core Web Vitals",
-      "Soporte técnico estándar"
-    ]
-  },
-  {
-    name: "Scale & Optimize",
-    target: "Operaciones de Retail B2B / Fuerte enfoque en SEO (Shopify Advanced).",
-    setupPrice: "~$5.5M ARS",
-    retainerPrice: "~$450K ARS",
-    features: [
-      "Todo lo incluido en Growth",
-      "Rutas de e-commerce complejas y filtrado dinámico",
-      "Optimización SEO Técnica Avanzada",
-      "Soporte prioritario y monitorización activa"
+      "Landing page profesional y mobile-first",
+      "Sección de servicios o productos",
+      "Formulario de contacto + botón WhatsApp",
+      "Google Maps integrado",
+      "Dominio y deploy incluidos (Vercel)",
+      "Entrega en 1 a 2 semanas",
     ],
-    isPopular: true
   },
   {
-    name: "Enterprise",
-    target: "Marcas Omnicanal con catálogos masivos (Shopify Plus).",
-    setupPrice: "Desde $9.8M",
-    retainerPrice: "~$900K ARS",
+    name: "Sistema Web a Medida",
+    target: "Para negocios que necesitan sistematizar operaciones: gestión de clientes, turnos, catálogos o dashboards.",
+    setupPrice: "$1.000.000 ARS",
+    retainerPrice: "$50.000 ARS",
     features: [
-      "Integraciones con ERPs/CRMs de terceros",
-      "Multi-región y Multi-moneda nativo",
-      "Desarrollo de features a medida",
-      "SLA garantizado y línea directa"
-    ]
-  }
+      "Aplicación web completa según requerimiento",
+      "Panel de administración propio",
+      "Base de datos y lógica de negocio a medida",
+      "Autenticación de usuarios",
+      "Ciclo de desarrollo de 3 meses",
+      "Mantenimiento mensual incluido post-entrega",
+    ],
+    isPopular: true,
+  },
 ];
 
 const onboardingSteps = [
-  { step: "01", title: "Discovery", desc: "Auditoría técnica profunda y trazado del plan de acción enfocado en el CRO." },
-  { step: "02", title: "Propuesta", desc: "Definición de arquitectura de datos, estimación de ROI e hitos de proyecto." },
-  { step: "03", title: "Desarrollo", desc: "Sprints ágiles semanales para desacoplar e integrar Next.js con Shopify." },
-  { step: "04", title: "Lanzamiento", desc: "Despliegue a producción y entrada al ciclo de Retainer para escalabilidad." },
+  { step: "01", title: "Discovery", desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo." },
+  { step: "02", title: "Propuesta", desc: "Definición del alcance, arquitectura, tiempos y presupuesto detallado." },
+  { step: "03", title: "Desarrollo", desc: "Ciclo de desarrollo con entregas parciales y comunicación continua." },
+  { step: "04", title: "Entrega & Soporte", desc: "Deploy a producción y transición al plan de mantenimiento mensual." },
+];
+
+const targetSegments = [
+  { icon: "🏢", title: "Inmobiliarias", desc: "Catálogo de propiedades, filtros y contacto directo." },
+  { icon: "🩺", title: "Profesionales", desc: "Médicos, abogados y contadores que necesitan captar clientes online." },
+  { icon: "🍽️", title: "Gastronomía", desc: "Menú digital, pedidos por WhatsApp y presencia local." },
+  { icon: "🛍️", title: "Comercios", desc: "Catálogo digital para tiendas que venden por WhatsApp." },
+  { icon: "🚀", title: "Emprendedores", desc: "MVP o landing page para validar una idea rápido." },
+  { icon: "⚙️", title: "Empresas", desc: "Sistemas internos, dashboards y automatizaciones a medida." },
 ];
 
 export const Business: React.FC = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       className="min-h-screen w-full bg-black bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8 text-[#e5e5e5] font-sans"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-16">
-        
-        {/* Hero Section */}
+
+        {/* Hero */}
         <BlueprintBox coords={{ x: 10, y: 15 }} delay={0.1}>
           <div className="py-12 md:py-20 text-center max-w-4xl mx-auto flex flex-col items-center">
             <span className="text-[#E67E32] uppercase tracking-widest text-sm font-bold mb-4 block">
-              // Infraestructura E-commerce de Alto Rendimiento
+              // Desarrollo de Software a Medida
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">
-              Escalabilidad y Velocidad que <span className="text-[#E67E32]">Convierten</span>.
+              Tu negocio necesita un sistema que{" "}
+              <span className="text-[#E67E32]">trabaje por vos.</span>
             </h1>
             <p className="text-lg md:text-xl text-[#a3a3a3] mb-10 max-w-3xl leading-relaxed">
-              No vendemos "plantillas". Construimos arquitecturas Headless (Next.js + Shopify) que recuperan el 20% de las ventas perdidas por latencia móvil. Diseñado exclusivamente para marcas que escalan.
+              Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores. 
+              Entrega en tiempo real, precios transparentes y soporte continuo.
             </p>
-            <button className="bg-[#E67E32] text-black px-10 py-4 font-bold text-lg hover:bg-white hover:shadow-[0_0_20px_rgba(230,126,50,0.6)] transition-all duration-300">
-              Agendar Auditoría Gratuita
-            </button>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 bg-[#E67E32] text-black px-10 py-4 font-bold text-lg hover:bg-white hover:shadow-[0_0_20px_rgba(230,126,50,0.6)] transition-all duration-300"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Consultar por WhatsApp
+            </a>
           </div>
         </BlueprintBox>
 
-        {/* Problem vs Solution */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <BlueprintBox coords={{ x: 25, y: 40 }} delay={0.3}>
-            <h3 className="text-xl font-bold text-white mb-6 border-b border-[#262626] pb-4">
-              <span className="text-[#E67E32] mr-2">{"<"}</span>El Problema: Monolito Tradicional
-            </h3>
-            <ul className="space-y-4 text-[#a3a3a3]">
-              <li className="flex gap-3"><span className="text-red-500 font-bold">x</span> Tiempos de carga superiores a 3 segundos.</li>
-              <li className="flex gap-3"><span className="text-red-500 font-bold">x</span> Dependencia de plugins frágiles de terceros.</li>
-              <li className="flex gap-3"><span className="text-red-500 font-bold">x</span> Caídas de servidor durante picos (Hot Sale/Cyber Monday).</li>
-              <li className="flex gap-3"><span className="text-red-500 font-bold">x</span> Altas tasas de rebote móvil y carritos abandonados.</li>
-            </ul>
-          </BlueprintBox>
-
-          <BlueprintBox coords={{ x: 75, y: 40 }} delay={0.4}>
-            <h3 className="text-xl font-bold text-white mb-6 border-b border-[#262626] pb-4">
-              <span className="text-[#E67E32] mr-2">{">"}</span>La Solución: Headless Commerce
-            </h3>
-            <ul className="space-y-4 text-[#a3a3a3]">
-              <li className="flex gap-3"><span className="text-green-500 font-bold">✓</span> Cargas en milisegundos (React/Next.js).</li>
-              <li className="flex gap-3"><span className="text-green-500 font-bold">✓</span> Backend y Frontend desacoplados para seguridad total.</li>
-              <li className="flex gap-3"><span className="text-green-500 font-bold">✓</span> Motor transaccional inquebrantable (Shopify).</li>
-              <li className="flex gap-3"><span className="text-green-500 font-bold">✓</span> Maximización del CRO y retención de usuarios.</li>
-            </ul>
-          </BlueprintBox>
-        </div>
-
-        {/* Pricing Section */}
-        <section className="mt-12">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">Planes de Inversión Tecnológica</h2>
-            <p className="text-[#a3a3a3]">Modelos paquetizados para asegurar transparencia y ROI desde el día 1.</p>
+        {/* Segmentos target */}
+        <section>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-white mb-2">¿Para quién trabajo?</h2>
+            <p className="text-[#a3a3a3]">Cualquier negocio que necesite software que funcione.</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {targetSegments.map((seg, idx) => (
+              <div
+                key={idx}
+                className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors"
+              >
+                <span className="text-2xl mb-3 block">{seg.icon}</span>
+                <h4 className="text-white font-bold mb-1">{seg.title}</h4>
+                <p className="text-xs text-[#a3a3a3]">{seg.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Servicios y Precios</h2>
+            <p className="text-[#a3a3a3]">Transparencia total desde el primer día. Sin sorpresas.</p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {pricingTiers.map((tier, idx) => (
               <PricingBox key={idx} {...tier} />
             ))}
           </div>
         </section>
 
-        {/* Retainer Banner */}
+        {/* Mantenimiento banner */}
         <BlueprintBox coords={{ x: 50, y: 80 }} delay={0.5} className="bg-[#1f1f1f] border-l-4 border-l-[#E67E32]">
           <div className="p-4 md:p-8 flex flex-col md:flex-row items-center gap-8 justify-between">
             <div className="flex-1">
-              <h3 className="text-2xl font-bold text-white mb-3">El Abono Mensual no es un gasto. <br/><span className="text-[#E67E32]">Es tu Seguro de Infraestructura.</span></h3>
-              <p className="text-[#a3a3a3]">Nuestro Retainer Mensual asegura alojamiento en servidores cloud ultrarrápidos, mantenimiento preventivo de código y evolución continua. Garantizamos que tu tienda nunca se caiga ni quede obsoleta ante las actualizaciones del ecosistema web.</p>
+              <h3 className="text-2xl font-bold text-white mb-3">
+                El mantenimiento mensual no es un gasto.<br />
+                <span className="text-[#E67E32]">Es tu garantía de continuidad.</span>
+              </h3>
+              <p className="text-[#a3a3a3]">
+                Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo. 
+                Ante cualquier cambio o problema, respuesta en el día.
+              </p>
             </div>
           </div>
         </BlueprintBox>
 
-        {/* Onboarding Process */}
+        {/* Proceso */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-10 text-center">Proceso de Onboarding</h2>
+          <h2 className="text-3xl font-bold text-white mb-10 text-center">¿Cómo trabajamos?</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {onboardingSteps.map((step, idx) => (
-              <div key={idx} className="bg-[#141414] border border-[#262626] p-6 relative hover:border-[#E67E32] transition-colors">
-                <span className="absolute -top-4 -left-4 text-5xl font-black text-[#E67E32] opacity-20">{step.step}</span>
+              <div
+                key={idx}
+                className="bg-[#141414] border border-[#262626] p-6 relative hover:border-[#E67E32] transition-colors"
+              >
+                <span className="absolute -top-4 -left-4 text-5xl font-black text-[#E67E32] opacity-20">
+                  {step.step}
+                </span>
                 <h4 className="text-xl font-bold text-[#e5e5e5] mb-3 relative z-10">{step.title}</h4>
                 <p className="text-sm text-[#a3a3a3] relative z-10">{step.desc}</p>
               </div>
             ))}
           </div>
         </section>
+
+        {/* CTA final */}
+        <BlueprintBox coords={{ x: 50, y: 95 }} delay={0.6}>
+          <div className="text-center py-10">
+            <h3 className="text-2xl font-bold text-white mb-4">
+              ¿Tenés un proyecto en mente?
+            </h3>
+            <p className="text-[#a3a3a3] mb-8 max-w-xl mx-auto">
+              Contame qué necesitás. La primera consulta es sin cargo y sin compromiso.
+            </p>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-3 bg-[#E67E32] text-black px-10 py-4 font-bold text-lg hover:bg-white transition-all duration-300"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Escribime por WhatsApp
+            </a>
+          </div>
+        </BlueprintBox>
+
       </div>
     </motion.div>
   );

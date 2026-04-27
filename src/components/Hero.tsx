@@ -1,6 +1,6 @@
 import React from 'react';
 import { BlueprintBox } from './BlueprintBox';
-import { Terminal, Github, Linkedin, Mail } from 'lucide-react';
+import { Terminal, Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
 import { data } from '../data/data';
 import { Typewriter } from './Typewriter'; // <-- Importamos nuestro nuevo componente
 
@@ -49,6 +49,9 @@ export const Hero: React.FC = () => {
           </a>
           <a href={`mailto:${personal.emails.professional}`} className="flex items-center gap-2 text-sm text-primary hover:text-accent transition-colors">
             <Mail className="w-4 h-4" /> {personal.emails.professional}
+          </a>
+          <a href={personal.social.whatsapp} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm font-bold text-accent border border-accent/40 px-2 py-1 hover:bg-accent/10 transition-colors">
+            <MessageCircle className="w-4 h-4" /> WhatsApp
           </a>
         </div>
         
