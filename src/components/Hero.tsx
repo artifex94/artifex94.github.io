@@ -1,10 +1,9 @@
-import React from 'react';
 import { BlueprintBox } from './BlueprintBox';
 import { Terminal, Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
 import { data } from '../data/data';
-import { Typewriter } from './Typewriter'; // <-- Importamos nuestro nuevo componente
+import { Typewriter } from './Typewriter';
 
-export const Hero: React.FC = () => {
+export const Hero = () => {
   const { personal } = data;
 
   return (
@@ -21,16 +20,16 @@ export const Hero: React.FC = () => {
             </span>
           </div>
           
-          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-tight min-h-[80px] md:min-h-[60px]">
+          <h1 className="text-3xl md:text-5xl font-bold text-primary mb-2 tracking-tight min-h-20 md:min-h-15">
             {/* Nombre tipeado después del alias */}
             <Typewriter text={personal.name} delay={1.2} />
           </h1>
           
-          <h2 className="text-lg md:text-xl text-secondary border-b border-dashed border-line pb-4 mb-4 min-h-[40px] md:min-h-[36px]">
+          <h2 className="text-lg md:text-xl text-secondary border-b border-dashed border-line pb-4 mb-4 min-h-10 md:min-h-9">
             &gt; <Typewriter text={personal.title} delay={2.5} speed="fast" />
           </h2>
           
-          <p className="text-primary/80 leading-relaxed text-sm md:text-base max-w-2xl min-h-[80px]">
+          <p className="text-primary/80 leading-relaxed text-sm md:text-base max-w-2xl min-h-20">
             {/* Párrafo largo escrito rápidamente al final */}
             <Typewriter text={personal.aboutMe} delay={3.2} speed="fast" />
           </p>

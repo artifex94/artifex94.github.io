@@ -1,7 +1,6 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-export const Navbar: React.FC = () => {
+export const Navbar = () => {
   const location = useLocation();
   
   return (
@@ -18,9 +17,9 @@ export const Navbar: React.FC = () => {
           >
             ./Portfolio
           </Link>
-          <Link 
-            to="/business" 
-            className={`text-sm font-mono transition-colors ${location.pathname === '/business' ? 'text-accent' : 'text-secondary hover:text-primary'}`}
+          <Link
+            to="/business"
+            className={`text-sm font-mono transition-colors ${location.pathname.startsWith('/business') ? 'text-accent' : 'text-secondary hover:text-primary'}`}
           >
             ./Business
           </Link>

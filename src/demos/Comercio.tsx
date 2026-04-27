@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingBag, MapPin, Clock, Search, Heart, Share2, Phone, Tag, Truck } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
 

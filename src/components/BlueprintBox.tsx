@@ -53,7 +53,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   // Sumamos la rotación del puntero + la del scroll para el eje X
   const rotateX = useTransform(
     [rotateXPointer, rotateXScroll],
-    ([pointer, scroll]: any[]) => `${pointer + scroll}deg`
+    (values: number[]) => `${(values[0] ?? 0) + (values[1] ?? 0)}deg`
   );
   
   // El eje Y solo responde al puntero (mouse/dedo)
@@ -105,10 +105,10 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
         }}
         className="relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40"
       >
-        <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>
+        <div style={{ transform: "translateZ(20px)" }} className="absolute -top-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div style={{ transform: "translateZ(20px)" }} className="absolute -top-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
 
         <div style={{ transform: "translateZ(30px)" }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
           [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]

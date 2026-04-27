@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Clock, MapPin, Phone, Star, ChevronRight, CheckCircle } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
 
@@ -46,7 +46,7 @@ export const Profesional: React.FC = () => {
       </nav>
 
       {/* Hero */}
-      <div className="bg-gradient-to-br from-[#1A3A4A] to-[#1A6B8A] text-white px-6 py-16 md:py-24">
+      <div className="bg-linear-to-br from-[#1A3A4A] to-[#1A6B8A] text-white px-6 py-16 md:py-24">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
           <div className="flex-1">
             <span className="inline-block bg-white/10 text-white/80 text-xs px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Victoria, Entre Ríos</span>
@@ -68,16 +68,16 @@ export const Profesional: React.FC = () => {
             </div>
           </div>
           <div className="hidden md:flex flex-col gap-3">
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-5 flex items-center gap-3 min-w-[220px]">
-              <CheckCircle className="w-8 h-8 text-[#5ECDE3] flex-shrink-0" />
+            <div className="bg-white/10 backdrop-blur rounded-2xl p-5 flex items-center gap-3 min-w-55">
+              <CheckCircle className="w-8 h-8 text-[#5ECDE3] shrink-0" />
               <div><p className="font-bold text-sm">+1.500 pacientes</p><p className="text-white/60 text-xs">atendidos en Victoria</p></div>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-2xl p-5 flex items-center gap-3">
-              <Star className="w-8 h-8 text-yellow-400 flex-shrink-0" />
+              <Star className="w-8 h-8 text-yellow-400 shrink-0" />
               <div><p className="font-bold text-sm">4.9 / 5 estrellas</p><p className="text-white/60 text-xs">en Google Maps</p></div>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-2xl p-5 flex items-center gap-3">
-              <Clock className="w-8 h-8 text-[#5ECDE3] flex-shrink-0" />
+              <Clock className="w-8 h-8 text-[#5ECDE3] shrink-0" />
               <div><p className="font-bold text-sm">Turnos en 24 hs</p><p className="text-white/60 text-xs">respuesta garantizada</p></div>
             </div>
           </div>
@@ -158,7 +158,7 @@ export const Profesional: React.FC = () => {
       <div id="ubicacion" className="bg-[#1A3A4A] text-white py-12 px-6">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4">
-            <MapPin className="w-8 h-8 text-[#5ECDE3] flex-shrink-0" />
+            <MapPin className="w-8 h-8 text-[#5ECDE3] shrink-0" />
             <div>
               <p className="font-bold text-lg">Consultorio en el Centro</p>
               <p className="text-white/60 text-sm">25 de Mayo 412, Victoria, Entre Ríos</p>

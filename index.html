@@ -1,25 +1,105 @@
 <!doctype html>
-<html lang="es-419">
+<html lang="es-AR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Artifex Dev - Ramiro Aníbal Escobar</title>
-    <meta name="description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta name="keywords" content="Software Solution Developer, React, TypeScript, Next.js, Frontend, IoT, Domótica, Administración de Sistemas, Artifex Dev, Ramiro Escobar" />
+
+    <!-- ===== Favicon ===== -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg?v=2" />
+
+    <!-- ===== Primary SEO ===== -->
+    <title>Ramiro Escobar — Software Developer | Artifex Dev</title>
+    <meta name="description" content="Desarrollo de plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores. React, TypeScript, Next.js. Victoria, Entre Ríos, Argentina." />
+    <meta name="keywords" content="desarrollador web, software a medida, React, TypeScript, Next.js, landing page, sistema web, Artifex Dev, Ramiro Escobar, Victoria Entre Ríos, Argentina" />
     <meta name="author" content="Ramiro Aníbal Escobar" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://artifex.click/" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- ===== Open Graph ===== -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
-    <meta property="og:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:site_name" content="Artifex Dev" />
+    <meta property="og:url" content="https://artifex.click/" />
+    <meta property="og:title" content="Ramiro Escobar — Software Developer | Artifex Dev" />
+    <meta property="og:description" content="Desarrollo plataformas digitales y sistemas web a medida. Entrega rápida, precios transparentes y soporte continuo. Victoria, Entre Ríos, Argentina." />
+    <meta property="og:image" content="https://artifex.click/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_AR" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
-    <meta property="twitter:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="twitter:image" content="/og-image.png" />
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ramiro Escobar — Software Developer | Artifex Dev" />
+    <meta name="twitter:description" content="Desarrollo plataformas digitales y sistemas web a medida. Entrega rápida, precios transparentes y soporte continuo." />
+    <meta name="twitter:image" content="https://artifex.click/og-image.png" />
+
+    <!-- ===== Performance: preconnect a dominios externos ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+
+    <!-- ===== JSON-LD: Person + Website ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://artifex.click/#person",
+          "name": "Ramiro Aníbal Escobar",
+          "alternateName": "Artifex Dev",
+          "jobTitle": "Software Solution Developer",
+          "description": "Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores en Argentina.",
+          "url": "https://artifex.click/",
+          "email": "dev@artifex.click",
+          "sameAs": [
+            "https://github.com/artifex94",
+            "https://www.linkedin.com/in/ramiroescobar"
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Victoria",
+            "addressRegion": "Entre Ríos",
+            "addressCountry": "AR"
+          },
+          "knowsAbout": ["React", "TypeScript", "Next.js", "Node.js", "TailwindCSS", "Software Development"]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://artifex.click/#website",
+          "url": "https://artifex.click/",
+          "name": "Artifex Dev — Ramiro Escobar",
+          "description": "Portfolio y servicios de desarrollo web a medida",
+          "publisher": { "@id": "https://artifex.click/#person" },
+          "inLanguage": "es-AR"
+        },
+        {
+          "@type": "ProfessionalService",
+          "@id": "https://artifex.click/#service",
+          "name": "Artifex Dev — Desarrollo Web a Medida",
+          "description": "Diseño y desarrollo de plataformas digitales, landing pages y sistemas web para negocios y emprendedores.",
+          "url": "https://artifex.click/business",
+          "provider": { "@id": "https://artifex.click/#person" },
+          "areaServed": { "@type": "Country", "name": "Argentina" },
+          "serviceType": "Desarrollo de Software",
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "Presencia Digital Express",
+              "description": "Landing page profesional mobile-first con entrega en 1 a 2 semanas.",
+              "priceCurrency": "ARS",
+              "price": "200000"
+            },
+            {
+              "@type": "Offer",
+              "name": "Sistema Web a Medida",
+              "description": "Aplicación web completa con panel de administración y lógica de negocio a medida.",
+              "priceCurrency": "ARS",
+              "price": "1000000"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

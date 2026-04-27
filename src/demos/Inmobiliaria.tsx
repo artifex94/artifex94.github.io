@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Bed, Bath, Maximize2, MapPin, Phone, Search } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
 
@@ -15,8 +15,14 @@ const propiedades = [
 
 export const Inmobiliaria: React.FC = () => {
   const [filtro, setFiltro] = useState('Todos');
+  const [busqueda, setBusqueda] = useState('');
 
-  const lista = filtro === 'Todos' ? propiedades : propiedades.filter(p => p.tipo === filtro);
+  const lista = propiedades.filter(p => {
+    const matchTipo = filtro === 'Todos' || p.tipo === filtro;
+    const q = busqueda.toLowerCase();
+    const matchBusqueda = !q || p.titulo.toLowerCase().includes(q) || p.zona.toLowerCase().includes(q);
+    return matchTipo && matchBusqueda;
+  });
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -27,10 +33,10 @@ export const Inmobiliaria: React.FC = () => {
           <span className="font-bold text-lg">Victoria <span className="text-[#C9A84C]">Propiedades</span></span>
         </div>
         <div className="hidden md:flex gap-6 text-sm">
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">Venta</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">Alquiler</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">Tasaciones</a>
-          <a href="#" className="hover:text-[#C9A84C] transition-colors">Contacto</a>
+          <button onClick={() => setFiltro('Venta')} className="hover:text-[#C9A84C] transition-colors">Venta</button>
+          <button onClick={() => setFiltro('Alquiler')} className="hover:text-[#C9A84C] transition-colors">Alquiler</button>
+          <a href={WA} target="_blank" rel="noreferrer" className="hover:text-[#C9A84C] transition-colors">Tasaciones</a>
+          <a href={WA} target="_blank" rel="noreferrer" className="hover:text-[#C9A84C] transition-colors">Contacto</a>
         </div>
         <a href={WA} target="_blank" rel="noreferrer" className="hidden md:flex items-center gap-2 bg-[#C9A84C] text-[#1B2A4A] px-4 py-2 text-sm font-bold hover:bg-yellow-400 transition-colors">
           <Phone className="w-4 h-4" /> Llamanos
@@ -46,10 +52,20 @@ export const Inmobiliaria: React.FC = () => {
           <div className="bg-white rounded shadow-xl p-4 flex flex-col md:flex-row gap-3 text-left">
             <div className="flex-1 flex items-center gap-2 border-b md:border-b-0 md:border-r border-neutral-200 pb-3 md:pb-0 md:pr-4">
               <Search className="w-4 h-4 text-neutral-400" />
-              <input className="w-full text-neutral-800 text-sm outline-none" placeholder="Zona, barrio o ciudad..." />
+              <input
+                className="w-full text-neutral-800 text-sm outline-none"
+                placeholder="Zona, barrio o ciudad..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+              />
             </div>
-            <select className="text-neutral-700 text-sm outline-none px-2">
-              <option>Venta</option><option>Alquiler</option>
+            <select
+              className="text-neutral-700 text-sm outline-none px-2"
+              value={filtro === 'Todos' ? 'Venta' : filtro}
+              onChange={e => setFiltro(e.target.value)}
+            >
+              <option value="Venta">Venta</option>
+              <option value="Alquiler">Alquiler</option>
             </select>
             <select className="text-neutral-700 text-sm outline-none px-2">
               <option>Cualquier tipo</option><option>Casa</option><option>Departamento</option><option>Lote</option><option>Local</option>

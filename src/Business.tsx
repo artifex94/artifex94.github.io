@@ -1,11 +1,29 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BlueprintBox } from './components/BlueprintBox';
 import { PricingBox, type PricingTier } from './components/PricingBox';
-import { MessageCircle } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import {
+  MessageCircle,
+  Building2, Stethoscope, UtensilsCrossed, ShoppingBag, Lightbulb, Briefcase,
+  Search, FileText, Code2, Rocket, ArrowRight,
+} from 'lucide-react';
 
 const WHATSAPP_URL = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
+
+interface Segment {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  demo: string;
+}
+
+interface Step {
+  step: string;
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+}
 
 const pricingTiers: PricingTier[] = [
   {
@@ -39,29 +57,29 @@ const pricingTiers: PricingTier[] = [
   },
 ];
 
-const onboardingSteps = [
-  { step: "01", title: "Discovery", desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo." },
-  { step: "02", title: "Propuesta", desc: "Definición del alcance, arquitectura, tiempos y presupuesto detallado." },
-  { step: "03", title: "Desarrollo", desc: "Ciclo de desarrollo con entregas parciales y comunicación continua." },
-  { step: "04", title: "Entrega & Soporte", desc: "Deploy a producción y transición al plan de mantenimiento mensual." },
+const onboardingSteps: Step[] = [
+  { step: "01", icon: Search,   title: "Discovery",        desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo." },
+  { step: "02", icon: FileText, title: "Propuesta",        desc: "Definición del alcance, arquitectura, tiempos y presupuesto detallado." },
+  { step: "03", icon: Code2,    title: "Desarrollo",       desc: "Ciclo de desarrollo con entregas parciales y comunicación continua." },
+  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a producción y transición al plan de mantenimiento mensual." },
 ];
 
-const targetSegments = [
-  { icon: "🏢", title: "Inmobiliarias", desc: "Catálogo de propiedades, filtros y contacto directo.", demo: "/business/inmobiliarias" },
-  { icon: "🩺", title: "Profesionales", desc: "Médicos, abogados y contadores que necesitan captar clientes online.", demo: "/business/profesionales" },
-  { icon: "🍽️", title: "Gastronomía", desc: "Menú digital, pedidos por WhatsApp y presencia local.", demo: "/business/gastronomia" },
-  { icon: "🛍️", title: "Comercios", desc: "Catálogo digital para tiendas que venden por WhatsApp.", demo: "/business/comercios" },
-  { icon: "🚀", title: "Emprendedores", desc: "MVP o landing page para validar una idea rápido.", demo: null },
-  { icon: "⚙️", title: "Empresas", desc: "Sistemas internos, dashboards y automatizaciones a medida.", demo: null },
+const targetSegments: Segment[] = [
+  { icon: Building2,       title: "Inmobiliarias",  desc: "Catálogo de propiedades, filtros y contacto directo.",                          demo: "/business/inmobiliarias" },
+  { icon: Stethoscope,     title: "Profesionales",  desc: "Médicos, abogados y contadores que necesitan captar clientes online.",           demo: "/business/profesionales" },
+  { icon: UtensilsCrossed, title: "Gastronomía",    desc: "Menú digital, pedidos por WhatsApp y presencia local.",                         demo: "/business/gastronomia"   },
+  { icon: ShoppingBag,     title: "Comercios",      desc: "Catálogo digital para tiendas que venden por WhatsApp.",                        demo: "/business/comercios"     },
+  { icon: Lightbulb,       title: "Emprendedores",  desc: "Landing page para validar tu idea y captar tus primeros clientes.",             demo: "/business/emprendedores" },
+  { icon: Briefcase,       title: "Empresas",       desc: "Sistemas internos, dashboards y automatizaciones a medida.",                    demo: "/business/empresas"      },
 ];
 
-export const Business: React.FC = () => {
+export const Business = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="min-h-screen w-full bg-black bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8 text-[#e5e5e5] font-sans"
+      className="min-h-screen w-full bg-black bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8 text-[#e5e5e5]"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-16">
 
@@ -76,7 +94,7 @@ export const Business: React.FC = () => {
               <span className="text-[#E67E32]">trabaje por vos.</span>
             </h1>
             <p className="text-lg md:text-xl text-[#a3a3a3] mb-10 max-w-3xl leading-relaxed">
-              Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores. 
+              Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores.
               Entrega en tiempo real, precios transparentes y soporte continuo.
             </p>
             <a
@@ -98,29 +116,23 @@ export const Business: React.FC = () => {
             <p className="text-[#a3a3a3]">Cualquier negocio que necesite software que funcione.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {targetSegments.map((seg, idx) => (
-              seg.demo ? (
+            {targetSegments.map((seg, idx) => {
+              const Icon = seg.icon;
+              return (
                 <Link
                   key={idx}
                   to={seg.demo}
-                  className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors group block"
+                  className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] hover:bg-[#1a1409] transition-all duration-200 group block"
                 >
-                  <span className="text-2xl mb-3 block">{seg.icon}</span>
+                  <Icon className="w-7 h-7 text-[#E67E32]/60 mb-4 group-hover:text-[#E67E32] transition-colors" />
                   <h4 className="text-white font-bold mb-1 group-hover:text-[#E67E32] transition-colors">{seg.title}</h4>
-                  <p className="text-xs text-[#a3a3a3] mb-2">{seg.desc}</p>
-                  <span className="text-xs text-[#E67E32] font-semibold">Ver demo →</span>
+                  <p className="text-xs text-[#a3a3a3] mb-3 leading-relaxed">{seg.desc}</p>
+                  <span className="flex items-center gap-1 text-xs text-[#E67E32]/60 font-mono group-hover:text-[#E67E32] transition-colors">
+                    Ver demo <ArrowRight className="w-3 h-3" />
+                  </span>
                 </Link>
-              ) : (
-                <div
-                  key={idx}
-                  className="bg-[#141414] border border-[#262626] p-5 hover:border-[#E67E32] transition-colors"
-                >
-                  <span className="text-2xl mb-3 block">{seg.icon}</span>
-                  <h4 className="text-white font-bold mb-1">{seg.title}</h4>
-                  <p className="text-xs text-[#a3a3a3]">{seg.desc}</p>
-                </div>
-              )
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -146,29 +158,65 @@ export const Business: React.FC = () => {
                 <span className="text-[#E67E32]">Es tu garantía de continuidad.</span>
               </h3>
               <p className="text-[#a3a3a3]">
-                Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo. 
+                Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo.
                 Ante cualquier cambio o problema, respuesta en el día.
               </p>
             </div>
           </div>
         </BlueprintBox>
 
-        {/* Proceso */}
+        {/* Proceso — ¿Cómo trabajamos? */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-white mb-10 text-center">¿Cómo trabajamos?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {onboardingSteps.map((step, idx) => (
-              <div
-                key={idx}
-                className="bg-[#141414] border border-[#262626] p-6 relative hover:border-[#E67E32] transition-colors"
-              >
-                <span className="absolute -top-4 -left-4 text-5xl font-black text-[#E67E32] opacity-20">
-                  {step.step}
-                </span>
-                <h4 className="text-xl font-bold text-[#e5e5e5] mb-3 relative z-10">{step.title}</h4>
-                <p className="text-sm text-[#a3a3a3] relative z-10">{step.desc}</p>
-              </div>
-            ))}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-3">¿Cómo trabajamos?</h2>
+            <p className="text-[#a3a3a3] text-sm font-mono">// Cuatro etapas claras, sin sorpresas.</p>
+          </div>
+
+          <div className="relative">
+            {/* Línea conectora entre pasos — solo desktop */}
+            <div className="hidden md:block absolute top-[2.6rem] left-[12.5%] right-[12.5%] h-px z-0 overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-r from-transparent via-[#E67E32]/25 to-transparent" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5 relative z-10">
+              {onboardingSteps.map((step, idx) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="group relative bg-[#141414] border border-[#262626] p-6 flex flex-col gap-4 hover:border-[#E67E32]/50 hover:bg-[#181818] transition-all duration-300"
+                  >
+                    {/* Número + icono */}
+                    <div className="flex items-center gap-3">
+                      <span className="w-9 h-9 border border-[#E67E32]/30 flex items-center justify-center text-[#E67E32] text-[11px] font-mono font-bold bg-[#1a1209] group-hover:border-[#E67E32] group-hover:bg-[#E67E32]/10 transition-all shrink-0">
+                        {step.step}
+                      </span>
+                      <Icon className="w-5 h-5 text-[#E67E32]/40 group-hover:text-[#E67E32] transition-colors duration-300" />
+                    </div>
+
+                    {/* Título y descripción */}
+                    <div>
+                      <h4 className="text-base font-bold text-[#e5e5e5] mb-2 group-hover:text-white transition-colors">
+                        {step.title}
+                      </h4>
+                      <p className="text-sm text-[#737373] leading-relaxed group-hover:text-[#a3a3a3] transition-colors">
+                        {step.desc}
+                      </p>
+                    </div>
+
+                    {/* Flecha en mobile entre pasos */}
+                    {idx < onboardingSteps.length - 1 && (
+                      <div className="md:hidden flex justify-center pt-1">
+                        <ArrowRight className="w-4 h-4 text-[#E67E32]/30 rotate-90" />
+                      </div>
+                    )}
+
+                    {/* Borde inferior acento en hover */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E67E32] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 

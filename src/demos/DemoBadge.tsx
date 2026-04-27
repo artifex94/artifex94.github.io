@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MessageCircle, X, Code2 } from 'lucide-react';
 
 const WA = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20el%20demo%20y%20me%20interesa%20un%20sitio%20similar%20para%20mi%20negocio.";
 
-export const DemoBadge: React.FC<{ label: string }> = ({ label }) => {
+export const DemoBadge = ({ label }: { label: string }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -18,7 +18,7 @@ export const DemoBadge: React.FC<{ label: string }> = ({ label }) => {
 
       {/* Modal CTA */}
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-100 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-md p-8 shadow-2xl relative">
             <button onClick={() => setOpen(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-black">
               <X className="w-5 h-5" />
