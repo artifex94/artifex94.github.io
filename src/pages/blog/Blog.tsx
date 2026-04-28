@@ -74,7 +74,6 @@ const DonationsSection = () => (
       </div>
 
       <p className="text-[10px] text-secondary font-mono border-t border-dashed border-line pt-4">
-        // NOTA: Actualiza las URLs en Blog.tsx con tus handles reales de Ko-fi y Cafecito antes de hacer deploy.
       </p>
     </div>
   </BlueprintBox>
