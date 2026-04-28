@@ -5,7 +5,7 @@ import { BlueprintBox } from '../../components/BlueprintBox';
 import { categories, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
 
 const KOFI_URL = "https://ko-fi.com/artifexdev";
-const CAFECITO_URL = "https://cafecito.app/artifexdev";
+const CAFECITO_URL = "https://cafecito.app/artifex";
 
 const DonationsSection = () => (
   <BlueprintBox coords={{ x: 80, y: 90 }} delay={0.4} className="w-full">
