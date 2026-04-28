@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 export const Navbar = () => {
   const location = useLocation();
-  
+
   return (
     <nav className="w-full border-b border-dashed border-line bg-base/80 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -11,8 +11,8 @@ export const Navbar = () => {
           <span className="text-secondary text-sm hidden sm:inline-block">// System_Core</span>
         </div>
         <div className="flex gap-6">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className={`text-sm font-mono transition-colors ${location.pathname === '/' ? 'text-accent' : 'text-secondary hover:text-primary'}`}
           >
             ./Portfolio
@@ -22,6 +22,12 @@ export const Navbar = () => {
             className={`text-sm font-mono transition-colors ${location.pathname.startsWith('/business') ? 'text-accent' : 'text-secondary hover:text-primary'}`}
           >
             ./Business
+          </Link>
+          <Link
+            to="/blog"
+            className={`text-sm font-mono transition-colors ${location.pathname.startsWith('/blog') ? 'text-accent' : 'text-secondary hover:text-primary'}`}
+          >
+            ./Blog
           </Link>
         </div>
       </div>

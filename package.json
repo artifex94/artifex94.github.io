@@ -6,6 +6,8 @@
   "homepage": "https://artifex94.github.io/",
   "scripts": {
     "dev": "vite",
+    "fetch-platzi": "node scripts/fetch-platzi.mjs",
+    "prebuild": "npm run fetch-platzi",
     "build": "tsc -b && vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",

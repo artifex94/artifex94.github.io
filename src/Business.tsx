@@ -7,6 +7,7 @@ import {
   MessageCircle,
   Building2, Stethoscope, UtensilsCrossed, ShoppingBag, Lightbulb, Briefcase,
   Search, FileText, Code2, Rocket, ArrowRight,
+  MessageSquare, Lock, FolderOpen,
 } from 'lucide-react';
 
 const WHATSAPP_URL = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
@@ -25,32 +26,38 @@ interface Step {
   desc: string;
 }
 
+interface Differentiator {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+}
+
 const pricingTiers: PricingTier[] = [
   {
     name: "Presencia Digital Express",
-    target: "Para negocios, profesionales y emprendedores que necesitan presencia web rápida y efectiva.",
-    setupPrice: "$200.000 – $400.000 ARS",
+    target: "Para negocios, profesionales y emprendedores que necesitan presencia web rapida y efectiva.",
+    setupPrice: "$200.000 - $400.000 ARS",
     retainerPrice: "$50.000 ARS",
     features: [
-      "Landing page profesional y mobile-first",
-      "Sección de servicios o productos",
-      "Formulario de contacto + botón WhatsApp",
+      "Tu negocio visible y captando consultas en menos de 2 semanas",
+      "Seccion de servicios o productos clara y orientada a conversion",
+      "Formulario de contacto + boton WhatsApp destacado",
       "Google Maps integrado",
       "Dominio y deploy incluidos (Vercel)",
-      "Entrega en 1 a 2 semanas",
+      "Mobile-first: el 80% de tus clientes llegan desde el celular",
     ],
   },
   {
     name: "Sistema Web a Medida",
-    target: "Para negocios que necesitan sistematizar operaciones: gestión de clientes, turnos, catálogos o dashboards.",
+    target: "Para negocios que necesitan sistematizar operaciones: gestion de clientes, turnos, catalogos o dashboards.",
     setupPrice: "$1.000.000 ARS",
     retainerPrice: "$50.000 ARS",
     features: [
-      "Aplicación web completa según requerimiento",
-      "Panel de administración propio",
-      "Base de datos y lógica de negocio a medida",
-      "Autenticación de usuarios",
-      "Ciclo de desarrollo de 3 meses",
+      "Sistema productivo en 90 dias, con soporte incluido el primer año",
+      "Panel de administracion propio — control total desde una sola pantalla",
+      "Base de datos y logica de negocio disenada para crecer",
+      "Autenticacion de usuarios y roles",
+      "Entregas parciales cada sprint — ves el avance en tiempo real",
       "Mantenimiento mensual incluido post-entrega",
     ],
     isPopular: true,
@@ -58,19 +65,37 @@ const pricingTiers: PricingTier[] = [
 ];
 
 const onboardingSteps: Step[] = [
-  { step: "01", icon: Search,   title: "Discovery",        desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo." },
-  { step: "02", icon: FileText, title: "Propuesta",        desc: "Definición del alcance, arquitectura, tiempos y presupuesto detallado." },
-  { step: "03", icon: Code2,    title: "Desarrollo",       desc: "Ciclo de desarrollo con entregas parciales y comunicación continua." },
-  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a producción y transición al plan de mantenimiento mensual." },
+  { step: "01", icon: Search,   title: "Discovery",         desc: "Reunion de diagnostico para entender el negocio, el problema y los objetivos. Sin costo ni compromiso." },
+  { step: "02", icon: FileText, title: "Propuesta",         desc: "Alcance, arquitectura, tiempos y presupuesto fijo detallado. Sin sorpresas despues." },
+  { step: "03", icon: Code2,    title: "Desarrollo",        desc: "Ciclo de desarrollo con entregas parciales. Ves el avance y das feedback en cada etapa." },
+  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a produccion, documentacion entregada y transicion al plan de mantenimiento." },
 ];
 
 const targetSegments: Segment[] = [
-  { icon: Building2,       title: "Inmobiliarias",  desc: "Catálogo de propiedades, filtros y contacto directo.",                          demo: "/business/inmobiliarias" },
-  { icon: Stethoscope,     title: "Profesionales",  desc: "Médicos, abogados y contadores que necesitan captar clientes online.",           demo: "/business/profesionales" },
-  { icon: UtensilsCrossed, title: "Gastronomía",    desc: "Menú digital, pedidos por WhatsApp y presencia local.",                         demo: "/business/gastronomia"   },
-  { icon: ShoppingBag,     title: "Comercios",      desc: "Catálogo digital para tiendas que venden por WhatsApp.",                        demo: "/business/comercios"     },
-  { icon: Lightbulb,       title: "Emprendedores",  desc: "Landing page para validar tu idea y captar tus primeros clientes.",             demo: "/business/emprendedores" },
-  { icon: Briefcase,       title: "Empresas",       desc: "Sistemas internos, dashboards y automatizaciones a medida.",                    demo: "/business/empresas"      },
+  { icon: Building2,       title: "Inmobiliarias",  desc: "Sin sistema propio, perdes leads entre WhatsApps y planillas. Te armo un catalogo con filtros, fichas y contacto directo.",          demo: "/business/inmobiliarias" },
+  { icon: Stethoscope,     title: "Profesionales",  desc: "Tus clientes te buscan en Google. Sin presencia profesional, llaman al siguiente. Te pongo visible en dias.",                         demo: "/business/profesionales" },
+  { icon: UtensilsCrossed, title: "Gastronomia",    desc: "Un menu digital reduce llamadas y errores en pedidos, y te da presencia local sin depender de apps de terceros.",                     demo: "/business/gastronomia"   },
+  { icon: ShoppingBag,     title: "Comercios",      desc: "Vendes por WhatsApp pero sin catalogo ordenado cada consulta te consume tiempo. Te organizo el proceso y lo escalo.",                 demo: "/business/comercios"     },
+  { icon: Lightbulb,       title: "Emprendedores",  desc: "Necesitas validar tu idea y captar tus primeros clientes antes de invertir mas. Te armo la presencia digital para arrancar.",         demo: "/business/emprendedores" },
+  { icon: Briefcase,       title: "Empresas",       desc: "Tus procesos criticos no pueden depender de hojas de calculo ni emails. Desarrollo sistemas internos y portales a medida.",           demo: "/business/empresas"      },
+];
+
+const differentiators: Differentiator[] = [
+  {
+    icon: MessageSquare,
+    title: "Comunicacion directa",
+    desc: "Sin intermediarios, sin ticketing, sin su consulta fue derivada al equipo. Hablas conmigo durante todo el proyecto, desde el primer mensaje hasta el deploy.",
+  },
+  {
+    icon: Lock,
+    title: "Precio fijo antes de empezar",
+    desc: "El presupuesto que acordamos es el que pagas. Sin extras sorpresa ni horas adicionales no pactadas. Si algo cambia, lo hablamos antes de hacerlo.",
+  },
+  {
+    icon: FolderOpen,
+    title: "Codigo que es tuyo",
+    desc: "Acceso completo al repositorio y documentacion del proyecto desde el dia uno. Si otro desarrollador necesita tomar el trabajo, puede hacerlo sin problemas.",
+  },
 ];
 
 export const Business = () => {
@@ -109,10 +134,10 @@ export const Business = () => {
           </div>
         </BlueprintBox>
 
-        {/* Segmentos target */}
+        {/* Segmentos */}
         <section>
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-white mb-2">¿Para quién trabajo?</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Para quien trabajo</h2>
             <p className="text-[#a3a3a3]">Cualquier negocio que necesite software que funcione.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -140,7 +165,7 @@ export const Business = () => {
         <section>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">Servicios y Precios</h2>
-            <p className="text-[#a3a3a3]">Transparencia total desde el primer día. Sin sorpresas.</p>
+            <p className="text-[#a3a3a3]">Transparencia total desde el primer dia. Sin sorpresas.</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {pricingTiers.map((tier, idx) => (
@@ -149,35 +174,30 @@ export const Business = () => {
           </div>
         </section>
 
-        {/* Mantenimiento banner */}
-        <BlueprintBox coords={{ x: 50, y: 80 }} delay={0.5} className="bg-[#1f1f1f] border-l-4 border-l-[#E67E32]">
-          <div className="p-4 md:p-8 flex flex-col md:flex-row items-center gap-8 justify-between">
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-white mb-3">
-                El mantenimiento mensual no es un gasto.<br />
-                <span className="text-[#E67E32]">Es tu garantía de continuidad.</span>
-              </h3>
-              <p className="text-[#a3a3a3]">
-                Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo.
-                Ante cualquier cambio o problema, respuesta en el día.
-              </p>
-            </div>
+        {/* Mantenimiento */}
+        <BlueprintBox coords={{ x: 50, y: 80 }} delay={0.5} innerClassName="bg-[#1f1f1f] border-l-4 border-l-[#E67E32]">
+          <div className="p-4 md:p-8">
+            <h3 className="text-2xl font-bold text-white mb-3">
+              El mantenimiento mensual no es un gasto.<br />
+              <span className="text-[#E67E32]">Es tu garantia de continuidad.</span>
+            </h3>
+            <p className="text-[#a3a3a3]">
+              Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo.
+              Ante cualquier cambio o problema, respuesta en el dia.
+            </p>
           </div>
         </BlueprintBox>
 
-        {/* Proceso — ¿Cómo trabajamos? */}
-        <section className="mb-16">
+        {/* Proceso */}
+        <section>
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">¿Cómo trabajamos?</h2>
+            <h2 className="text-3xl font-bold text-white mb-3">Como trabajamos</h2>
             <p className="text-[#a3a3a3] text-sm font-mono">// Cuatro etapas claras, sin sorpresas.</p>
           </div>
-
           <div className="relative">
-            {/* Línea conectora entre pasos — solo desktop */}
             <div className="hidden md:block absolute top-[2.6rem] left-[12.5%] right-[12.5%] h-px z-0 overflow-hidden">
               <div className="w-full h-full bg-gradient-to-r from-transparent via-[#E67E32]/25 to-transparent" />
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5 relative z-10">
               {onboardingSteps.map((step, idx) => {
                 const Icon = step.icon;
@@ -186,15 +206,12 @@ export const Business = () => {
                     key={idx}
                     className="group relative bg-[#141414] border border-[#262626] p-6 flex flex-col gap-4 hover:border-[#E67E32]/50 hover:bg-[#181818] transition-all duration-300"
                   >
-                    {/* Número + icono */}
                     <div className="flex items-center gap-3">
                       <span className="w-9 h-9 border border-[#E67E32]/30 flex items-center justify-center text-[#E67E32] text-[11px] font-mono font-bold bg-[#1a1209] group-hover:border-[#E67E32] group-hover:bg-[#E67E32]/10 transition-all shrink-0">
                         {step.step}
                       </span>
                       <Icon className="w-5 h-5 text-[#E67E32]/40 group-hover:text-[#E67E32] transition-colors duration-300" />
                     </div>
-
-                    {/* Título y descripción */}
                     <div>
                       <h4 className="text-base font-bold text-[#e5e5e5] mb-2 group-hover:text-white transition-colors">
                         {step.title}
@@ -203,15 +220,11 @@ export const Business = () => {
                         {step.desc}
                       </p>
                     </div>
-
-                    {/* Flecha en mobile entre pasos */}
                     {idx < onboardingSteps.length - 1 && (
                       <div className="md:hidden flex justify-center pt-1">
                         <ArrowRight className="w-4 h-4 text-[#E67E32]/30 rotate-90" />
                       </div>
                     )}
-
-                    {/* Borde inferior acento en hover */}
                     <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E67E32] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </div>
                 );
@@ -220,14 +233,31 @@ export const Business = () => {
           </div>
         </section>
 
+        {/* Por que yo */}
+        <section>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-white mb-3">Por que trabajar conmigo</h2>
+            <p className="text-[#a3a3a3] text-sm font-mono">// Tres cosas que no vas a tener que aclarar dos veces.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {differentiators.map(({ icon: Icon, title, desc }, idx) => (
+              <div key={idx} className="group bg-[#141414] border border-[#262626] p-6 hover:border-[#E67E32]/50 transition-all duration-300">
+                <Icon className="w-6 h-6 text-[#E67E32]/50 mb-4 group-hover:text-[#E67E32] transition-colors" />
+                <h4 className="text-white font-bold mb-2">{title}</h4>
+                <p className="text-sm text-[#737373] leading-relaxed group-hover:text-[#a3a3a3] transition-colors">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* CTA final */}
         <BlueprintBox coords={{ x: 50, y: 95 }} delay={0.6}>
           <div className="text-center py-10">
             <h3 className="text-2xl font-bold text-white mb-4">
-              ¿Tenés un proyecto en mente?
+              Tenes un proyecto en mente?
             </h3>
             <p className="text-[#a3a3a3] mb-8 max-w-xl mx-auto">
-              Contame qué necesitás. La primera consulta es sin cargo y sin compromiso.
+              Contame que necesitas. La primera consulta es sin cargo y sin compromiso.
             </p>
             <a
               href={WHATSAPP_URL}

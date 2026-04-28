@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Portfolio } from './Portfolio';
 import { Business } from './Business';
+import { Blog } from './pages/blog/Blog';
+import { BlogCategory } from './pages/blog/BlogCategory';
+import { BlogPost } from './pages/blog/BlogPost';
 import { Navbar } from './components/Navbar';
 import { Inmobiliaria } from './demos/Inmobiliaria';
 import { Profesional } from './demos/Profesional';
@@ -34,6 +37,9 @@ function App() {
         <Route path="/business/comercios" element={<Comercio />} />
         <Route path="/business/emprendedores" element={<Emprendedor />} />
         <Route path="/business/empresas" element={<Empresa />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:categorySlug" element={<BlogCategory />} />
+        <Route path="/blog/:categorySlug/:postSlug" element={<BlogPost />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

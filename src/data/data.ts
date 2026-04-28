@@ -1,3 +1,5 @@
+import platziCerts from './platzi-certs.json';
+
 // Tipados base para asegurar la escalabilidad de los datos
 export interface Project {
   title: string;
@@ -22,6 +24,14 @@ export interface Education {
   details?: string;
 }
 
+export interface PlatziCert {
+  name: string;
+  school: string;
+  completedAt: string | null;
+  url: string | null;
+  imageUrl: string | null;
+}
+
 export interface SkillGroup {
   category: string;
   skills: string[];
@@ -44,7 +54,7 @@ export interface PortfolioData {
 
 export const data: PortfolioData = {
   personal: {
-    name: "Ramiro Aníbal Escobar",
+    name: "Ramiro Anibal Escobar",
     aka: "Artifex Dev",
     title: "Software Solution Developer",
     emails: {
@@ -57,7 +67,10 @@ export const data: PortfolioData = {
       whatsapp: "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20tu%20portfolio%20y%20me%20interesa%20hablar%20sobre%20un%20proyecto.",
     },
     aboutMe:
-      "Desarrollo plataformas digitales a medida para empresas, negocios y emprendedores que necesitan software que funcione. Combino ingeniería de software moderna con visión de negocio para entregar sistemas que generan resultados reales: más clientes, operaciones más eficientes y presencia digital que convierte.",
+      "Si tu negocio no tiene presencia online, te estas perdiendo clientes que ya buscan lo que ofrecés. " +
+      "Desarrollo sitios web y sistemas digitales para empresas y emprendedores que quieren resultados concretos: " +
+      "mas consultas, operaciones ordenadas y una imagen profesional que genera confianza. " +
+      "Precios claros, entrega en tiempo y soporte real.",
   },
 
   experience: [
@@ -66,20 +79,20 @@ export const data: PortfolioData = {
       role: "Administrador de Sistemas & Software Developer",
       period: "2016 - Presente",
       description: [
-        "Implementación y gestión de software de monitoreo SoftGuard para sistemas de seguridad, domótica, control de acceso y rastreo GPS.",
-        "Administración integral del CRM, saneamiento de bases de datos y configuración de sistemas de alarma mediante Beat Netio.",
+        "Implementacion y gestion de software de monitoreo SoftGuard para sistemas de seguridad, domotica, control de acceso y rastreo GPS.",
+        "Administracion integral del CRM, saneamiento de bases de datos y configuracion de sistemas de alarma mediante Beat Netio.",
         "Desarrollo y mantenimiento de la Landing Page corporativa utilizando Next.js y TypeScript.",
-        "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad."
-      ]
-    }
+        "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad.",
+      ],
+    },
   ],
 
   education: [
     {
-      institution: "Universidad Nacional de Entre Ríos (UNER)",
-      degree: "Ingeniería en Informática",
+      institution: "Universidad Siglo XXI",
+      degree: "Ciencias de la Computacion (cursado parcial)",
       period: "2022 - Presente",
-      details: "Cursando materias de Algoritmos y Estructuras de Datos, Pruebas de Software y Principios de Economía."
+      details: "Cursado parcial equivalente a Analista de Sistemas. Materias completadas: Algoritmos, Estructuras de Datos y Pruebas de Software.",
     },
     {
       institution: "Argentina Programa",
@@ -88,50 +101,65 @@ export const data: PortfolioData = {
     },
     {
       institution: "Platzi",
-      degree: "+20 certificaciones en Desarrollo Web",
+      degree: `+${(platziCerts as unknown[]).length} certificaciones en Desarrollo Web`,
       period: "2020 - Presente",
-      details: "React, Next.js, Node.js, TypeScript, Arquitectura de Software, Bases de Datos."
-    }
+      details: "React, Next.js, Node.js, TypeScript, Arquitectura de Software, Bases de Datos.",
+    },
   ],
 
   skills: [
     {
       category: "Frontend",
-      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Framer Motion"]
+      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Framer Motion"],
     },
     {
       category: "Backend & Bases de Datos",
-      skills: ["Node.js", "Java", "SQL", "REST APIs"]
+      skills: ["Node.js", "Java", "SQL", "REST APIs"],
     },
     {
       category: "Herramientas & Workflow",
-      skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"]
-    }
+      skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"],
+    },
+    {
+      category: "Administracion & Sistemas",
+      skills: ["SoftGuard", "Beat Netio", "CRM", "Redes & Infraestructura"],
+    },
   ],
 
   projects: [
     {
-      title: "Escobar Instalaciones — Plataforma Corporativa",
+      title: "Escobar Instalaciones - Plataforma Corporativa",
       description:
-        "Sitio web corporativo completo para empresa de seguridad electrónica y domótica. Incluye presentación de servicios, sección de contacto y portal de clientes en desarrollo para monitoreo autogestionado.",
+        "Empresa de seguridad y domotica que necesitaba presencia profesional online y reducir la carga de atencion telefonica. " +
+        "Desarrolle el sitio corporativo completo y un portal de autogestion para que los clientes gestionen sus cuentas sin llamar.",
       technologies: ["Next.js", "TypeScript", "React", "TailwindCSS"],
       liveUrl: "https://instalacionescob.ar",
       githubUrl: "https://github.com/artifex94/Ei-LandingPage.git",
-      tag: "Proyecto Real"
+      tag: "Proyecto Real",
     },
     {
-      title: "Demo — Presencia Digital para Profesionales",
+      title: "Portal de Autogestion - Escobar Instalaciones",
       description:
-        "Landing page diseñada para profesionales independientes (médicos, abogados, contadores). Incluye sección de servicios, formulario de contacto, integración WhatsApp y diseño mobile-first orientado a captación de clientes.",
+        "Los clientes no tenian forma de consultar el estado de sus cuentas sin llamar. " +
+        "Desarrollando un portal privado con autenticacion, dashboard de cuenta y gestion de servicios contratados.",
+      technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"],
+      tag: "En Desarrollo",
+    },
+    {
+      title: "Demo - Presencia Digital para Profesionales",
+      description:
+        "Landing page para profesionales independientes que necesitan captar clientes online. " +
+        "Seccion de servicios, formulario de contacto, integracion WhatsApp y diseño mobile-first orientado a conversion.",
       technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"],
-      tag: "Demo"
+      tag: "Demo",
     },
     {
-      title: "Demo — Catálogo Digital para Comercios",
+      title: "Demo - Catalogo Digital para Comercios",
       description:
-        "Sitio web para tiendas y restaurantes locales. Presenta productos o menú en formato visual, integra pedidos por WhatsApp y muestra ubicación con Google Maps. Optimizado para conversión mobile.",
+        "Sitio para tiendas y restaurantes que venden por WhatsApp sin catalogo ordenado. " +
+        "Productos o menu en formato visual, pedidos por WhatsApp y ubicacion en Google Maps. Optimizado para mobile.",
       technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"],
-      tag: "Demo"
-    }
-  ]
+      tag: "Demo",
+    },
+  ],
 };
