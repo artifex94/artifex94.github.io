@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { cn } from '../utils/cn';
 import {
   motion,
@@ -7,7 +7,22 @@ import {
   useTransform,
   useScroll,
   useVelocity,
+  useInView,
+  animate,
 } from 'framer-motion';
+
+// ── Personality constants ──────────────────────────────────────────────────
+const SURPRISED_MULTIPLIER = 2.2;  // exaggerated tilt on first encounter
+const CALM_MULTIPLIER      = 0.35; // subtle tilt once accustomed
+const CALM_DELAY_MS        = 5000; // auto-calm after 5s in viewport
+const CALM_HOVER_COUNT     = 3;    // or after 3 hover-leave cycles
+
+function readCalm(key: string): boolean {
+  try { return sessionStorage.getItem(key) === 'calm'; } catch { return false; }
+}
+function writeCalm(key: string): void {
+  try { sessionStorage.setItem(key, 'calm'); } catch { /* ignore */ }
+}
 
 interface BlueprintBoxProps {
   children: React.ReactNode;
@@ -36,6 +51,25 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  // ── Personality state (session-persistent) ─────────────────────────────
+  const sessionKey    = `bp-${coords.x}-${coords.y}`;
+  const alreadyCalm   = readCalm(sessionKey);
+
+  // Scales ALL rotations. Starts high (surprised), drops to calm after acclimation.
+  const intensity  = useMotionValue(alreadyCalm ? CALM_MULTIPLIER : SURPRISED_MULTIPLIER);
+  const isCalmRef  = useRef(alreadyCalm);
+  const hoverCount = useRef(0);
+  const calmTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const goCalm = useCallback(() => {
+    if (isCalmRef.current) return;
+    isCalmRef.current = true;
+    writeCalm(sessionKey);
+    if (calmTimer.current) clearTimeout(calmTimer.current);
+    // Slow, smooth transition so the change itself feels natural
+    animate(intensity, CALM_MULTIPLIER, { duration: 1.8, ease: 'easeInOut' });
+  }, [sessionKey, intensity]);
+
   // ── 1. Pointer (mouse / touch) ─────────────────────────────────────────
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -50,31 +84,49 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
-  const rotateXScroll = useTransform(smoothVelocity, [-1000, 0, 1000], [5, 0, -5]);
+  const rotateXScroll  = useTransform(smoothVelocity, [-1000, 0, 1000], [5, 0, -5]);
 
-  // ── 3. Combined rotation (string + "deg") — drives the frame tilt ─────
+  // ── 3. Combined rotation × intensity ──────────────────────────────────
+  // Surprised phase (intensity ≈ 2.2): tilt up to ±11°, very reactive.
+  // Calm phase (intensity ≈ 0.35): tilt ≤ ±2°, barely perceptible but alive.
   const rotateX = useTransform(
-    [rotateXPointer, rotateXScroll],
-    (values: number[]) => `${(values[0] ?? 0) + (values[1] ?? 0)}deg`
+    [rotateXPointer, rotateXScroll, intensity],
+    (v: number[]) => `${((v[0] ?? 0) + (v[1] ?? 0)) * (v[2] ?? 1)}deg`
   );
-  const rotateY = useTransform(rotateYPointer, (val) => `${val}deg`);
+  const rotateY = useTransform(
+    [rotateYPointer, intensity],
+    (v: number[]) => `${(v[0] ?? 0) * (v[1] ?? 1)}deg`
+  );
 
-  // ── 4. Inverse rotation (numeric degrees) — keeps content flat ────────
-  //
-  // The frame tilts; the content counter-tilts by the exact same angle so
-  // it always faces the camera. Interactive elements (links, buttons, cards)
-  // are never seen at an angle and are comfortable to click and read.
-  //
-  // NO z-translation here — pushing content forward in Z creates a visible
-  // gap between the card surface and the floating content layer, which makes
-  // the outer wrapper's background show through when the card tilts.
+  // ── 4. Inverse rotation — content stays flat ───────────────────────────
   const contentRotateX = useTransform(
-    [rotateXPointer, rotateXScroll],
-    (values: number[]) => -((values[0] ?? 0) + (values[1] ?? 0))
+    [rotateXPointer, rotateXScroll, intensity],
+    (v: number[]) => -((v[0] ?? 0) + (v[1] ?? 0)) * (v[2] ?? 1)
   );
-  const contentRotateY = useTransform(rotateYPointer, (val: number) => -val);
+  const contentRotateY = useTransform(
+    [rotateYPointer, intensity],
+    (v: number[]) => -(v[0] ?? 0) * (v[1] ?? 1)
+  );
 
-  // ── 5. Pointer events ──────────────────────────────────────────────────
+  // ── 5. Viewport entry: jolt + calm timer ──────────────────────────────
+  const isInView = useInView(ref, { once: true, margin: '-30px' });
+
+  useEffect(() => {
+    if (!isInView || isCalmRef.current) return;
+
+    // "Surprised" jolt — element reacts to being seen for the first time.
+    // Animate y (feeds mouseYSpring via spring physics → produces a natural wobble).
+    (async () => {
+      await animate(y, -0.38, { duration: 0.12, ease: 'easeOut' });
+      await animate(y,  0.12, { duration: 0.10, ease: 'easeInOut' });
+      await animate(y,  0,    { duration: 0.45, ease: 'easeOut' });
+    })();
+
+    calmTimer.current = setTimeout(goCalm, CALM_DELAY_MS);
+    return () => { if (calmTimer.current) clearTimeout(calmTimer.current); };
+  }, [isInView, goCalm, y]);
+
+  // ── 6. Pointer handlers ────────────────────────────────────────────────
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
@@ -84,12 +136,16 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
 
   const handlePointerReset = () => { x.set(0); y.set(0); };
 
+  // Each complete hover cycle (enter → leave) counts toward going calm.
+  const handlePointerLeave = () => {
+    x.set(0);
+    y.set(0);
+    if (isCalmRef.current) return;
+    hoverCount.current += 1;
+    if (hoverCount.current >= CALM_HOVER_COUNT) goCalm();
+  };
+
   return (
-    /*
-     * Outer wrapper — perspective container only.
-     * className is intentionally limited to LAYOUT classes (flex-grow, etc.).
-     * Background/border classes belong on the inner card via innerClassName.
-     */
     <motion.div
       style={{ perspective: 1200 }}
       initial={{ opacity: 0, y: 20, filter: 'blur(5px)' }}
@@ -102,7 +158,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
       <motion.div
         ref={ref}
         onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerReset}
+        onPointerLeave={handlePointerLeave}
         onPointerUp={handlePointerReset}
         onPointerCancel={handlePointerReset}
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
@@ -111,7 +167,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
           innerClassName
         )}
       >
-        {/* Decorative 3D corners — float above card surface, tilt with frame */}
+        {/* Decorative 3D corners — float above card surface */}
         <div style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
@@ -121,15 +177,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
           [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
         </div>
 
-        {/*
-         * Content layer — counter-rotated so it stays perpendicular to the camera.
-         *
-         * The rotateX/rotateY exactly negate the frame's tilt, making all
-         * interactive elements (links, buttons, text) face the user flat.
-         * No z-translation is applied: pushing the content forward in Z
-         * would create a gap between the card surface and content, revealing
-         * the outer wrapper behind the tilted frame.
-         */}
+        {/* Content layer — counter-rotated to stay perpendicular to camera */}
         <motion.div
           style={{ rotateX: contentRotateX, rotateY: contentRotateY }}
           className="relative z-10"

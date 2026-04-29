@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, useMotionValue, useTransform, useVelocity, animate } from 'framer-motion';
 import type { PlatziCert } from '../data/data';
 import rawCerts from '../data/platzi-certs.json';
 
 const certs = rawCerts as PlatziCert[];
 
 // Card: w-44 (176px) + gap-2 (8px) = 184px per slot
-const CARD_PX      = 184;
-const PX_PER_SEC   = 35;
-const DURATION_S   = Math.round((certs.length * CARD_PX) / PX_PER_SEC);
+const CARD_PX         = 184;
+const TRACK_WIDTH     = certs.length * CARD_PX;
+const AUTO_PX_PER_SEC = 35;
 
 // ── school → border/text color ─────────────────────────────────────────────
 const SCHOOL_COLORS: Record<string, string> = {
@@ -37,55 +39,45 @@ function formatDate(raw: string | null): string | null {
 
 // ── Diploma card ───────────────────────────────────────────────────────────
 
-function DiplomaCard({ cert }: { cert: PlatziCert }) {
+interface DiplomaCardProps {
+  cert:  PlatziCert;
+}
+
+function DiplomaCard({ cert }: DiplomaCardProps) {
   const color = schoolColor(cert.school);
   const date  = formatDate(cert.completedAt);
 
-  const card = (
-    /*
-     * Fixed portrait size — all cards identical: w-44 × h-60 (176 × 240 px).
-     * Double-border: outer dashed (line) + inner faint (secondary/10) to
-     * evoke the layered frame of a physical diploma.
-     */
+  return (
     <article
       className={`
         w-44 h-60 shrink-0 relative
         border border-dashed border-line
         hover:border-accent/60
         transition-colors duration-300
-        cursor-pointer select-none
-        group/card
-        overflow-hidden
+        select-none group/card overflow-hidden
+        ${cert.url ? 'cursor-pointer' : ''}
       `}
+      data-name={cert.name}
+      data-url={cert.url || undefined}
     >
-      {/* Blueprint corner marks — same motif as BlueprintBox */}
       <span className="absolute top-0 left-0   text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
       <span className="absolute top-0 right-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
       <span className="absolute bottom-0 left-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
       <span className="absolute bottom-0 right-0 text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
 
-      {/* Subtle accent glow from top — gives depth like parchment */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,107,0,0.06) 0%, transparent 70%)' }}
       />
-
-      {/* Inner frame */}
       <div className="absolute inset-[5px] border border-secondary/10 pointer-events-none" />
 
-      {/* Content — flex column fills the full card */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-between px-3 py-3">
-
-        {/* ── Header: "D I P L O M A" ── */}
         <div className="w-full flex items-center gap-1.5 shrink-0">
           <span className="flex-1 border-t border-secondary/25" />
-          <span className="text-[7px] font-mono uppercase tracking-[0.25em] text-secondary/50">
-            diploma
-          </span>
+          <span className="text-[7px] font-mono uppercase tracking-[0.25em] text-secondary/50">diploma</span>
           <span className="flex-1 border-t border-secondary/25" />
         </div>
 
-        {/* ── Badge image ── */}
         <div className="flex-1 flex items-center justify-center py-1">
           {cert.imageUrl ? (
             <img
@@ -102,45 +94,214 @@ function DiplomaCard({ cert }: { cert: PlatziCert }) {
           )}
         </div>
 
-        {/* ── Course name ── */}
         <p className="text-[11px] font-bold text-primary leading-snug line-clamp-3 text-center w-full group-hover/card:text-accent transition-colors duration-200 shrink-0">
           {cert.name}
         </p>
 
-        {/* ── Decorative divider ── */}
         <div className="w-full flex items-center gap-1.5 my-1.5 shrink-0">
           <span className="flex-1 border-t border-dashed border-secondary/20" />
           <span className="text-secondary/35 text-[8px]">◆</span>
           <span className="flex-1 border-t border-dashed border-secondary/20" />
         </div>
 
-        {/* ── School label ── */}
-        <span
-          className={`text-[8px] font-mono uppercase tracking-wider border px-1.5 py-[3px] leading-none text-center max-w-full line-clamp-1 shrink-0 ${color}`}
-        >
+        <span className={`text-[8px] font-mono uppercase tracking-wider border px-1.5 py-0.75 leading-none text-center max-w-full line-clamp-1 shrink-0 ${color}`}>
           {cert.school}
         </span>
 
-        {/* ── Date ── */}
         <span className="text-[9px] font-mono text-secondary/55 mt-1.5 shrink-0">
           {date ?? '✓ Completado'}
         </span>
-
       </div>
     </article>
   );
-
-  return cert.url ? (
-    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="shrink-0">
-      {card}
-    </a>
-  ) : card;
 }
 
-// ── Infinite marquee ───────────────────────────────────────────────────────
+// ── Confirmation dialog — portal escapes BlueprintBox 3D transform context ──
+
+interface DiplomaDialogProps {
+  name:    string;
+  url:     string;
+  onClose: () => void;
+}
+
+function DiplomaDialog({ name, url, onClose }: DiplomaDialogProps) {
+  return createPortal(
+    <motion.div
+      className="fixed inset-0 z-9999 flex items-center justify-center px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-sm" />
+
+      <motion.div
+        className="relative z-10 w-full max-w-sm bg-[#0d0d0d] border border-dashed border-accent/50 p-6"
+        initial={{ scale: 0.95, y: 8 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 8 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="absolute -top-px -left-px  text-accent text-xs leading-none">+</span>
+        <span className="absolute -top-px -right-px text-accent text-xs leading-none">+</span>
+        <span className="absolute -bottom-px -left-px  text-accent text-xs leading-none">+</span>
+        <span className="absolute -bottom-px -right-px text-accent text-xs leading-none">+</span>
+
+        <div className="absolute -top-3 right-4 bg-[#0d0d0d] px-2 text-[9px] text-secondary border border-dashed border-line tracking-wider font-mono">
+          [diploma]
+        </div>
+
+        <p className="text-[9px] font-mono text-secondary/50 uppercase tracking-widest mb-2">
+          // Ver certificado
+        </p>
+        <p className="text-sm font-bold text-primary leading-snug mb-6">
+          {name}
+        </p>
+
+        <div className="flex items-center gap-3">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-accent text-black text-sm font-bold py-2.5 text-center hover:bg-white transition-colors duration-200"
+            onClick={onClose}
+          >
+            Abrir diploma ↗
+          </a>
+          <button
+            className="text-sm font-mono text-secondary hover:text-primary transition-colors px-3 py-2.5"
+            onClick={onClose}
+          >
+            Cancelar
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>,
+    document.body
+  );
+}
+
+// ── Draggable infinite carousel ────────────────────────────────────────────
 
 export function PlatziCarousel() {
-  const [paused, setPaused] = useState(false);
+  const rawX        = useMotionValue(0);
+  const rawVelocity = useVelocity(rawX);
+  const displayX    = useTransform(rawX, (v) => {
+    if (TRACK_WIDTH === 0) return 0;
+    let mod = v % -TRACK_WIDTH;
+    if (mod > 0) mod -= TRACK_WIDTH;
+    return mod;
+  });
+
+  const autoAnim   = useRef<ReturnType<typeof animate> | null>(null);
+  const isDragging = useRef(false);
+  const isHovered  = useRef(false);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ptrStartX  = useRef(0);
+  const rawStartX  = useRef(0);
+  const hasDragged = useRef(false);
+  const pressedTarget = useRef<EventTarget | null>(null);
+
+  const [pendingDiploma, setPendingDiploma] = useState<{ name: string; url: string } | null>(null);
+
+  const startAutoScroll = useCallback(() => {
+    if (isHovered.current) return;
+    autoAnim.current?.stop();
+    const cur     = rawX.get();
+    const totalPx = TRACK_WIDTH * 200;
+    autoAnim.current = animate(rawX, cur - totalPx, {
+      ease:     'linear',
+      duration: totalPx / AUTO_PX_PER_SEC,
+    });
+  }, [rawX]);
+
+  const startAutoScrollGradual = useCallback(() => {
+    if (isHovered.current) return;
+    autoAnim.current?.stop();
+    const cur      = rawX.get();
+    const warmupPx = AUTO_PX_PER_SEC * 2;
+    autoAnim.current = animate(rawX, cur - warmupPx, {
+      ease:       [0, 0, 0.4, 1],
+      duration:   2.2,
+      onComplete: startAutoScroll,
+    });
+  }, [rawX, startAutoScroll]);
+
+  useEffect(() => {
+    startAutoScroll();
+    return () => {
+      autoAnim.current?.stop();
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
+  }, [startAutoScroll]);
+
+  // ── Hover pause / gradual resume ──────────────────────────────────────
+  const onMouseEnter = useCallback(() => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    isHovered.current = true;
+    if (!isDragging.current) autoAnim.current?.stop();
+  }, []);
+
+  const onMouseLeave = useCallback(() => {
+    isHovered.current = false;
+    if (!isDragging.current) {
+      hoverTimer.current = setTimeout(startAutoScrollGradual, 500);
+    }
+  }, [startAutoScrollGradual]);
+
+  // ── Pointer drag handlers ─────────────────────────────────────────────
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    autoAnim.current?.stop();
+    isDragging.current = true;
+    hasDragged.current = false;
+    ptrStartX.current  = e.clientX;
+    rawStartX.current  = rawX.get();
+    pressedTarget.current = e.target;
+  }, [rawX]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - ptrStartX.current;
+    if (Math.abs(dx) > 6) hasDragged.current = true;
+    rawX.set(rawStartX.current + dx);
+  }, [rawX]);
+
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging.current) return;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    isDragging.current = false;
+
+    if (!hasDragged.current && pressedTarget.current) {
+      const article = (pressedTarget.current as Element).closest('article');
+      if (article) {
+        const url = article.getAttribute('data-url');
+        const name = article.getAttribute('data-name');
+        if (url && name) {
+          setPendingDiploma({ name, url });
+        }
+      }
+    }
+    pressedTarget.current = null;
+
+    const vel    = rawVelocity.get();
+    const absVel = Math.abs(vel);
+
+    if (absVel > 30) {
+      const distance = vel * 0.4;
+      const duration = Math.min(Math.max(absVel / 1200, 0.3), 3);
+      autoAnim.current = animate(rawX, rawX.get() + distance, {
+        ease:       [0.16, 1, 0.3, 1],
+        duration,
+        onComplete: startAutoScroll,
+      });
+    } else {
+      startAutoScroll();
+    }
+  }, [rawX, rawVelocity, startAutoScroll]);
 
   if (certs.length === 0) return null;
 
@@ -162,32 +323,39 @@ export function PlatziCarousel() {
             platzi.com/p/Ramiroesc18
           </span>
         </a>
-        <span className="text-[9px] font-mono text-secondary/40 select-none">
-          {paused ? '⏸ pausado' : '▶ auto'}
+        <span className="text-[9px] font-mono text-secondary/35 select-none">
+          ↔ arrastrá para explorar
         </span>
       </div>
 
-      {/*
-       * Marquee wrapper — overflow:hidden clips the track.
-       * Hover pauses the CSS animation via the class toggle.
-       * The duplicated array makes the loop seamless: when the track reaches
-       * -50% of its own width it looks identical to 0%, so the reset is invisible.
-       */}
       <div
-        className="overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        title="Hover para pausar"
+        className="overflow-hidden cursor-grab active:cursor-grabbing select-none"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onDragStart={(e) => e.preventDefault()}
+        style={{ touchAction: 'pan-y pinch-zoom' }}
       >
-        <div
-          className={`flex gap-2 w-max animate-platzi-marquee ${paused ? 'animate-platzi-marquee-paused' : ''}`}
-          style={{ '--marquee-duration': `${DURATION_S}s` } as React.CSSProperties}
-        >
+        <motion.div className="flex gap-2 w-max" style={{ x: displayX }}>
           {doubled.map((cert, i) => (
-            <DiplomaCard key={i} cert={cert} />
+            <DiplomaCard
+              key={i}
+              cert={cert}
+            />
           ))}
-        </div>
+        </motion.div>
       </div>
+
+      {pendingDiploma && (
+        <DiplomaDialog
+          name={pendingDiploma.name}
+          url={pendingDiploma.url}
+          onClose={() => setPendingDiploma(null)}
+        />
+      )}
 
     </div>
   );

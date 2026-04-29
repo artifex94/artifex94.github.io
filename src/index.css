@@ -25,18 +25,6 @@
 }
 
 @layer utilities {
-  /* Marquee infinito para el carrusel de certificados Platzi */
-  @keyframes platzi-marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-  .animate-platzi-marquee {
-    animation: platzi-marquee var(--marquee-duration, 80s) linear infinite;
-  }
-  .animate-platzi-marquee-paused {
-    animation-play-state: paused;
-  }
-
   /* 1. Animación usando background-position para evitar el desenfoque de subpíxeles */
   @keyframes move-blueprint {
     0% {

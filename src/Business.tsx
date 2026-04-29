@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BlueprintBox } from './components/BlueprintBox';
@@ -98,6 +99,136 @@ const differentiators: Differentiator[] = [
   },
 ];
 
+// ── Proceso / Cómo trabajamos ──────────────────────────────────────────────
+
+function StepCard({
+  step,
+  isLast,
+  isActive,
+  refCallback,
+}: {
+  step: Step;
+  isLast: boolean;
+  isActive: boolean;
+  refCallback: (el: HTMLDivElement | null) => void;
+}) {
+  const Icon = step.icon;
+  return (
+    <div
+      ref={refCallback}
+      className={`group relative p-6 flex flex-col gap-4 border transition-all duration-500 ${
+        isActive
+          ? 'bg-[#181818] border-[#E67E32]/50'
+          : 'bg-[#141414] border-[#262626] hover:border-[#E67E32]/50 hover:bg-[#181818]'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <span className={`w-9 h-9 border flex items-center justify-center text-[#E67E32] text-[11px] font-mono font-bold transition-all shrink-0 ${
+          isActive
+            ? 'border-[#E67E32] bg-[#E67E32]/10'
+            : 'border-[#E67E32]/30 bg-[#1a1209] group-hover:border-[#E67E32] group-hover:bg-[#E67E32]/10'
+        }`}>
+          {step.step}
+        </span>
+        <Icon className={`w-5 h-5 transition-colors duration-300 ${
+          isActive ? 'text-[#E67E32]' : 'text-[#E67E32]/40 group-hover:text-[#E67E32]'
+        }`} />
+      </div>
+      <div>
+        <h4 className={`text-base font-bold mb-2 transition-colors ${
+          isActive ? 'text-white' : 'text-[#e5e5e5] group-hover:text-white'
+        }`}>
+          {step.title}
+        </h4>
+        <p className={`text-sm leading-relaxed transition-colors ${
+          isActive ? 'text-[#a3a3a3]' : 'text-[#737373] group-hover:text-[#a3a3a3]'
+        }`}>
+          {step.desc}
+        </p>
+      </div>
+      {!isLast && (
+        <div className="md:hidden flex justify-center pt-1">
+          <ArrowRight className="w-4 h-4 text-[#E67E32]/30 rotate-90" />
+        </div>
+      )}
+      <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#E67E32] transition-transform duration-500 origin-left ${
+        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+      }`} />
+    </div>
+  );
+}
+
+function ProcesoSection() {
+  const [activeStep, setActiveStep] = useState(0);
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Desktop: auto-cycle through steps every 2.5 s
+  useEffect(() => {
+    if (!isDesktop) return;
+    const id = setInterval(
+      () => setActiveStep(prev => (prev + 1) % onboardingSteps.length),
+      2500
+    );
+    return () => clearInterval(id);
+  }, [isDesktop]);
+
+  // Mobile: highlight whichever step is closest to 40% from the top of the viewport
+  useEffect(() => {
+    if (isDesktop) return;
+    const update = () => {
+      const target = window.scrollY + window.innerHeight * 0.40;
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      stepRefs.current.forEach((el, i) => {
+        if (!el) return;
+        const mid = el.getBoundingClientRect().top + window.scrollY + el.offsetHeight / 2;
+        const dist = Math.abs(mid - target);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      });
+      setActiveStep(bestIdx);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+    return () => window.removeEventListener('scroll', update);
+  }, [isDesktop]);
+
+  return (
+    <section>
+      <div className="text-center mb-12">
+        <h2 className="text-3xl font-bold text-white mb-3">Como trabajamos</h2>
+        <p className="text-[#a3a3a3] text-sm font-mono">// Cuatro etapas claras, sin sorpresas.</p>
+      </div>
+      <div className="relative">
+        <div className="hidden md:block absolute top-[2.6rem] left-[12.5%] right-[12.5%] h-px z-0 overflow-hidden">
+          <div className="w-full h-full bg-linear-to-r from-transparent via-[#E67E32]/25 to-transparent" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 relative z-10">
+          {onboardingSteps.map((step, idx) => (
+            <StepCard
+              key={idx}
+              step={step}
+              isLast={idx === onboardingSteps.length - 1}
+              isActive={activeStep === idx}
+              refCallback={el => { stepRefs.current[idx] = el; }}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export const Business = () => {
   return (
     <motion.div
@@ -106,7 +237,7 @@ export const Business = () => {
       transition={{ duration: 1 }}
       className="min-h-screen w-full bg-black bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8 text-[#e5e5e5]"
     >
-      <div className="max-w-6xl mx-auto flex flex-col gap-16">
+      <div className="max-w-6xl mx-auto flex flex-col gap-16 md:bg-black/5 md:backdrop-blur-sm md:border md:border-white/[0.07] md:px-10 md:py-10">
 
         {/* Hero */}
         <BlueprintBox coords={{ x: 10, y: 15 }} delay={0.1}>
@@ -189,49 +320,7 @@ export const Business = () => {
         </BlueprintBox>
 
         {/* Proceso */}
-        <section>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-3">Como trabajamos</h2>
-            <p className="text-[#a3a3a3] text-sm font-mono">// Cuatro etapas claras, sin sorpresas.</p>
-          </div>
-          <div className="relative">
-            <div className="hidden md:block absolute top-[2.6rem] left-[12.5%] right-[12.5%] h-px z-0 overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-r from-transparent via-[#E67E32]/25 to-transparent" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-5 relative z-10">
-              {onboardingSteps.map((step, idx) => {
-                const Icon = step.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="group relative bg-[#141414] border border-[#262626] p-6 flex flex-col gap-4 hover:border-[#E67E32]/50 hover:bg-[#181818] transition-all duration-300"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-9 h-9 border border-[#E67E32]/30 flex items-center justify-center text-[#E67E32] text-[11px] font-mono font-bold bg-[#1a1209] group-hover:border-[#E67E32] group-hover:bg-[#E67E32]/10 transition-all shrink-0">
-                        {step.step}
-                      </span>
-                      <Icon className="w-5 h-5 text-[#E67E32]/40 group-hover:text-[#E67E32] transition-colors duration-300" />
-                    </div>
-                    <div>
-                      <h4 className="text-base font-bold text-[#e5e5e5] mb-2 group-hover:text-white transition-colors">
-                        {step.title}
-                      </h4>
-                      <p className="text-sm text-[#737373] leading-relaxed group-hover:text-[#a3a3a3] transition-colors">
-                        {step.desc}
-                      </p>
-                    </div>
-                    {idx < onboardingSteps.length - 1 && (
-                      <div className="md:hidden flex justify-center pt-1">
-                        <ArrowRight className="w-4 h-4 text-[#E67E32]/30 rotate-90" />
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E67E32] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <ProcesoSection />
 
         {/* Por que yo */}
         <section>

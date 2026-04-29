@@ -7,8 +7,8 @@ export const Hero = () => {
   const { personal } = data;
 
   return (
-    <BlueprintBox coords={{ x: 0, y: 0 }} className="w-full">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+    <BlueprintBox coords={{ x: 0, y: 0 }} className="w-full h-full">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-6 h-full">
         
         {/* Columna de texto */}
         <div className="flex-1">

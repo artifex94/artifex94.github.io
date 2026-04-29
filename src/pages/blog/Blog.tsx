@@ -1,50 +1,28 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, ArrowRight, Clock, Tag, Coffee, Heart, ExternalLink } from 'lucide-react';
+import { BookOpen, ArrowRight, Clock, Tag, Heart, ExternalLink } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { categories, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
 
-const KOFI_URL = "https://ko-fi.com/artifexdev";
 const CAFECITO_URL = "https://cafecito.app/artifex";
+const MATECITO_URL = "https://matecito.app/artifex"; // actualizar cuando esté validado
 
 const DonationsSection = () => (
   <BlueprintBox coords={{ x: 80, y: 90 }} delay={0.4} className="w-full">
     <div className="flex flex-col gap-6">
       <div>
         <p className="text-secondary text-xs font-mono mb-1">// SUPPORT_MODULE</p>
-        <h2 className="text-xl font-bold text-primary mb-2">Apoya el proyecto</h2>
+        <h2 className="text-xl font-bold text-primary mb-2">Si el contenido te sirvio, considerá invitarme algo</h2>
         <p className="text-sm text-primary/60 leading-relaxed max-w-2xl">
-          Este blog no tiene publicidad. Todo el contenido es libre y sin paywalls.
-          Si algo te fue util y queres colaborar con el tiempo que lleva, te dejo dos opciones.
+          Este blog no tiene publicidad, no tiene paywall y nunca va a tener.
+          Cada articulo lleva horas de investigacion, prueba y escritura — y lo comparto libre porque creo
+          que el conocimiento tiene que circular. Si algo de lo que escribi te ahorro tiempo, te destrabo
+          un problema o simplemente te gusto, podes devolver un poco de esa energia aca abajo.
+          Cualquier colaboracion, por minima que sea, significa muchisimo y me motiva a seguir publicando.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        {/* Ko-fi */}
-        <a
-          href={KOFI_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="group border border-dashed border-line p-5 bg-[#0f0f0f] hover:bg-[#181818] hover:border-accent transition-all flex flex-col gap-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Coffee className="w-5 h-5 text-accent/60 group-hover:text-accent transition-colors" />
-              <span className="font-bold text-primary group-hover:text-accent transition-colors">Ko-fi</span>
-            </div>
-            <span className="text-[10px] font-mono border border-green-500/40 text-green-400 bg-green-500/10 px-2 py-0.5">
-              0% comision
-            </span>
-          </div>
-          <p className="text-xs text-primary/50 leading-relaxed">
-            Pago unico en USD via Stripe o PayPal. Sin cuenta requerida.
-            Ko-fi no cobra comision de plataforma -- solo las tasas estandar del procesador.
-          </p>
-          <span className="flex items-center gap-1 text-xs text-accent/60 font-mono group-hover:text-accent transition-colors mt-auto">
-            Invitame un cafe <ExternalLink className="w-3 h-3" />
-          </span>
-        </a>
 
         {/* Cafecito */}
         <a
@@ -59,21 +37,47 @@ const DonationsSection = () => (
               <span className="font-bold text-primary group-hover:text-[#E67E32] transition-colors">Cafecito</span>
             </div>
             <span className="text-[10px] font-mono border border-[#E67E32]/40 text-[#E67E32] bg-[#E67E32]/10 px-2 py-0.5">
-              Para Argentina
+              En pesos, facil
             </span>
           </div>
           <p className="text-xs text-primary/50 leading-relaxed">
-            Pago en ARS via MercadoPago. La opcion local para quienes prefieren no operar en dolares.
-            Comision del 5% de plataforma.
+            La forma mas rapida si estas en Argentina: pago en ARS via MercadoPago,
+            sin registrarte ni dar vueltas. Con el valor de un cafe ya me estas bancando un monton.
           </p>
           <span className="flex items-center gap-1 text-xs text-[#E67E32]/60 font-mono group-hover:text-[#E67E32] transition-colors mt-auto">
-            Colaborar en pesos <ExternalLink className="w-3 h-3" />
+            Invitame un cafecito <ExternalLink className="w-3 h-3" />
+          </span>
+        </a>
+
+        {/* Matecito */}
+        <a
+          href={MATECITO_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="group border border-dashed border-line p-5 bg-[#0f0f0f] hover:bg-[#181818] hover:border-green-500/60 transition-all flex flex-col gap-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-green-500/60 group-hover:text-green-400 transition-colors" />
+              <span className="font-bold text-primary group-hover:text-green-400 transition-colors">Matecito</span>
+            </div>
+            <span className="text-[10px] font-mono border border-green-500/40 text-green-400 bg-green-500/10 px-2 py-0.5">
+              Otra opcion local
+            </span>
+          </div>
+          <p className="text-xs text-primary/50 leading-relaxed">
+            Si preferis Matecito, aca estoy tambien. Mismo espiritu: colaboracion directa,
+            sin intermediarios raros, todo en pesos. Cada matecito cuenta igual de bien.
+          </p>
+          <span className="flex items-center gap-1 text-xs text-green-500/60 font-mono group-hover:text-green-400 transition-colors mt-auto">
+            Convidarme un matecito <ExternalLink className="w-3 h-3" />
           </span>
         </a>
 
       </div>
 
       <p className="text-[10px] text-secondary font-mono border-t border-dashed border-line pt-4">
+        // Gracias por leer. En serio.
       </p>
     </div>
   </BlueprintBox>
@@ -89,7 +93,7 @@ export const Blog = () => {
       transition={{ duration: 0.8 }}
       className="min-h-screen w-full bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-5xl mx-auto flex flex-col gap-12">
+      <div className="max-w-5xl mx-auto flex flex-col gap-12 md:bg-black/5 md:backdrop-blur-sm md:border md:border-white/[0.07] md:px-10 md:py-10">
 
         {/* Header */}
         <BlueprintBox coords={{ x: 5, y: 5 }} className="w-full">

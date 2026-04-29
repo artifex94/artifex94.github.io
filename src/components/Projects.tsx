@@ -12,13 +12,14 @@ const tagStyles: Record<string, string> = {
 
 export const Projects: React.FC = () => {
   return (
-    <BlueprintBox coords={{ x: 50, y: 80 }} className="w-full">
+    <BlueprintBox coords={{ x: 50, y: 80 }} className="w-full h-full">
       <h3 className="text-xl font-bold text-accent mb-6 flex items-center gap-2">
         <span className="text-secondary text-sm">##</span>
         <Typewriter text="Deployed_Modules" delay={0.8} speed="fast" />
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Lo forzamos a una columna en 'xl' porque estará constreñido en un panel derecho */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
         {data.projects.map((project, index) => (
           <div key={index} className="border border-dashed border-line p-5 bg-base/30 hover:bg-base/60 transition-colors flex flex-col h-full">
 

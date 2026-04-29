@@ -15,7 +15,7 @@ export const Portfolio = () => {
       transition={{ duration: 1 }}
       className="min-h-screen w-full bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-5xl mx-auto flex flex-col gap-8">
+      <div className="max-w-5xl mx-auto flex flex-col gap-8 md:bg-black/5 md:backdrop-blur-sm md:border md:border-white/[0.07] md:px-10 md:py-10">
         
         {/* Renderizado del Hero */}
         <Hero />
