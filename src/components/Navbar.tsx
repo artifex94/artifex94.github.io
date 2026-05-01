@@ -164,21 +164,21 @@ export const Navbar = () => {
 
   return (
     <nav className="w-full border-b border-dashed border-line bg-surface/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between relative">
 
         {/* Left: > Artifex/Section */}
-        <div className="flex items-center z-10">
-          <span className="inline-flex items-center text-accent font-bold text-xl">
-            <span>&gt; Artifex</span>
-            <span className="font-mono">/{displayedSection}</span>
+        <div className="flex items-center z-10 min-w-0">
+          <span className="inline-flex items-center text-accent font-bold text-base sm:text-xl truncate">
+            <span className="shrink-0">&gt; Artifex</span>
+            <span className="font-mono truncate">/{displayedSection}</span>
           </span>
         </div>
 
         {/* Right: secciones accesibles + reloj + System_Date */}
-        <div className="flex items-center gap-4 sm:gap-6 z-10">
+        <div className="flex items-center gap-3 sm:gap-6 z-10 shrink-0 ml-3 sm:ml-0">
 
           {/* Secciones navegables */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {inactiveLinks.map((link, idx) => {
               const displayLabel = newLinksState[link.label] ?? link.label;
 
@@ -186,16 +186,16 @@ export const Navbar = () => {
                 <React.Fragment key={link.to}>
                   {idx > 0 && <span className="text-secondary/40 select-none text-sm">|</span>}
                   <span
-                    className="relative inline-flex items-center ml-13 w-[9ch]"
+                    className="relative inline-flex items-center sm:ml-13 sm:w-[9ch]"
                     onMouseEnter={() => handleHoverStart(link.label)}
                     onMouseLeave={handleHoverEnd}
                   >
-                    <span className="absolute right-full inset-y-0 flex items-center font-mono text-sm text-secondary/50 whitespace-nowrap pointer-events-none">
+                    <span className="absolute right-full inset-y-0 hidden sm:flex items-center font-mono text-sm text-secondary/50 whitespace-nowrap pointer-events-none">
                       {prefixState?.label === link.label ? prefixState.display : ''}
                     </span>
                     <Link
                       to={link.to}
-                      className="text-sm font-mono text-secondary hover:text-primary transition-colors"
+                      className="text-sm font-mono text-secondary hover:text-primary transition-colors py-1"
                     >
                       {displayLabel}
                     </Link>
