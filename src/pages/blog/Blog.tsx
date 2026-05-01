@@ -17,10 +17,10 @@ const DonationsSection = () => (
         <h2 className="text-xl font-bold text-primary mb-2">Si el contenido te sirvio, considerá invitarme algo</h2>
         <p className="text-sm text-primary/60 leading-relaxed max-w-2xl">
           Este blog no tiene publicidad, no tiene paywall y nunca va a tener.
-          Cada articulo lleva horas de investigacion, prueba y escritura — y lo comparto libre porque creo
+          Cada articulo lleva horas de investigación, prueba y escritura — y lo comparto libre porque creo
           que el conocimiento tiene que circular. Si algo de lo que escribi te ahorro tiempo, te destrabo
-          un problema o simplemente te gusto, podes devolver un poco de esa energia aca abajo.
-          Cualquier colaboracion, por minima que sea, significa muchisimo y me motiva a seguir publicando.
+          un problema o simplemente te gusto, podes devolver un poco de esa energía aca abajo.
+          Cualquier colaboración, por mínima que sea, significa muchísimo y me motiva a seguir publicando.
         </p>
       </div>
 
@@ -43,8 +43,8 @@ const DonationsSection = () => (
             </span>
           </div>
           <p className="text-xs text-primary/50 leading-relaxed">
-            La forma mas rapida si estas en Argentina: pago en ARS via MercadoPago,
-            sin registrarte ni dar vueltas. Con el valor de un cafe ya me estas bancando un monton.
+            La forma más rápida si estás en Argentina: pago en ARS vía MercadoPago,
+            sin registrarte ni dar vueltas. Con el valor de un café ya me estás bancando un montón.
           </p>
           <span className="flex items-center gap-1 text-xs text-[#E67E32]/60 font-mono group-hover:text-[#E67E32] transition-colors mt-auto">
             Invitame un cafecito <ExternalLink className="w-3 h-3" />
@@ -64,11 +64,11 @@ const DonationsSection = () => (
               <span className="font-bold text-primary group-hover:text-green-400 transition-colors">Matecito</span>
             </div>
             <span className="text-[10px] font-mono border border-green-500/40 text-green-400 bg-green-500/10 px-2 py-0.5">
-              Otra opcion local
+              Otra opción local
             </span>
           </div>
           <p className="text-xs text-primary/50 leading-relaxed">
-            Si preferis Matecito, aca estoy tambien. Mismo espiritu: colaboracion directa,
+            Si preferís Matecito, acá estoy también. Mismo espíritu: colaboración directa,
             sin intermediarios raros, todo en pesos. Cada matecito cuenta igual de bien.
           </p>
           <span className="flex items-center gap-1 text-xs text-green-500/60 font-mono group-hover:text-green-400 transition-colors mt-auto">
@@ -130,8 +130,8 @@ export const Blog = () => {
               <p className="text-secondary text-xs font-mono tracking-widest uppercase mb-1">// Knowledge_Base</p>
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3 tracking-tight">Blog & Notas</h1>
               <p className="text-primary/70 text-sm md:text-base leading-relaxed max-w-2xl">
-                Apuntes de estudio, exploraciones tecnicas e implementaciones que vale la pena documentar.
-                Sin pretensiones -- esto es un registro de lo que aprendo mientras lo aprendo.
+                Apuntes de estudio, exploraciones técnicas e implementaciones que vale la pena documentar.
+                Sin pretensiones -- ésto es un registro de lo que aprendo mientras lo aprendo.
               </p>
             </div>
           </div>
@@ -260,7 +260,7 @@ export const Blog = () => {
                   <>
                     <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
                     <p className="text-primary/50 text-sm max-w-md mx-auto leading-relaxed">
-                      Las categorias estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
+                      Las categorías estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
                     </p>
                   </>
                 )}

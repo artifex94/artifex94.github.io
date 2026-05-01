@@ -322,6 +322,42 @@ export const posts: BlogPost[] = [
   },
 
   {
+    slug:     'principios-testing-psicologia-tester',
+    title:    'Los principios del testing moderno y la psicología del tester profesional',
+    date:     '2026-05-01',
+    category: 'ingenieria',
+    tags:     ['testing', 'istqb', 'calidad', 'apuntes'],
+    summary:  'Los siete principios del testing según el ISTQB, la mentalidad que diferencia a un tester competente de uno mediocre, y por qué el testing independiente produce mejores resultados que el auto-testing. Basado en apuntes académicos de la carrera.',
+    readTime: 7,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
+    slug:     'terminos-istqb-casos-de-prueba',
+    title:    'Vocabulario ISTQB: condición de prueba, caso de prueba, cobertura y Gherkin',
+    date:     '2026-05-01',
+    category: 'ingenieria',
+    tags:     ['testing', 'istqb', 'gherkin', 'cobertura', 'apuntes'],
+    summary:  'La terminología precisa del ISTQB aplicada a proyectos reales: condición de prueba, caso de prueba formal vs. informal, cuándo usar Gherkin Given/When/Then, y cómo medir cobertura de decisiones versus cobertura de sentencias.',
+    readTime: 9,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
+    slug:     'design-patterns-creacionales-factory',
+    title:    'Patrones creacionales GoF: Factory Method y Abstract Factory en TypeScript',
+    date:     '2026-04-28',
+    category: 'ingenieria',
+    tags:     ['design-patterns', 'typescript', 'arquitectura', 'gof'],
+    summary:  'Cuándo un simple new() no alcanza: cómo los patrones Factory Method y Abstract Factory resuelven la creación de objetos en sistemas que necesitan extensibilidad. Ejemplos en TypeScript extraídos del libro original de Gamma et al.',
+    readTime: 8,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
     slug:     'clean-code-practico',
     title:    'Clean Code en la practica: lo que realmente uso',
     date:     '2026-04-10',
@@ -410,6 +446,18 @@ export const posts: BlogPost[] = [
   },
 
   {
+    slug:     'ecmascript-moderno-features-que-uso',
+    title:    'ECMAScript moderno: las features que uso en cada proyecto',
+    date:     '2026-04-26',
+    category: 'frontend',
+    tags:     ['javascript', 'ecmascript', 'es6', 'typescript'],
+    summary:  'Destructuring, optional chaining, nullish coalescing, Promise.allSettled y módulos ES. Las features de ES6 a ES2024 que cambian cómo escribo JavaScript todos los días — con ejemplos reales de uso en proyectos de producción.',
+    readTime: 8,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
     slug:     'tailwindcss-patrones-reales',
     title:    'TailwindCSS en proyectos reales: patrones que uso',
     date:     '2026-04-05',
@@ -460,6 +508,18 @@ export const posts: BlogPost[] = [
   },
 
   {
+    slug:     'fundamentos-bases-de-datos-relacionales',
+    title:    'Bases de datos relacionales: fundamentos que uso en proyectos web',
+    date:     '2026-04-24',
+    category: 'backend',
+    tags:     ['sql', 'bases-de-datos', 'relacional', 'postgres'],
+    summary:  'Modelo relacional, entidades y atributos, claves primarias y foráneas, normalización y cuándo denormalizar. Los conceptos que aplico al diseñar el esquema de base de datos de cualquier proyecto web.',
+    readTime: 10,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
     slug:     'sql-patrones-aplicaciones-web',
     title:    'SQL para aplicaciones web: patrones de consulta que uso',
     date:     '2026-04-01',
@@ -498,6 +558,30 @@ export const posts: BlogPost[] = [
   },
 
   {
+    slug:     'vitest-testing-library-react-vite',
+    title:    'Testing en React con Vite: Vitest + Testing Library desde cero',
+    date:     '2026-05-01',
+    category: 'herramientas',
+    tags:     ['vitest', 'testing-library', 'react', 'vite', 'typescript'],
+    summary:  'Cómo configuré 100+ tests en un proyecto React + Vite sin Jest ni Babel: configuración de Vitest, mock de framer-motion con Proxy, renderWithProviders y los patrones de test que funcionan con React 19.',
+    readTime: 10,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
+    slug:     'playwright-automatizacion-capturas',
+    title:    'Playwright para automatización: captura de OG image y más allá del e2e',
+    date:     '2026-05-01',
+    category: 'herramientas',
+    tags:     ['playwright', 'automatizacion', 'seo', 'og-image'],
+    summary:  'Playwright como herramienta de build: captura automática de OG images 1200×630, preview server automation, mock de matchMedia para prefers-reduced-motion e integración con npm scripts. Más allá del testing e2e.',
+    readTime: 7,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
     slug:     'git-comandos-diarios',
     title:    'Git: los comandos que uso todos los dias',
     date:     '2026-04-08',
@@ -531,6 +615,30 @@ export const posts: BlogPost[] = [
     tags:     ['scrum', 'agile', 'gestion', 'freelance'],
     summary:  'SCRUM completo tiene ceremonia que no escala a proyectos de un desarrollador. Esta version reducida — con backlog, sprints de dos semanas y definition of done — funciona bien con clientes reales.',
     readTime: 6,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
+    slug:     'presupuestar-proyecto-web-argentina',
+    title:    'Cómo presupuestar un proyecto web en Argentina: mi método',
+    date:     '2026-04-27',
+    category: 'producto',
+    tags:     ['freelance', 'presupuesto', 'negocio', 'argentina'],
+    summary:  'Descomponer un proyecto en horas reales, aplicar la tarifa correcta, manejar los pedidos de "algo rapido" y establecer condiciones de pago que protegen el trabajo. El método que uso para proyectos a medida desde landing pages hasta sistemas completos.',
+    readTime: 7,
+    status:   'draft',
+    content:  [],
+  },
+
+  {
+    slug:     'modelo-negocio-desarrollador-freelance',
+    title:    'El modelo de negocio del desarrollador freelance: lo que aprendí estructurándolo',
+    date:     '2026-04-23',
+    category: 'producto',
+    tags:     ['freelance', 'negocio', 'bmc', 'emprendimiento'],
+    summary:  'Aplicar el Business Model Canvas a un servicio de desarrollo freelance revela problemas que el código no puede resolver: segmentos mal definidos, canales sin testar y propuesta de valor que no resuena. Mi experiencia armando el modelo de negocios desde cero.',
+    readTime: 9,
     status:   'draft',
     content:  [],
   },

@@ -7,6 +7,7 @@
   --color-secondary: var(--text-secondary);
   --color-accent: var(--accent-orange);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-digital: 'DS-Digital', monospace;
 }
 
 @layer base {
@@ -17,6 +18,13 @@
     --text-primary: #e5e5e5;
     --text-secondary: #8a8a8a;
     --accent-orange: #ff6b00; /* Naranja vibrante de acento */
+  }
+
+  @font-face {
+    font-family: 'DS-Digital';
+    src: url('/fonts/DS-DIGI.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
   }
 
   body {

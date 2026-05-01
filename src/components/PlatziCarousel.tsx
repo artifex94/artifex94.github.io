@@ -353,6 +353,23 @@ export function PlatziCarousel() {
         </motion.div>
       </div>
 
+      {/* Link de referidos de Platzi */}
+      <div className="mt-5 flex justify-center">
+        <p className="text-[10px] font-mono text-secondary/70 bg-line/5 px-3 py-1.5 border border-dashed border-line/30">
+          <span className="text-accent mr-1">/&gt;</span>
+          Suscribite a Platzi con mi{' '}
+          <a
+            href="https://platzi.com/r/Ramiroesc18"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:text-white underline decoration-accent/40 hover:decoration-white transition-colors font-bold"
+          >
+            link de referidos
+          </a>
+          {' '}y ambos recibimos un mes gratis.
+        </p>
+      </div>
+
       {pendingDiploma && (
         <DiplomaDialog
           name={pendingDiploma.name}
