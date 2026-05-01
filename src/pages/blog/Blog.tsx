@@ -15,7 +15,7 @@ const DonationsSection = () => (
       <div>
         <p className="text-secondary text-xs font-mono mb-1">// SUPPORT_MODULE</p>
         <h2 className="text-xl font-bold text-primary mb-2">Si el contenido te sirvio, considerá invitarme algo</h2>
-        <p className="text-sm text-primary/60 leading-relaxed max-w-2xl">
+        <p className="text-sm text-[#aaaaaa] leading-relaxed max-w-2xl">
           Este blog no tiene publicidad, no tiene paywall y nunca va a tener.
           Cada articulo lleva horas de investigación, prueba y escritura — y lo comparto libre porque creo
           que el conocimiento tiene que circular. Si algo de lo que escribi te ahorro tiempo, te destrabo
@@ -42,7 +42,7 @@ const DonationsSection = () => (
               En pesos, facil
             </span>
           </div>
-          <p className="text-xs text-primary/50 leading-relaxed">
+          <p className="text-xs text-[#909090] leading-relaxed">
             La forma más rápida si estás en Argentina: pago en ARS vía MercadoPago,
             sin registrarte ni dar vueltas. Con el valor de un café ya me estás bancando un montón.
           </p>
@@ -67,7 +67,7 @@ const DonationsSection = () => (
               Otra opción local
             </span>
           </div>
-          <p className="text-xs text-primary/50 leading-relaxed">
+          <p className="text-xs text-[#909090] leading-relaxed">
             Si preferís Matecito, acá estoy también. Mismo espíritu: colaboración directa,
             sin intermediarios raros, todo en pesos. Cada matecito cuenta igual de bien.
           </p>
@@ -129,7 +129,7 @@ export const Blog = () => {
             <div>
               <p className="text-secondary text-xs font-mono tracking-widest uppercase mb-1">// Knowledge_Base</p>
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3 tracking-tight">Blog & Notas</h1>
-              <p className="text-primary/70 text-sm md:text-base leading-relaxed max-w-2xl">
+              <p className="text-[#c8c8c8] text-sm md:text-base leading-relaxed max-w-2xl">
                 Apuntes de estudio, exploraciones técnicas e implementaciones que vale la pena documentar.
                 Sin pretensiones -- ésto es un registro de lo que aprendo mientras lo aprendo.
               </p>
@@ -155,7 +155,7 @@ export const Blog = () => {
                 <div key={cat.slug} className="relative group">
                   <Link
                     to={`/blog/${cat.slug}`}
-                    className="inline-flex items-baseline gap-1.5 text-xs font-bold font-mono text-primary/70 hover:text-primary underline underline-offset-4 decoration-2 transition-colors"
+                    className="inline-flex items-baseline gap-1.5 text-xs font-bold font-mono text-[#c0c0c0] hover:text-primary underline underline-offset-4 decoration-2 transition-colors"
                     style={{ textDecorationColor: decorationColor }}
                   >
                     {cat.title}
@@ -165,7 +165,7 @@ export const Blog = () => {
                   {/* Tooltip */}
                   <div className="pointer-events-none absolute top-full left-0 z-50 mt-3 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
                     <div className="border border-dashed border-line bg-[#111111] p-4 flex flex-col gap-3">
-                      <p className="text-[11px] text-primary/60 leading-relaxed font-normal">{cat.description}</p>
+                      <p className="text-[11px] text-[#aaaaaa] leading-relaxed font-normal">{cat.description}</p>
                       <span className="flex items-center gap-1 text-[10px] font-mono text-accent/50">
                         Ver todos <ArrowRight className="w-3 h-3" />
                       </span>
@@ -234,7 +234,7 @@ export const Blog = () => {
                     <h3 className="text-primary font-bold mb-1 group-hover:text-accent transition-colors">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{post.summary}</p>
+                    <p className="text-sm text-[#aaaaaa] leading-relaxed line-clamp-2">{post.summary}</p>
                     <div className="flex flex-wrap gap-2 mt-3">
                       {post.tags.slice(0, 3).map(tag => (
                         <span key={tag} className="flex items-center gap-1 text-[10px] text-secondary font-mono">
@@ -252,14 +252,14 @@ export const Blog = () => {
                 {query ? (
                   <>
                     <p className="text-secondary text-xs font-mono mb-2">// SIN_RESULTADOS</p>
-                    <p className="text-primary/50 text-sm">
+                    <p className="text-[#909090] text-sm">
                       Ningún post coincide con <span className="text-accent font-mono">"{query}"</span>.
                     </p>
                   </>
                 ) : (
                   <>
                     <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
-                    <p className="text-primary/50 text-sm max-w-md mx-auto leading-relaxed">
+                    <p className="text-[#909090] text-sm max-w-md mx-auto leading-relaxed">
                       Las categorías estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
                     </p>
                   </>

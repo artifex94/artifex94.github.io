@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-base: var(--bg-base);
-  --color-line: var(--border-line);
-  --color-primary: var(--text-primary);
-  --color-secondary: var(--text-secondary);
-  --color-accent: var(--accent-orange);
+  --color-surface: #050505;
+  --color-line: rgba(255, 255, 255, 0.15);
+  --color-primary: #e5e5e5;
+  --color-secondary: #8a8a8a;
+  --color-accent: #ff6b00;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-digital: 'DS-Digital', monospace;
 }
@@ -28,7 +28,7 @@
   }
 
   body {
-    @apply bg-base text-primary font-mono antialiased;
+    @apply bg-surface text-primary font-mono antialiased;
   }
 }
 

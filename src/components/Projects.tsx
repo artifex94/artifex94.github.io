@@ -21,7 +21,7 @@ export const Projects: React.FC = () => {
       {/* Lo forzamos a una columna en 'xl' porque estará constreñido en un panel derecho */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
         {data.projects.map((project, index) => (
-          <div key={index} className="border border-dashed border-line p-5 bg-base/30 hover:bg-base/60 transition-colors flex flex-col h-full">
+          <div key={index} className="border border-dashed border-line p-5 bg-surface/30 hover:bg-surface/60 transition-colors flex flex-col h-full">
 
             {project.tag && (
               <span className={`self-start text-[10px] font-mono font-bold px-2 py-0.5 border mb-3 ${tagStyles[project.tag] ?? "text-secondary border-line"}`}>
@@ -45,7 +45,7 @@ export const Projects: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-sm text-primary/70 mb-4 flex-grow leading-relaxed">
+            <p className="text-sm text-[#c0c0c0] mb-4 flex-grow leading-relaxed">
               {project.description}
             </p>
 

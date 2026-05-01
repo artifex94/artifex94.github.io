@@ -32,7 +32,7 @@ export const Education: React.FC = () => {
             </div>
             <h5 className="text-accent/80 text-sm mb-2">{edu.institution}</h5>
             {edu.details && (
-              <p className="text-sm text-primary/70 border-t border-dashed border-line/50 pt-2 mt-2">
+              <p className="text-sm text-[#c0c0c0] border-t border-dashed border-line/50 pt-2 mt-2">
                 <span className="text-secondary mr-2">/&gt;</span>
                 {edu.details}
               </p>

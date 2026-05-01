@@ -165,7 +165,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
         onPointerCancel={handlePointerReset}
         style={prefersReducedMotion ? undefined : { rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className={cn(
-          'relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40',
+          'relative w-full h-full border border-dashed border-line bg-surface/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40',
           innerClassName
         )}
       >
@@ -175,7 +175,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
         <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
         <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
 
-        <div aria-hidden="true" style={{ transform: 'translateZ(30px)' }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
+        <div aria-hidden="true" style={{ transform: 'translateZ(30px)' }} className="absolute -top-3 right-4 bg-surface px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
           [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
         </div>
 

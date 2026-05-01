@@ -19,12 +19,12 @@ const Block = ({ block }: { block: ContentBlock }) => {
     case 'h3':
       return <h3 className="text-lg font-semibold text-primary mt-6 mb-2">{block.text}</h3>;
     case 'p':
-      return <p className="text-primary/80 leading-relaxed mb-4">{block.text}</p>;
+      return <p className="text-[#c8c8c8] leading-relaxed mb-4">{block.text}</p>;
     case 'ul':
       return (
         <ul className="mb-4 flex flex-col gap-2">
           {block.items.map((item, i) => (
-            <li key={i} className="flex gap-2 text-sm text-primary/80">
+            <li key={i} className="flex gap-2 text-sm text-[#c8c8c8]">
               <span className="text-accent shrink-0 mt-0.5">--</span>
               <span>{item}</span>
             </li>
@@ -35,7 +35,7 @@ const Block = ({ block }: { block: ContentBlock }) => {
       return (
         <ol className="mb-4 flex flex-col gap-2">
           {block.items.map((item, i) => (
-            <li key={i} className="flex gap-2 text-sm text-primary/80">
+            <li key={i} className="flex gap-2 text-sm text-[#c8c8c8]">
               <span className="text-accent font-mono shrink-0 w-5">{String(i + 1).padStart(2, '0')}.</span>
               <span>{item}</span>
             </li>
@@ -56,7 +56,7 @@ const Block = ({ block }: { block: ContentBlock }) => {
     case 'callout':
       return (
         <div className="border-l-4 border-accent bg-accent/5 px-4 py-3 mb-4">
-          <p className="text-sm text-primary/90 leading-relaxed">{block.text}</p>
+          <p className="text-sm text-[#dcdcdc] leading-relaxed">{block.text}</p>
         </div>
       );
     default:
@@ -141,7 +141,7 @@ export const BlogPost = () => {
             {cat.title}
           </Link>
           <span className="text-secondary text-xs">/</span>
-          <span className="text-xs font-mono text-primary/60 truncate max-w-[200px]">{post.slug}</span>
+          <span className="text-xs font-mono text-[#aaaaaa] truncate max-w-[200px]">{post.slug}</span>
         </div>
 
         {/* Header del post */}
@@ -156,7 +156,7 @@ export const BlogPost = () => {
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-primary mb-4 leading-tight">{post.title}</h1>
-          <p className="text-primary/70 leading-relaxed border-t border-dashed border-line pt-4 mt-2">
+          <p className="text-[#c0c0c0] leading-relaxed border-t border-dashed border-line pt-4 mt-2">
             {post.summary}
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
@@ -179,7 +179,7 @@ export const BlogPost = () => {
           <BlueprintBox coords={{ x: 50, y: 50 }}>
             <div className="text-center py-10">
               <p className="text-secondary text-xs font-mono mb-2">// CONTENT_PENDING</p>
-              <p className="text-primary/40 text-sm">Este post esta en progreso.</p>
+              <p className="text-[#787878] text-sm">Este post esta en progreso.</p>
             </div>
           </BlueprintBox>
         )}

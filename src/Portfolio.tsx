@@ -45,7 +45,7 @@ export const Portfolio = () => {
                       {skillGroup.skills.map((skill, i) => (
                         <span 
                           key={i} 
-                          className="text-xs text-primary border border-line bg-base px-2 py-1 hover:border-accent hover:text-accent transition-colors cursor-default"
+                          className="text-xs text-primary border border-line bg-surface px-2 py-1 hover:border-accent hover:text-accent transition-colors cursor-default"
                         >
                           {skill}
                         </span>

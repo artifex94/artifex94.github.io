@@ -14,12 +14,12 @@ export const Skills: React.FC = () => {
       <div className="flex flex-col gap-6">
         {data.skills.map((group, index) => (
           <div key={index}>
-            <h4 className="text-sm font-bold text-primary/90 mb-3 border-b border-dashed border-line pb-2">
+            <h4 className="text-sm font-bold text-[#dcdcdc] mb-3 border-b border-dashed border-line pb-2">
               // {group.category}
             </h4>
             <ul className="flex flex-col gap-2">
               {group.skills.map((skill, i) => (
-                <li key={i} className="text-sm text-primary/80 flex items-center gap-2">
+                <li key={i} className="text-sm text-[#c8c8c8] flex items-center gap-2">
                   <CheckSquare className="w-3 h-3 text-accent/70" />
                   {skill}
                 </li>

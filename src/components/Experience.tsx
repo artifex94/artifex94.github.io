@@ -16,7 +16,7 @@ export const Experience: React.FC = () => {
         {/* ... resto del código sin cambios ... */}
         {data.experience.map((exp, index) => (
           <div key={index} className="border-l border-dashed border-accent pl-4 relative">
-            <div className="absolute -left-[5px] top-1.5 w-2 h-2 bg-base border border-accent rounded-full" />
+            <div className="absolute -left-[5px] top-1.5 w-2 h-2 bg-surface border border-accent rounded-full" />
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
               <h4 className="text-primary font-bold text-lg">{exp.role}</h4>
               <span className="text-xs text-secondary font-mono bg-line/20 px-2 py-1">
@@ -26,7 +26,7 @@ export const Experience: React.FC = () => {
             <h5 className="text-accent/80 text-sm mb-3">{exp.company}</h5>
             <ul className="flex flex-col gap-2">
               {exp.description.map((item, i) => (
-                <li key={i} className="text-sm text-primary/70 flex items-start gap-2">
+                <li key={i} className="text-sm text-[#c0c0c0] flex items-start gap-2">
                   <span className="text-secondary mt-0.5">&gt;</span>
                   {item}
                 </li>

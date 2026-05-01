@@ -16,13 +16,13 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center px-4 font-mono">
-          <div className="relative border border-dashed border-accent/50 p-8 max-w-md w-full bg-base/80 backdrop-blur-sm">
+          <div className="relative border border-dashed border-accent/50 p-8 max-w-md w-full bg-surface/80 backdrop-blur-sm">
             <span className="absolute -top-px -left-px  text-accent text-xs leading-none" aria-hidden="true">+</span>
             <span className="absolute -top-px -right-px text-accent text-xs leading-none" aria-hidden="true">+</span>
             <span className="absolute -bottom-px -left-px  text-accent text-xs leading-none" aria-hidden="true">+</span>
             <span className="absolute -bottom-px -right-px text-accent text-xs leading-none" aria-hidden="true">+</span>
             <div
-              className="absolute -top-3 right-4 bg-base px-2 text-[9px] text-secondary border border-dashed border-line tracking-wider"
+              className="absolute -top-3 right-4 bg-surface px-2 text-[9px] text-secondary border border-dashed border-line tracking-wider"
               aria-hidden="true"
             >
               [error]

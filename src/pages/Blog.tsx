@@ -57,7 +57,7 @@ export const Blog = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3 tracking-tight">
                 Blog & Notas
               </h1>
-              <p className="text-primary/70 text-sm md:text-base leading-relaxed max-w-2xl">
+              <p className="text-[#c0c0c0] text-sm md:text-base leading-relaxed max-w-2xl">
                 Apuntes de estudio, exploraciones técnicas e implementaciones que vale la pena documentar.
                 Sin pretensiones — esto es un registro de lo que aprendo mientras lo aprendo.
               </p>
@@ -72,9 +72,9 @@ export const Blog = () => {
             {categories.map(({ icon: Icon, title, desc, count, available }, idx) => (
               <div
                 key={idx}
-                className={`border border-dashed border-line p-6 bg-base/30 flex flex-col gap-4 transition-colors ${
+                className={`border border-dashed border-line p-6 bg-surface/30 flex flex-col gap-4 transition-colors ${
                   available
-                    ? 'hover:border-accent hover:bg-base/60 cursor-pointer'
+                    ? 'hover:border-accent hover:bg-surface/60 cursor-pointer'
                     : 'opacity-60 cursor-default'
                 }`}
               >
@@ -91,7 +91,7 @@ export const Blog = () => {
                 </div>
                 <div>
                   <h3 className="text-primary font-bold mb-2">{title}</h3>
-                  <p className="text-sm text-primary/60 leading-relaxed">{desc}</p>
+                  <p className="text-sm text-[#aaaaaa] leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -102,7 +102,7 @@ export const Blog = () => {
         <BlueprintBox coords={{ x: 50, y: 70 }} className="w-full">
           <div className="text-center py-10">
             <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
-            <p className="text-primary/50 text-sm max-w-md mx-auto leading-relaxed">
+            <p className="text-[#909090] text-sm max-w-md mx-auto leading-relaxed">
               Las secciones están estructuradas y listas para recibir contenido.
               Las primeras entradas van a aparecer acá cuando estén publicadas.
             </p>

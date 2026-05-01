@@ -67,7 +67,7 @@ export const BlogCategory = () => {
             // {cat.slug.toUpperCase()}
           </p>
           <h1 className="text-3xl font-bold text-primary mb-3">{cat.title}</h1>
-          <p className="text-primary/70 text-sm leading-relaxed max-w-2xl">{cat.description}</p>
+          <p className="text-[#c0c0c0] text-sm leading-relaxed max-w-2xl">{cat.description}</p>
           <div className="flex gap-4 mt-4 pt-4 border-t border-dashed border-line">
             <span className="text-xs text-secondary font-mono">{published.length} publicados</span>
             <span className="text-xs text-secondary font-mono">{drafts.length} en progreso</span>
@@ -94,7 +94,7 @@ export const BlogCategory = () => {
                   <h3 className="text-primary font-bold mb-2 group-hover:text-accent transition-colors">
                     {post.title}
                   </h3>
-                  <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{post.summary}</p>
+                  <p className="text-sm text-[#aaaaaa] leading-relaxed line-clamp-2">{post.summary}</p>
                   <div className="flex flex-wrap gap-2 mt-3">
                     {post.tags.map(tag => (
                       <span key={tag} className="flex items-center gap-1 text-[10px] text-secondary font-mono">
@@ -122,8 +122,8 @@ export const BlogCategory = () => {
                     <FileText className="w-3.5 h-3.5 text-secondary" />
                     <span className="text-[10px] font-mono text-secondary border border-line px-1.5 py-0.5">draft</span>
                   </div>
-                  <h4 className="text-primary/80 font-medium text-sm leading-snug mb-1">{post.title}</h4>
-                  <p className="text-xs text-primary/40 line-clamp-2">{post.summary}</p>
+                  <h4 className="text-[#c8c8c8] font-medium text-sm leading-snug mb-1">{post.title}</h4>
+                  <p className="text-xs text-[#787878] line-clamp-2">{post.summary}</p>
                 </div>
               ))}
             </div>
@@ -134,7 +134,7 @@ export const BlogCategory = () => {
           <BlueprintBox coords={{ x: 50, y: 60 }}>
             <div className="text-center py-8">
               <p className="text-secondary text-xs font-mono mb-2">// NO_CONTENT_YET</p>
-              <p className="text-primary/40 text-sm">Proximamente.</p>
+              <p className="text-[#787878] text-sm">Proximamente.</p>
             </div>
           </BlueprintBox>
         )}
