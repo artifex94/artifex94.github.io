@@ -1,8 +1,10 @@
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, ArrowRight, Clock, Tag, Heart, ExternalLink } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { BookOpen, ArrowRight, Clock, Tag, Heart, ExternalLink, Search, X } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
-import { categories, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
+import { categories, getAllPublished, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
 
 const CAFECITO_URL = "https://cafecito.app/artifex";
 const MATECITO_URL = "https://matecito.app/artifex"; // actualizar cuando esté validado
@@ -84,9 +86,34 @@ const DonationsSection = () => (
 );
 
 export const Blog = () => {
-  const recent = getRecentPosts(4);
+  const [query, setQuery] = useState('');
+  const allPublished = useMemo(() => getAllPublished(), []);
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    if (!q) return getRecentPosts(4);
+    return allPublished.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.summary.toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q))
+    );
+  }, [query, allPublished]);
 
   return (
+    <>
+    <Helmet>
+      <title>Blog & Notas — Artifex Dev</title>
+      <meta name="description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más. Blog de Ramiro Escobar." />
+      <link rel="canonical" href="https://artifex.click/blog" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="Blog & Notas — Artifex Dev" />
+      <meta property="og:description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más." />
+      <meta property="og:url" content="https://artifex.click/blog" />
+      <meta property="og:locale" content="es_AR" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content="Blog & Notas — Artifex Dev" />
+      <meta name="twitter:description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript y desarrollo web." />
+    </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -113,37 +140,79 @@ export const Blog = () => {
         {/* Categorias */}
         <section>
           <p className="text-secondary text-xs font-mono mb-5">// CATEGORIAS ({categories.length})</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
             {categories.map(cat => {
               const count = countByCategory(cat.slug);
+              const accentColorMap: Record<string, string> = {
+                'text-blue-400':   'rgba(96, 165, 250, 0.35)',
+                'text-accent':     'color-mix(in srgb, var(--color-accent) 35%, transparent)',
+                'text-green-400':  'rgba(74, 222, 128, 0.35)',
+                'text-purple-400': 'rgba(192, 132, 252, 0.35)',
+                'text-yellow-400': 'rgba(250, 204, 21, 0.35)',
+              };
+              const decorationColor = accentColorMap[cat.accent.split(' ')[0]] ?? 'currentColor';
               return (
-                <Link
-                  key={cat.slug}
-                  to={`/blog/${cat.slug}`}
-                  className="group border border-dashed border-line p-5 bg-[#111111] hover:bg-[#1a1a1a] hover:border-accent transition-all flex flex-col gap-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-primary font-bold group-hover:text-accent transition-colors">{cat.title}</h3>
-                    <span className={`text-[10px] font-mono border px-2 py-0.5 ${cat.accent}`}>
-                      {count > 0 ? `${count} posts` : 'proximamente'}
-                    </span>
+                <div key={cat.slug} className="relative group">
+                  <Link
+                    to={`/blog/${cat.slug}`}
+                    className="inline-flex items-baseline gap-1.5 text-xs font-bold font-mono text-primary/70 hover:text-primary underline underline-offset-4 decoration-2 transition-colors"
+                    style={{ textDecorationColor: decorationColor }}
+                  >
+                    {cat.title}
+                    <span className="text-[10px] font-normal no-underline opacity-60">{count > 0 ? `${count}` : '—'}</span>
+                  </Link>
+
+                  {/* Tooltip */}
+                  <div className="pointer-events-none absolute top-full left-0 z-50 mt-3 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                    <div className="border border-dashed border-line bg-[#111111] p-4 flex flex-col gap-3">
+                      <p className="text-[11px] text-primary/60 leading-relaxed font-normal">{cat.description}</p>
+                      <span className="flex items-center gap-1 text-[10px] font-mono text-accent/50">
+                        Ver todos <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-sm text-primary/60 leading-relaxed">{cat.description}</p>
-                  <span className="flex items-center gap-1 text-xs text-accent/60 font-mono group-hover:text-accent transition-colors mt-auto">
-                    Ver todos <ArrowRight className="w-3 h-3" />
-                  </span>
-                </Link>
+                </div>
               );
             })}
           </div>
         </section>
 
-        {/* Posts recientes */}
-        {recent.length > 0 && (
-          <section>
-            <p className="text-secondary text-xs font-mono mb-5">// PUBLICACIONES_RECIENTES</p>
+        {/* Buscador + Posts */}
+        <section>
+          {/* Search input */}
+          <div className="flex items-center border border-dashed border-line bg-[#0f0f0f] px-3 mb-5 focus-within:border-accent/50 transition-colors">
+            <Search className="w-4 h-4 text-secondary shrink-0" aria-hidden="true" />
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Buscar posts por título, tema o tag..."
+              className="flex-1 bg-transparent text-sm text-primary placeholder:text-secondary/40 py-2.5 px-3 font-mono outline-none"
+              aria-label="Buscar posts"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="text-secondary hover:text-primary transition-colors p-1"
+                aria-label="Limpiar búsqueda"
+                title="Limpiar búsqueda"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Section label */}
+          <p className="text-secondary text-xs font-mono mb-5">
+            {query
+              ? `// ${filtered.length} resultado${filtered.length !== 1 ? 's' : ''} para "${query}"`
+              : '// PUBLICACIONES_RECIENTES'}
+          </p>
+
+          {/* Results */}
+          {filtered.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {recent.map(post => {
+              {filtered.map(post => {
                 const cat = getCategoryBySlug(post.category);
                 return (
                   <Link
@@ -158,7 +227,7 @@ export const Blog = () => {
                         </span>
                       )}
                       <span className="flex items-center gap-1 text-[10px] text-secondary font-mono">
-                        <Clock className="w-3 h-3" /> {post.readTime} min
+                        <Clock className="w-3 h-3" aria-hidden="true" /> {post.readTime} min
                       </span>
                       <span className="text-[10px] text-secondary font-mono">{post.date}</span>
                     </div>
@@ -169,7 +238,7 @@ export const Blog = () => {
                     <div className="flex flex-wrap gap-2 mt-3">
                       {post.tags.slice(0, 3).map(tag => (
                         <span key={tag} className="flex items-center gap-1 text-[10px] text-secondary font-mono">
-                          <Tag className="w-2.5 h-2.5" />{tag}
+                          <Tag className="w-2.5 h-2.5" aria-hidden="true" />{tag}
                         </span>
                       ))}
                     </div>
@@ -177,24 +246,34 @@ export const Blog = () => {
                 );
               })}
             </div>
-          </section>
-        )}
-
-        {recent.length === 0 && (
-          <BlueprintBox coords={{ x: 50, y: 70 }} className="w-full">
-            <div className="text-center py-10">
-              <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
-              <p className="text-primary/50 text-sm max-w-md mx-auto leading-relaxed">
-                Las categorias estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
-              </p>
-            </div>
-          </BlueprintBox>
-        )}
+          ) : (
+            <BlueprintBox coords={{ x: 50, y: 70 }} className="w-full">
+              <div className="text-center py-8">
+                {query ? (
+                  <>
+                    <p className="text-secondary text-xs font-mono mb-2">// SIN_RESULTADOS</p>
+                    <p className="text-primary/50 text-sm">
+                      Ningún post coincide con <span className="text-accent font-mono">"{query}"</span>.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
+                    <p className="text-primary/50 text-sm max-w-md mx-auto leading-relaxed">
+                      Las categorias estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
+                    </p>
+                  </>
+                )}
+              </div>
+            </BlueprintBox>
+          )}
+        </section>
 
         {/* Donaciones */}
         <DonationsSection />
 
       </div>
     </motion.div>
+    </>
   );
 };

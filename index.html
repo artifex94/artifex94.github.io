@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050505" />
 
     <!-- ===== Favicon ===== -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg?v=2" />
@@ -15,6 +16,20 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://artifex.click/" />
 
+    <!-- ===== Geo ===== -->
+    <meta name="geo.region" content="AR-E" />
+    <meta name="geo.placename" content="Victoria, Entre Ríos, Argentina" />
+    <meta name="geo.position" content="-32.621;-60.155" />
+    <meta name="ICBM" content="-32.621, -60.155" />
+
+    <!-- ===== Hreflang ===== -->
+    <link rel="alternate" hreflang="es-AR" href="https://artifex.click/" />
+    <link rel="alternate" hreflang="es" href="https://artifex.click/" />
+    <link rel="alternate" hreflang="x-default" href="https://artifex.click/" />
+
+    <!-- ===== RSS ===== -->
+    <link rel="alternate" type="application/rss+xml" title="Artifex Blog — RSS" href="https://artifex.click/rss.xml" />
+
     <!-- ===== Open Graph ===== -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Artifex Dev" />
@@ -24,6 +39,8 @@
     <meta property="og:image" content="https://artifex.click/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Ramiro Escobar — Artifex Dev — Software Developer Portfolio" />
     <meta property="og:locale" content="es_AR" />
 
     <!-- ===== Twitter Card ===== -->
@@ -31,12 +48,13 @@
     <meta name="twitter:title" content="Ramiro Escobar — Software Developer | Artifex Dev" />
     <meta name="twitter:description" content="Desarrollo plataformas digitales y sistemas web a medida. Entrega rápida, precios transparentes y soporte continuo." />
     <meta name="twitter:image" content="https://artifex.click/og-image.png" />
+    <meta name="twitter:image:alt" content="Ramiro Escobar — Artifex Dev portfolio preview" />
 
     <!-- ===== Performance: preconnect a dominios externos ===== -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://images.unsplash.com" />
 
-    <!-- ===== JSON-LD: Person + Website ===== -->
+    <!-- ===== JSON-LD: @graph completo ===== -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -50,6 +68,12 @@
           "description": "Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores en Argentina.",
           "url": "https://artifex.click/",
           "email": "dev@artifex.click",
+          "image": {
+            "@type": "ImageObject",
+            "url": "https://artifex.click/og-image.png",
+            "width": 1200,
+            "height": 630
+          },
           "sameAs": [
             "https://github.com/artifex94",
             "https://www.linkedin.com/in/ramiroescobar"
@@ -70,6 +94,16 @@
           "description": "Portfolio y servicios de desarrollo web a medida",
           "publisher": { "@id": "https://artifex.click/#person" },
           "inLanguage": "es-AR"
+        },
+        {
+          "@type": "Blog",
+          "@id": "https://artifex.click/#blog",
+          "name": "Artifex Blog",
+          "description": "Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más.",
+          "url": "https://artifex.click/blog",
+          "inLanguage": "es-AR",
+          "author": { "@id": "https://artifex.click/#person" },
+          "publisher": { "@id": "https://artifex.click/#person" }
         },
         {
           "@type": "ProfessionalService",

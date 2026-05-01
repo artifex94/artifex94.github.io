@@ -1,8 +1,15 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Clock, Tag, Calendar } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { getPostBySlug, getCategoryBySlug, type ContentBlock } from '../../data/blog';
+
+function formatPostDate(raw: string): string {
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return raw;
+  return d.toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 // Renderer de bloques de contenido
 const Block = ({ block }: { block: ContentBlock }) => {
@@ -64,7 +71,58 @@ export const BlogPost = () => {
 
   if (!post || !cat) return <Navigate to="/blog" replace />;
 
+  const canonicalUrl   = `https://artifex.click/blog/${cat.slug}/${post.slug}`;
+  const breadcrumbData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Inicio',   'item': 'https://artifex.click/' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Blog',     'item': 'https://artifex.click/blog' },
+      { '@type': 'ListItem', 'position': 3, 'name': cat.title,  'item': `https://artifex.click/blog/${cat.slug}` },
+      { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': canonicalUrl },
+    ],
+  };
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    'headline': post.title,
+    'description': post.summary,
+    'datePublished': post.date,
+    'url': canonicalUrl,
+    'inLanguage': 'es-AR',
+    'author': {
+      '@type': 'Person',
+      '@id': 'https://artifex.click/#person',
+      'name': 'Ramiro Aníbal Escobar',
+    },
+    'publisher': {
+      '@type': 'Person',
+      '@id': 'https://artifex.click/#person',
+    },
+    'keywords': post.tags.join(', '),
+  };
+
   return (
+    <>
+      <Helmet>
+        <title>{post.title} — Artifex Blog</title>
+        <meta name="description" content={post.summary} />
+        <meta name="keywords" content={post.tags.join(', ')} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={`${post.title} — Artifex Blog`} />
+        <meta property="og:description" content={post.summary} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:locale" content="es_AR" />
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:author" content="Ramiro Aníbal Escobar" />
+        <meta property="article:tag" content={post.tags.join(', ')} />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={`${post.title} — Artifex Blog`} />
+        <meta name="twitter:description" content={post.summary} />
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbData)}</script>
+      </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -94,7 +152,7 @@ export const BlogPost = () => {
               <Clock className="w-3 h-3" /> {post.readTime} min de lectura
             </span>
             <span className="flex items-center gap-1 text-[10px] text-secondary font-mono">
-              <Calendar className="w-3 h-3" /> {post.date}
+              <Calendar className="w-3 h-3" /> {formatPostDate(post.date)}
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-primary mb-4 leading-tight">{post.title}</h1>
@@ -138,5 +196,6 @@ export const BlogPost = () => {
 
       </div>
     </motion.div>
+    </>
   );
 };

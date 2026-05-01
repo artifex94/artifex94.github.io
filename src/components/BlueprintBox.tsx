@@ -8,6 +8,7 @@ import {
   useScroll,
   useVelocity,
   useInView,
+  useReducedMotion,
   animate,
 } from 'framer-motion';
 
@@ -50,6 +51,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   delay = 0,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   // ── Personality state (session-persistent) ─────────────────────────────
   const sessionKey    = `bp-${coords.x}-${coords.y}`;
@@ -112,7 +114,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   const isInView = useInView(ref, { once: true, margin: '-30px' });
 
   useEffect(() => {
-    if (!isInView || isCalmRef.current) return;
+    if (!isInView || isCalmRef.current || prefersReducedMotion) return;
 
     // "Surprised" jolt — element reacts to being seen for the first time.
     // Animate y (feeds mouseYSpring via spring physics → produces a natural wobble).
@@ -124,11 +126,11 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
 
     calmTimer.current = setTimeout(goCalm, CALM_DELAY_MS);
     return () => { if (calmTimer.current) clearTimeout(calmTimer.current); };
-  }, [isInView, goCalm, y]);
+  }, [isInView, goCalm, y, prefersReducedMotion]);
 
   // ── 6. Pointer handlers ────────────────────────────────────────────────
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (!ref.current || prefersReducedMotion) return;
     const rect = ref.current.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
@@ -147,8 +149,8 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
 
   return (
     <motion.div
-      style={{ perspective: 1200 }}
-      initial={{ opacity: 0, y: 20, filter: 'blur(5px)' }}
+      style={{ perspective: prefersReducedMotion ? undefined : 1200 }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20, filter: prefersReducedMotion ? 'blur(0px)' : 'blur(5px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ duration: 0.6, ease: 'easeOut', delay }}
@@ -161,25 +163,25 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
         onPointerLeave={handlePointerLeave}
         onPointerUp={handlePointerReset}
         onPointerCancel={handlePointerReset}
-        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+        style={prefersReducedMotion ? undefined : { rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className={cn(
           'relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40',
           innerClassName
         )}
       >
         {/* Decorative 3D corners — float above card surface */}
-        <div style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
-        <div style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -top-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -left-1.25 text-accent text-xs opacity-80 leading-none">+</div>
+        <div aria-hidden="true" style={{ transform: 'translateZ(20px)' }} className="absolute -bottom-1.25 -right-1.25 text-accent text-xs opacity-80 leading-none">+</div>
 
-        <div style={{ transform: 'translateZ(30px)' }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
+        <div aria-hidden="true" style={{ transform: 'translateZ(30px)' }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
           [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
         </div>
 
         {/* Content layer — counter-rotated to stay perpendicular to camera */}
         <motion.div
-          style={{ rotateX: contentRotateX, rotateY: contentRotateY }}
+          style={prefersReducedMotion ? undefined : { rotateX: contentRotateX, rotateY: contentRotateY }}
           className="relative z-10"
         >
           {children}

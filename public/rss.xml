@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Artifex Blog</title>
+    <link>https://artifex.click/blog</link>
+    <description>Apuntes técnicos, exploraciones de software y desarrollo web.</description>
+    <language>es-AR</language>
+    <lastBuildDate>Fri, 01 May 2026 07:59:39 GMT</lastBuildDate>
+    <atom:link href="https://artifex.click/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title><![CDATA[La evolución del testing de software: de corregir errores a garantizar calidad]]></title>
+      <link>https://artifex.click/blog/ingenieria/evolucion-testing-software</link>
+      <description><![CDATA[Setenta años de historia del testing en un artículo: las cinco visiones que transformaron la disciplina, terminología ISTQB (error, falla, defecto), el modelo de calidad McCall con sus 11 factores, la norma ISO 9126 y los cinco principios fundamentales del tester profesional.]]></description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://artifex.click/blog/ingenieria/evolucion-testing-software</guid>
+      <category><![CDATA[ingenieria]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Arquitectura de software: fundamentos, dificultades y deuda técnica]]></title>
+      <link>https://artifex.click/blog/ingenieria/arquitectura-software-fundamentos</link>
+      <description><![CDATA[Qué es la arquitectura de software según Bass, Taylor y Fowler. Cuáles son los problemas esenciales del desarrollo y por qué no hay bala de plata. Cómo clasificar y gestionar los cuatro tipos de deuda técnica. Y cuál es el rol del arquitecto frente a los distintos stakeholders del proyecto.]]></description>
+      <pubDate>Tue, 28 Apr 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://artifex.click/blog/ingenieria/arquitectura-software-fundamentos</guid>
+      <category><![CDATA[ingenieria]]></category>
+    </item>
+    <item>
+      <title><![CDATA[Por que uso TypeScript en cada proyecto nuevo]]></title>
+      <link>https://artifex.click/blog/frontend/typescript-por-que-lo-uso-siempre</link>
+      <description><![CDATA[No es por los tipos en si mismos. Es por el autocompletado, el refactoring seguro y la documentacion que emerge naturalmente del codigo. Argumentos concretos para convencer al cliente skeptico.]]></description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://artifex.click/blog/frontend/typescript-por-que-lo-uso-siempre</guid>
+      <category><![CDATA[frontend]]></category>
+    </item>
+    <item>
+      <title><![CDATA[ADRs: como documento mis decisiones de arquitectura]]></title>
+      <link>https://artifex.click/blog/ingenieria/adrs-documentar-decisiones-arquitectura</link>
+      <description><![CDATA[Un ADR (Architecture Decision Record) es un archivo de texto que responde una sola pregunta: por que tomamos esta decision y no otra. Llevo usandolos en todos mis proyectos y cambio la forma en que trabajo.]]></description>
+      <pubDate>Mon, 20 Apr 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://artifex.click/blog/ingenieria/adrs-documentar-decisiones-arquitectura</guid>
+      <category><![CDATA[ingenieria]]></category>
+    </item>
+    <item>
+      <title><![CDATA[GitFlow en proyectos a medida: el setup que uso]]></title>
+      <link>https://artifex.click/blog/ingenieria/gitflow-proyectos-a-medida</link>
+      <description><![CDATA[GitFlow tiene fama de ser complejo para proyectos chicos. Mi version simplificada tiene solo tres reglas y funciona bien para proyectos de un solo desarrollador con clientes reales.]]></description>
+      <pubDate>Wed, 15 Apr 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://artifex.click/blog/ingenieria/gitflow-proyectos-a-medida</guid>
+      <category><![CDATA[ingenieria]]></category>
+    </item>
+  </channel>
+</rss>

@@ -1,5 +1,6 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Clock, Tag, FileText } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { categories, posts, getCategoryBySlug } from '../../data/blog';
@@ -17,7 +18,32 @@ export const BlogCategory = () => {
   const published = catPosts.filter(p => p.status === 'published');
   const drafts    = catPosts.filter(p => p.status === 'draft');
 
+  const canonicalUrl = `https://artifex.click/blog/${cat.slug}`;
+
   return (
+    <>
+      <Helmet>
+        <title>{cat.title} — Artifex Blog</title>
+        <meta name="description" content={cat.description} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${cat.title} — Artifex Blog`} />
+        <meta property="og:description" content={cat.description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:locale" content="es_AR" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={`${cat.title} — Artifex Blog`} />
+        <meta name="twitter:description" content={cat.description} />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Inicio', 'item': 'https://artifex.click/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Blog',   'item': 'https://artifex.click/blog' },
+            { '@type': 'ListItem', 'position': 3, 'name': cat.title, 'item': canonicalUrl },
+          ],
+        })}</script>
+      </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -131,5 +157,6 @@ export const BlogCategory = () => {
 
       </div>
     </motion.div>
+    </>
   );
 };

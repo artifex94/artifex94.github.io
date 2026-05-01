@@ -6,7 +6,7 @@ import { Skills } from '../components/Skills';
 
 export const Home = () => {
   return (
-    <div className="w-full bg-blueprint-grid py-12">
+    <main className="w-full bg-blueprint-grid py-12">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* 
           Contenedor Principal de la Grilla.
@@ -42,6 +42,6 @@ export const Home = () => {
 
         </div>
       </div>
-    </div>
+    </main>
   );
 };

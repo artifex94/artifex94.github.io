@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path . -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "PowerShell(cd \"C:\\\\Users\\\\rami_\\\\Dev\\\\Artifex\\\\Portfolio\\\\artifex94.github.io\"; Get-ChildItem -Path . | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)"
+    ]
+  }
+}

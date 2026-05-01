@@ -41,9 +41,10 @@ function formatDate(raw: string | null): string | null {
 
 interface DiplomaCardProps {
   cert:  PlatziCert;
+  'aria-hidden'?: boolean;
 }
 
-function DiplomaCard({ cert }: DiplomaCardProps) {
+function DiplomaCard({ cert, 'aria-hidden': ariaHidden }: DiplomaCardProps) {
   const color = schoolColor(cert.school);
   const date  = formatDate(cert.completedAt);
 
@@ -59,11 +60,13 @@ function DiplomaCard({ cert }: DiplomaCardProps) {
       `}
       data-name={cert.name}
       data-url={cert.url || undefined}
+      aria-hidden={ariaHidden}
+      role="listitem"
     >
-      <span className="absolute top-0 left-0   text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
-      <span className="absolute top-0 right-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
-      <span className="absolute bottom-0 left-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
-      <span className="absolute bottom-0 right-0 text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
+      <span aria-hidden="true" className="absolute top-0 left-0   text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
+      <span aria-hidden="true" className="absolute top-0 right-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
+      <span aria-hidden="true" className="absolute bottom-0 left-0  text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
+      <span aria-hidden="true" className="absolute bottom-0 right-0 text-accent/50 text-[10px] leading-none pointer-events-none">+</span>
 
       <div
         className="absolute inset-0 pointer-events-none"
@@ -82,7 +85,7 @@ function DiplomaCard({ cert }: DiplomaCardProps) {
           {cert.imageUrl ? (
             <img
               src={cert.imageUrl}
-              alt=""
+              alt={`Logo ${cert.name}`}
               loading="lazy"
               draggable={false}
               className="w-14 h-14 object-contain opacity-75 group-hover/card:opacity-100 group-hover/card:scale-105 transition-all duration-300"
@@ -127,7 +130,7 @@ interface DiplomaDialogProps {
 function DiplomaDialog({ name, url, onClose }: DiplomaDialogProps) {
   return createPortal(
     <motion.div
-      className="fixed inset-0 z-9999 flex items-center justify-center px-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -144,12 +147,12 @@ function DiplomaDialog({ name, url, onClose }: DiplomaDialogProps) {
         transition={{ duration: 0.18, ease: 'easeOut' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <span className="absolute -top-px -left-px  text-accent text-xs leading-none">+</span>
-        <span className="absolute -top-px -right-px text-accent text-xs leading-none">+</span>
-        <span className="absolute -bottom-px -left-px  text-accent text-xs leading-none">+</span>
-        <span className="absolute -bottom-px -right-px text-accent text-xs leading-none">+</span>
+        <span aria-hidden="true" className="absolute -top-px -left-px  text-accent text-xs leading-none">+</span>
+        <span aria-hidden="true" className="absolute -top-px -right-px text-accent text-xs leading-none">+</span>
+        <span aria-hidden="true" className="absolute -bottom-px -left-px  text-accent text-xs leading-none">+</span>
+        <span aria-hidden="true" className="absolute -bottom-px -right-px text-accent text-xs leading-none">+</span>
 
-        <div className="absolute -top-3 right-4 bg-[#0d0d0d] px-2 text-[9px] text-secondary border border-dashed border-line tracking-wider font-mono">
+        <div aria-hidden="true" className="absolute -top-3 right-4 bg-[#0d0d0d] px-2 text-[9px] text-secondary border border-dashed border-line tracking-wider font-mono">
           [diploma]
         </div>
 
@@ -339,11 +342,12 @@ export function PlatziCarousel() {
         onDragStart={(e) => e.preventDefault()}
         style={{ touchAction: 'pan-y pinch-zoom' }}
       >
-        <motion.div className="flex gap-2 w-max" style={{ x: displayX }}>
+        <motion.div className="flex gap-2 w-max" style={{ x: displayX }} role="list" aria-label="Certificados Platzi">
           {doubled.map((cert, i) => (
             <DiplomaCard
               key={i}
               cert={cert}
+              aria-hidden={i >= certs.length}
             />
           ))}
         </motion.div>
