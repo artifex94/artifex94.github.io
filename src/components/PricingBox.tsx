@@ -11,6 +11,7 @@ export interface PricingTier {
   }[];
   retainerPrice: string;
   features: string[];
+  ctaHref?: string;
   isPopular?: boolean;
 }
 
@@ -21,6 +22,7 @@ export const PricingBox: React.FC<PricingTier> = ({
   setupOptions,
   retainerPrice,
   features,
+  ctaHref,
   isPopular
 }) => {
   return (
@@ -68,11 +70,14 @@ export const PricingBox: React.FC<PricingTier> = ({
         ))}
       </ul>
 
-      <button 
-        className={`mt-auto w-full py-4 text-sm font-bold tracking-widest uppercase transition-all duration-300 ${isPopular ? 'bg-[#E67E32] text-black hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-[#1f1f1f] text-[#e5e5e5] border border-[#262626] hover:bg-[#E67E32] hover:text-black hover:border-[#E67E32]'}`}
+      <a
+        href={ctaHref}
+        target="_blank"
+        rel="noreferrer"
+        className={`mt-auto inline-flex w-full items-center justify-center py-4 text-sm font-bold tracking-widest uppercase transition-all duration-300 ${isPopular ? 'bg-[#E67E32] text-black hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-[#1f1f1f] text-[#e5e5e5] border border-[#262626] hover:bg-[#E67E32] hover:text-black hover:border-[#E67E32]'}`}
       >
         Solicitar Propuesta
-      </button>
+      </a>
     </div>
   );
 };

@@ -11,7 +11,8 @@ import {
   MessageSquare, Lock, FolderOpen,
 } from 'lucide-react';
 
-const WHATSAPP_URL = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20quiero%20consultar%20sobre%20un%20proyecto%20web.";
+const WHATSAPP_MESSAGE = "Hola Ramiro, como estas? Vi tu pagina y me gustaria hablar sobre una propuesta de desarrollo web. Quiero contarte un poco lo que necesito y ver si podemos armar algo juntos.";
+const WHATSAPP_URL = `https://wa.me/5493436431987?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
 interface Segment {
   icon: LucideIcon;
@@ -56,6 +57,7 @@ const pricingTiers: PricingTier[] = [
       },
     ],
     retainerPrice: "$50.000 ARS",
+    ctaHref: WHATSAPP_URL,
     features: [
       "Tu negocio visible y captando consultas en menos de 2 semanas",
       "Seccion de servicios o productos clara y orientada a conversion",
@@ -70,6 +72,7 @@ const pricingTiers: PricingTier[] = [
     target: "Para negocios que necesitan sistematizar operaciones: gestion de clientes, turnos, catalogos o dashboards.",
     setupPrice: "$1.000.000 ARS",
     retainerPrice: "$50.000 ARS",
+    ctaHref: WHATSAPP_URL,
     features: [
       "Sistema productivo en 90 dias, con soporte incluido el primer año",
       "Panel de administracion propio — control total desde una sola pantalla",
