@@ -8,7 +8,7 @@ const propiedades = [
   { id:1, tipo:'Venta', titulo:'Casa familiar en Costanera', precio:'$85.000.000', zona:'Costanera, Victoria', hab:3, banos:2, m2:120, img:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=80', tag:'Destacada' },
   { id:2, tipo:'Alquiler', titulo:'Departamento 2 ambientes centro', precio:'$180.000/mes', zona:'Centro, Victoria', hab:1, banos:1, m2:52, img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80', tag:'' },
   { id:3, tipo:'Venta', titulo:'Lote en barrio residencial', precio:'$45.000.000', zona:'Villa Itati, Victoria', hab:0, banos:0, m2:600, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', tag:'Oportunidad' },
-  { id:4, tipo:'Alquiler', titulo:'PH amplio con jardín', precio:'$250.000/mes', zona:'Av. Sarmiento, Victoria', hab:3, banos:1, m2:90, img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80', tag:'' },
+  { id:4, tipo:'Alquiler', titulo:'PH amplio con jardín', precio:'$250.000/mes', zona:'Av. Sarmiento, Victoria', hab:3, banos:1, m2:90, img:'https://images.unsplash.com/photo-1762461838534-ca26dfa134a8?auto=format&fit=crop&w=400&q=80', tag:'' },
   { id:5, tipo:'Venta', titulo:'Duplex a estrenar', precio:'$120.000.000', zona:'Barrio Nuevo, Victoria', hab:4, banos:2, m2:180, img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=80', tag:'Nuevo' },
   { id:6, tipo:'Alquiler', titulo:'Local comercial sobre 25 de Mayo', precio:'$320.000/mes', zona:'Centro, Victoria', hab:0, banos:1, m2:75, img:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80', tag:'' },
 ];
