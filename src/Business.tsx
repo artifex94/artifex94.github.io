@@ -11,7 +11,7 @@ import {
   MessageSquare, Lock, FolderOpen,
 } from 'lucide-react';
 
-const WHATSAPP_MESSAGE = "Hola Ramiro, como estas? Vi tu pagina y me gustaria hablar sobre una propuesta de desarrollo web. Quiero contarte un poco lo que necesito y ver si podemos armar algo juntos.";
+const WHATSAPP_MESSAGE = "Hola Ramiro, ¿cómo estás? Vi tu página y me gustaría hablar sobre una propuesta de desarrollo web. Quiero contarte un poco lo que necesito y ver si podemos armar algo juntos.";
 const WHATSAPP_URL = `https://wa.me/5493436431987?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
 interface Segment {
@@ -37,22 +37,22 @@ interface Differentiator {
 const pricingTiers: PricingTier[] = [
   {
     name: "Presencia Digital Express",
-    target: "Para negocios, profesionales y emprendedores que necesitan presencia web rapida y efectiva.",
+    target: "Para negocios, profesionales y emprendedores que necesitan presencia web rápida y efectiva.",
     setupPrice: "$200.000 ARS",
     setupOptions: [
       {
-        label: "Landing page estatica",
-        description: "Pagina de presentacion para mostrar servicios, contacto y presencia profesional.",
+        label: "Crece",
+        description: "Crece el alcance de tu presencia mediante una landing page que le muestre al mundo quién sos y qué hacés.",
         price: "$200.000 ARS",
       },
       {
-        label: "Sitio con blog administrable",
-        description: "Sitio intermedio con secciones dinamicas, blog o contenido actualizable sin carrito ni gestion de ventas.",
+        label: "Expande",
+        description: "Expande tu trabajo mostrando, compartiendo y actualizando tu contenido digital con un blog o secciones administrables.",
         price: "$400.000 ARS",
       },
       {
-        label: "Tienda online",
-        description: "E-commerce para vender online, gestionar productos y ordenar el proceso comercial.",
+        label: "Explota",
+        description: "Explota tu negocio mediante una tienda web que te permita vender online, gestionar productos y ordenar tu proceso comercial.",
         price: "$600.000 ARS",
       },
     ],
@@ -60,8 +60,8 @@ const pricingTiers: PricingTier[] = [
     ctaHref: WHATSAPP_URL,
     features: [
       "Tu negocio visible y captando consultas en menos de 2 semanas",
-      "Seccion de servicios o productos clara y orientada a conversion",
-      "Formulario de contacto + boton WhatsApp destacado",
+      "Sección de servicios o productos clara y orientada a conversión",
+      "Formulario de contacto + botón WhatsApp destacado",
       "Google Maps integrado",
       "Dominio y deploy incluidos (Vercel)",
       "Mobile-first: el 80% de tus clientes llegan desde el celular",
@@ -69,15 +69,17 @@ const pricingTiers: PricingTier[] = [
   },
   {
     name: "Sistema Web a Medida",
-    target: "Para negocios que necesitan sistematizar operaciones: gestion de clientes, turnos, catalogos o dashboards.",
+    target: "Para negocios que necesitan sistematizar operaciones: gestión de clientes, turnos, catálogos o dashboards.",
     setupPrice: "$1.000.000 ARS",
     retainerPrice: "$50.000 ARS",
     ctaHref: WHATSAPP_URL,
+    visualSrc: "/assets/business-system-demo.gif",
+    visualAlt: "Animación de un sistema web a medida conectando clientes, datos, panel administrativo y dashboard.",
     features: [
-      "Sistema productivo en 90 dias, con soporte incluido el primer año",
-      "Panel de administracion propio — control total desde una sola pantalla",
-      "Base de datos y logica de negocio disenada para crecer",
-      "Autenticacion de usuarios y roles",
+      "Sistema productivo en 90 días, con soporte incluido el primer año",
+      "Panel de administración propio — control total desde una sola pantalla",
+      "Base de datos y lógica de negocio diseñada para crecer",
+      "Autenticación de usuarios y roles",
       "Entregas parciales cada sprint — ves el avance en tiempo real",
       "Mantenimiento mensual incluido post-entrega",
     ],
@@ -86,36 +88,36 @@ const pricingTiers: PricingTier[] = [
 ];
 
 const onboardingSteps: Step[] = [
-  { step: "01", icon: Search,   title: "Discovery",         desc: "Reunion de diagnostico para entender el negocio, el problema y los objetivos. Sin costo ni compromiso." },
-  { step: "02", icon: FileText, title: "Propuesta",         desc: "Alcance, arquitectura, tiempos y presupuesto fijo detallado. Sin sorpresas despues." },
+  { step: "01", icon: Search,   title: "Discovery",         desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo ni compromiso." },
+  { step: "02", icon: FileText, title: "Propuesta",         desc: "Alcance, arquitectura, tiempos y presupuesto fijo detallado. Sin sorpresas después." },
   { step: "03", icon: Code2,    title: "Desarrollo",        desc: "Ciclo de desarrollo con entregas parciales. Ves el avance y das feedback en cada etapa." },
-  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a produccion, documentacion entregada y transicion al plan de mantenimiento." },
+  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a producción, documentación entregada y transición al plan de mantenimiento." },
 ];
 
 const targetSegments: Segment[] = [
-  { icon: Building2,       title: "Inmobiliarias",  desc: "Sin sistema propio, perdes leads entre WhatsApps y planillas. Te armo un catalogo con filtros, fichas y contacto directo.",          demo: "/business/inmobiliarias" },
-  { icon: Stethoscope,     title: "Profesionales",  desc: "Tus clientes te buscan en Google. Sin presencia profesional, llaman al siguiente. Te pongo visible en dias.",                         demo: "/business/profesionales" },
-  { icon: UtensilsCrossed, title: "Gastronomia",    desc: "Un menu digital reduce llamadas y errores en pedidos, y te da presencia local sin depender de apps de terceros.",                     demo: "/business/gastronomia"   },
-  { icon: ShoppingBag,     title: "Comercios",      desc: "Vendes por WhatsApp pero sin catalogo ordenado cada consulta te consume tiempo. Te organizo el proceso y lo escalo.",                 demo: "/business/comercios"     },
-  { icon: Lightbulb,       title: "Emprendedores",  desc: "Necesitas validar tu idea y captar tus primeros clientes antes de invertir mas. Te armo la presencia digital para arrancar.",         demo: "/business/emprendedores" },
-  { icon: Briefcase,       title: "Empresas",       desc: "Tus procesos criticos no pueden depender de hojas de calculo ni emails. Desarrollo sistemas internos y portales a medida.",           demo: "/business/empresas"      },
+  { icon: Building2,       title: "Inmobiliarias",  desc: "Sin sistema propio, perdés leads entre WhatsApps y planillas. Te armo un catálogo con filtros, fichas y contacto directo.",          demo: "/business/inmobiliarias" },
+  { icon: Stethoscope,     title: "Profesionales",  desc: "Tus clientes te buscan en Google. Sin presencia profesional, llaman al siguiente. Te pongo visible en días.",                         demo: "/business/profesionales" },
+  { icon: UtensilsCrossed, title: "Gastronomía",    desc: "Un menú digital reduce llamadas y errores en pedidos, y te da presencia local sin depender de apps de terceros.",                     demo: "/business/gastronomia"   },
+  { icon: ShoppingBag,     title: "Comercios",      desc: "Vendés por WhatsApp pero sin catálogo ordenado cada consulta te consume tiempo. Te organizo el proceso y lo escalo.",                 demo: "/business/comercios"     },
+  { icon: Lightbulb,       title: "Emprendedores",  desc: "Necesitás validar tu idea y captar tus primeros clientes antes de invertir más. Te armo la presencia digital para arrancar.",         demo: "/business/emprendedores" },
+  { icon: Briefcase,       title: "Empresas",       desc: "Tus procesos críticos no pueden depender de hojas de cálculo ni emails. Desarrollo sistemas internos y portales a medida.",           demo: "/business/empresas"      },
 ];
 
 const differentiators: Differentiator[] = [
   {
     icon: MessageSquare,
-    title: "Comunicacion directa",
-    desc: "Sin intermediarios, sin ticketing, sin su consulta fue derivada al equipo. Hablas conmigo durante todo el proyecto, desde el primer mensaje hasta el deploy.",
+    title: "Comunicación directa",
+    desc: "Sin intermediarios, sin ticketing, sin su consulta fue derivada al equipo. Hablás conmigo durante todo el proyecto, desde el primer mensaje hasta el deploy.",
   },
   {
     icon: Lock,
     title: "Precio fijo antes de empezar",
-    desc: "El presupuesto que acordamos es el que pagas. Sin extras sorpresa ni horas adicionales no pactadas. Si algo cambia, lo hablamos antes de hacerlo.",
+    desc: "El presupuesto que acordamos es el que pagás. Sin extras sorpresa ni horas adicionales no pactadas. Si algo cambia, lo hablamos antes de hacerlo.",
   },
   {
     icon: FolderOpen,
-    title: "Codigo que es tuyo",
-    desc: "Acceso completo al repositorio y documentacion del proyecto desde el dia uno. Si otro desarrollador necesita tomar el trabajo, puede hacerlo sin problemas.",
+    title: "Código que es tuyo",
+    desc: "Acceso completo al repositorio y documentación del proyecto desde el día uno. Si otro desarrollador necesita tomar el trabajo, puede hacerlo sin problemas.",
   },
 ];
 
@@ -226,7 +228,7 @@ function ProcesoSection() {
   return (
     <section>
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-white mb-3">Como trabajamos</h2>
+        <h2 className="text-3xl font-bold text-white mb-3">Cómo trabajamos</h2>
         <p className="text-[#a3a3a3] text-sm font-mono">// Cuatro etapas claras, sin sorpresas.</p>
       </div>
       <div className="relative">
@@ -288,7 +290,7 @@ export const Business = () => {
         {/* Segmentos */}
         <section>
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-white mb-2">Para quien trabajo</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Para quién trabajo</h2>
             <p className="text-[#a3a3a3]">Cualquier negocio que necesite software que funcione.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -316,7 +318,7 @@ export const Business = () => {
         <section>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-white mb-4">Servicios y Precios</h2>
-            <p className="text-[#a3a3a3]">Transparencia total desde el primer dia. Sin sorpresas.</p>
+            <p className="text-[#a3a3a3]">Transparencia total desde el primer día. Sin sorpresas.</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {pricingTiers.map((tier, idx) => (
@@ -330,11 +332,11 @@ export const Business = () => {
           <div className="p-4 md:p-8">
             <h3 className="text-2xl font-bold text-white mb-3">
               El mantenimiento mensual no es un gasto.<br />
-              <span className="text-[#E67E32]">Es tu garantia de continuidad.</span>
+              <span className="text-[#E67E32]">Es tu garantía de continuidad.</span>
             </h3>
             <p className="text-[#a3a3a3]">
               Por $50.000 ARS/mes tu sistema se mantiene actualizado, seguro y con soporte directo.
-              Ante cualquier cambio o problema, respuesta en el dia.
+              Ante cualquier cambio o problema, respuesta en el día.
             </p>
           </div>
         </BlueprintBox>
@@ -342,10 +344,10 @@ export const Business = () => {
         {/* Proceso */}
         <ProcesoSection />
 
-        {/* Por que yo */}
+        {/* Por qué yo */}
         <section>
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-white mb-3">Por que trabajar conmigo</h2>
+            <h2 className="text-3xl font-bold text-white mb-3">Por qué trabajar conmigo</h2>
             <p className="text-[#a3a3a3] text-sm font-mono">// Tres cosas que no vas a tener que aclarar dos veces.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -363,10 +365,10 @@ export const Business = () => {
         <BlueprintBox coords={{ x: 50, y: 95 }} delay={0.6}>
           <div className="text-center py-10">
             <h3 className="text-2xl font-bold text-white mb-4">
-              Tenes un proyecto en mente?
+              ¿Tenés un proyecto en mente?
             </h3>
             <p className="text-[#a3a3a3] mb-8 max-w-xl mx-auto">
-              Contame que necesitas. La primera consulta es sin cargo y sin compromiso.
+              Contame qué necesitás. La primera consulta es sin cargo y sin compromiso.
             </p>
             <a
               href={WHATSAPP_URL}

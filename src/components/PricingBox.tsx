@@ -12,6 +12,8 @@ export interface PricingTier {
   retainerPrice: string;
   features: string[];
   ctaHref?: string;
+  visualSrc?: string;
+  visualAlt?: string;
   isPopular?: boolean;
 }
 
@@ -23,6 +25,8 @@ export const PricingBox: React.FC<PricingTier> = ({
   retainerPrice,
   features,
   ctaHref,
+  visualSrc,
+  visualAlt,
   isPopular
 }) => {
   return (
@@ -59,6 +63,16 @@ export const PricingBox: React.FC<PricingTier> = ({
           <span className="text-3xl font-bold text-[#e5e5e5]">{retainerPrice}</span>
           <span className="block text-xs text-[#a3a3a3] mt-2">+ Servidores y Mantenimiento</span>
         </div>
+        {visualSrc && (
+          <div className="overflow-hidden bg-[#000000] border border-[#262626] group-hover:border-[#E67E32]/30 transition-colors">
+            <img
+              src={visualSrc}
+              alt={visualAlt ?? ''}
+              className="aspect-video w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
       </div>
 
       <ul className="flex flex-col gap-4 mb-10">
