@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { BlueprintBox } from './components/BlueprintBox';
 import { PricingBox, type PricingTier } from './components/PricingBox';
 import type { LucideIcon } from 'lucide-react';
@@ -253,6 +254,17 @@ function ProcesoSection() {
 
 export const Business = () => {
   return (
+    <>
+    <Helmet>
+      <title>Artifex Dev — Sitios y sistemas web a medida para tu negocio</title>
+      <meta name="description" content="Desarrollo de sitios web y sistemas a medida para empresas, negocios y emprendedores. Precios claros, entrega en tiempo y soporte real. Victoria, Entre Ríos." />
+      <link rel="canonical" href="https://artifex.click/" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="Artifex Dev — Sitios y sistemas web a medida para tu negocio" />
+      <meta property="og:description" content="Desarrollo de sitios web y sistemas a medida para empresas, negocios y emprendedores. Precios claros, entrega en tiempo y soporte real." />
+      <meta property="og:url" content="https://artifex.click/" />
+      <meta property="og:locale" content="es_AR" />
+    </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -384,5 +396,6 @@ export const Business = () => {
 
       </div>
     </motion.div>
+    </>
   );
 };

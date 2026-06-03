@@ -6,14 +6,14 @@ const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123
 const PREFIX_TARGET = 'cd ../';
 
 const getSectionName = (pathname: string): string => {
-  if (pathname.startsWith('/business')) return 'Business';
+  if (pathname.startsWith('/about')) return 'Portfolio';
   if (pathname.startsWith('/blog')) return 'Blog';
-  return 'Portfolio';
+  return 'Business';
 };
 
 const NAV_LINKS = [
-  { to: '/', label: 'Portfolio', isActive: (p: string) => p === '/' },
-  { to: '/business', label: 'Business', isActive: (p: string) => p.startsWith('/business') },
+  { to: '/', label: 'Business', isActive: (p: string) => p === '/' || p.startsWith('/business') },
+  { to: '/about', label: 'Portfolio', isActive: (p: string) => p.startsWith('/about') },
   { to: '/blog', label: 'Blog', isActive: (p: string) => p.startsWith('/blog') },
 ];
 

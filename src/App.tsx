@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Portfolio } from './Portfolio';
 import { Business } from './Business';
 import { Blog } from './pages/blog/Blog';
@@ -34,8 +34,9 @@ function App() {
       {!isDemo && <Navbar />}
       <ErrorBoundary>
         <Routes>
-          <Route path="/" element={<Portfolio />} />
-          <Route path="/business" element={<Business />} />
+          <Route path="/" element={<Business />} />
+          <Route path="/about" element={<Portfolio />} />
+          <Route path="/business" element={<Navigate to="/" replace />} />
           <Route path="/business/inmobiliarias" element={<Inmobiliaria />} />
           <Route path="/business/profesionales" element={<Profesional />} />
           <Route path="/business/gastronomia" element={<Gastronomia />} />

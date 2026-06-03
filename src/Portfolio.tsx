@@ -5,11 +5,22 @@ import { Projects } from './components/Projects';
 import { BlueprintBox } from './components/BlueprintBox';
 import { data } from './data/data';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { Typewriter } from './components/Typewriter';
 
 export const Portfolio = () => {
   return (
-    <motion.div 
+    <>
+    <Helmet>
+      <title>Perfil técnico — Ramiro Escobar | Artifex Dev</title>
+      <meta name="description" content="Perfil técnico de Ramiro Escobar (Artifex Dev): experiencia, stack, proyectos y formación en desarrollo de software. React, TypeScript, Next.js." />
+      <link rel="canonical" href="https://artifex.click/about" />
+      <meta property="og:type" content="profile" />
+      <meta property="og:title" content="Perfil técnico — Ramiro Escobar | Artifex Dev" />
+      <meta property="og:url" content="https://artifex.click/about" />
+      <meta property="og:locale" content="es_AR" />
+    </Helmet>
+    <motion.div
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 1 }}
@@ -84,5 +95,6 @@ export const Portfolio = () => {
 
       </div>
     </motion.div>
+    </>
   );
 };

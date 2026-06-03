@@ -11,14 +11,14 @@ describe('Navbar', () => {
 
   it('shows only the two inactive sections as links when on /', () => {
     renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/'] } });
-    expect(screen.getByRole('link', { name: /Business/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Portfolio/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Blog/i })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /^Portfolio$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Business$/i })).not.toBeInTheDocument();
   });
 
-  it('Business link points to /business', () => {
+  it('Portfolio link points to /about when on /', () => {
     renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/'] } });
-    expect(screen.getByRole('link', { name: /Business/i })).toHaveAttribute('href', '/business');
+    expect(screen.getByRole('link', { name: /Portfolio/i })).toHaveAttribute('href', '/about');
   });
 
   it('Blog link points to /blog', () => {
@@ -26,20 +26,20 @@ describe('Navbar', () => {
     expect(screen.getByRole('link', { name: /Blog/i })).toHaveAttribute('href', '/blog');
   });
 
-  it('Portfolio link points to / when on /business', () => {
-    renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/business'] } });
-    expect(screen.getByRole('link', { name: /^Portfolio$/i })).toHaveAttribute('href', '/');
+  it('Business link points to / when on /about', () => {
+    renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/about'] } });
+    expect(screen.getByRole('link', { name: /^Business$/i })).toHaveAttribute('href', '/');
   });
 
   it('active section is shown in the brand area, not as a link', () => {
     renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/'] } });
-    expect(screen.getByText('/Portfolio')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /^Portfolio$/i })).not.toBeInTheDocument();
+    expect(screen.getByText('/Business')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Business$/i })).not.toBeInTheDocument();
   });
 
-  it('brand area shows /Business when on /business', () => {
-    renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/business'] } });
-    expect(screen.getByText('/Business')).toBeInTheDocument();
+  it('brand area shows /Portfolio when on /about', () => {
+    renderWithProviders(<Navbar />, { routerProps: { initialEntries: ['/about'] } });
+    expect(screen.getByText('/Portfolio')).toBeInTheDocument();
   });
 
   it('brand area shows /Blog when on /blog', () => {
