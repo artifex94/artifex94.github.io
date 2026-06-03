@@ -63,7 +63,7 @@ const pricingTiers: PricingTier[] = [
       "Sección de servicios o productos clara y orientada a conversión",
       "Formulario de contacto + botón WhatsApp destacado",
       "Google Maps integrado",
-      "Dominio y deploy incluidos (Vercel)",
+      "Dominio y deploy incluidos",
       "Mobile-first: el 80% de tus clientes llegan desde el celular",
     ],
   },
