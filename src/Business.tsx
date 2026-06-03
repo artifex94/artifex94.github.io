@@ -37,7 +37,24 @@ const pricingTiers: PricingTier[] = [
   {
     name: "Presencia Digital Express",
     target: "Para negocios, profesionales y emprendedores que necesitan presencia web rapida y efectiva.",
-    setupPrice: "$200.000 - $400.000 ARS",
+    setupPrice: "$200.000 ARS",
+    setupOptions: [
+      {
+        label: "Landing page estatica",
+        description: "Pagina de presentacion para mostrar servicios, contacto y presencia profesional.",
+        price: "$200.000 ARS",
+      },
+      {
+        label: "Sitio con blog administrable",
+        description: "Sitio intermedio con secciones dinamicas, blog o contenido actualizable sin carrito ni gestion de ventas.",
+        price: "$400.000 ARS",
+      },
+      {
+        label: "Tienda online",
+        description: "E-commerce para vender online, gestionar productos y ordenar el proceso comercial.",
+        price: "$600.000 ARS",
+      },
+    ],
     retainerPrice: "$50.000 ARS",
     features: [
       "Tu negocio visible y captando consultas en menos de 2 semanas",
