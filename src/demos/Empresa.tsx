@@ -157,7 +157,7 @@ const ViewDashboard = () => (
             <Plus className="w-3.5 h-3.5" /> Nueva obra
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
@@ -192,6 +192,26 @@ const ViewDashboard = () => (
             </tbody>
           </table>
         </div>
+        <ul className="md:hidden divide-y divide-gray-50">
+          {todasObras.slice(0, 4).map((o, i) => (
+            <li key={i} className="px-4 py-3.5 flex flex-col gap-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-gray-400 font-mono">{o.id}</span>
+                <EstadoBadge estado={o.estado} />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-sm leading-tight">{o.nombre}</p>
+                <p className="text-xs text-gray-400">{o.cliente}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-gray-100 h-1.5">
+                  <div className={`h-full ${o.avance === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${o.avance}%` }} />
+                </div>
+                <span className="text-xs text-gray-400 tabular-nums">{o.avance}%</span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
       <div className="bg-white border border-gray-100">
         <div className="px-5 py-4 border-b border-gray-100">
@@ -244,7 +264,8 @@ const ViewObras = () => {
       </div>
 
       {/* Tabla ampliada */}
-      <div className="bg-white border border-gray-100 overflow-x-auto">
+      <div className="bg-white border border-gray-100">
+        <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm min-w-175">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
@@ -290,6 +311,38 @@ const ViewObras = () => {
             ))}
           </tbody>
         </table>
+        </div>
+        <ul className="md:hidden divide-y divide-gray-50">
+          {lista.map((o, i) => (
+            <li key={i} className="p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] text-gray-400 font-mono">{o.id}</span>
+                {o.prioridad !== '—' && (
+                  <span className={`text-[11px] font-bold px-2 py-0.5 ${
+                    o.prioridad === 'Alta' ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'
+                  }`}>{o.prioridad}</span>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-sm leading-tight">{o.nombre}</p>
+                <p className="text-xs text-gray-400">{o.cliente}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-gray-100 h-1.5">
+                  <div className={`h-full ${o.avance === 100 ? 'bg-emerald-500' : o.avance === 0 ? 'bg-gray-200' : 'bg-blue-500'}`}
+                    style={{ width: `${o.avance}%` }} />
+                </div>
+                <span className="text-xs text-gray-400 tabular-nums">{o.avance}%</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-0.5">
+                <EstadoBadge estado={o.estado} />
+                <span className="text-xs text-gray-500 flex items-center gap-1"><Calendar className="w-3 h-3" />{o.entrega}</span>
+                <span className="text-xs font-semibold text-gray-700">{o.presupuesto}</span>
+                <span className="text-xs text-gray-400">{o.responsable}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
         {lista.length === 0 && (
           <div className="text-center py-12 text-gray-400 text-sm">No hay obras en este estado.</div>
         )}
@@ -340,7 +393,8 @@ const ViewClientes = () => {
       </div>
 
       {/* Tabla clientes */}
-      <div className="bg-white border border-gray-100 overflow-x-auto">
+      <div className="bg-white border border-gray-100">
+        <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm min-w-150">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
@@ -382,6 +436,38 @@ const ViewClientes = () => {
             ))}
           </tbody>
         </table>
+        </div>
+        <ul className="md:hidden divide-y divide-gray-50">
+          {lista.map((c, i) => (
+            <li key={i} className="p-4 flex flex-col gap-2.5">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-semibold text-gray-800 text-sm">{c.nombre}</p>
+                  <p className="text-[11px] text-gray-400 font-mono">{c.id}</p>
+                </div>
+                <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 ${
+                  c.estado === 'Activo' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'
+                }`}>{c.estado}</span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <TipoBadge tipo={c.tipo} />
+                <span className="inline-flex items-center gap-1 text-xs text-gray-600 font-semibold">
+                  <Package className="w-3 h-3 text-gray-400" /> {c.obras} obras
+                </span>
+              </div>
+              <div className="flex items-end justify-between gap-2 pt-0.5">
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-700 truncate">{c.contacto}</p>
+                  <p className="text-[11px] text-gray-400">{c.tel}</p>
+                </div>
+                <a href={WA} target="_blank" rel="noreferrer"
+                  className="flex items-center gap-1.5 bg-[#25D366] text-white text-xs font-bold px-3 py-2 shrink-0 hover:bg-[#1ebe5d] transition-colors">
+                  <Phone className="w-3.5 h-3.5" /> Llamar
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -517,7 +603,7 @@ const ViewDocumentos = () => (
         <div className="px-5 py-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-800 text-sm">Archivos recientes</h2>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden md:block">
           <table className="w-full text-sm min-w-125">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
@@ -548,6 +634,20 @@ const ViewDocumentos = () => (
             </tbody>
           </table>
         </div>
+        <ul className="md:hidden divide-y divide-gray-50">
+          {archivosRecientes.map((f, i) => (
+            <li key={i} className="px-4 py-3 flex items-center gap-3">
+              <FileTypeBadge tipo={f.tipo} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-700 truncate">{f.nombre}</p>
+                <p className="text-[11px] text-gray-400">{f.obra} · {f.size} · {f.fecha}</p>
+              </div>
+              <button className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors shrink-0">
+                <Download className="w-4 h-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </div>
@@ -613,7 +713,7 @@ export const Empresa = () => {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Header dinámico */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+        <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between">
           <div>
             <p className="text-[11px] text-gray-400 uppercase tracking-wider font-mono">{meta.sub}</p>
             <h1 className="text-lg font-bold text-gray-800">{meta.label}</h1>
@@ -631,12 +731,31 @@ export const Empresa = () => {
         </header>
 
         {/* Vista activa */}
-        <main className="flex-1 p-5 overflow-auto">
+        <main className="flex-1 p-4 pb-24 md:p-5 md:pb-5 overflow-auto">
           {views[activeNav]}
         </main>
       </div>
 
-      <DemoBadge label="empresa" />
+      {/* Bottom nav — mobile only (native-app style tab bar) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-gray-200 flex justify-around shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
+        {navItems.map(({ id, label, Icon }) => {
+          const active = activeNav === id;
+          return (
+            <button
+              key={id}
+              onClick={() => setActiveNav(id)}
+              className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold transition-colors ${
+                active ? 'text-blue-600' : 'text-gray-400'
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              {label}
+            </button>
+          );
+        })}
+      </nav>
+
+      <DemoBadge label="empresa" raised />
     </div>
   );
 };

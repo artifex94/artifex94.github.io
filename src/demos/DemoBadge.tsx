@@ -3,14 +3,14 @@ import { MessageCircle, X, Code2 } from 'lucide-react';
 
 const WA = "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20el%20demo%20y%20me%20interesa%20un%20sitio%20similar%20para%20mi%20negocio.";
 
-export const DemoBadge = ({ label }: { label: string }) => {
+export const DemoBadge = ({ label, raised = false }: { label: string; raised?: boolean }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
       {/* Badge fijo */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-black text-white text-xs font-bold px-4 py-2 shadow-xl border border-white/20 hover:bg-neutral-800 transition-all"
+        className={`fixed ${raised ? 'bottom-20 md:bottom-6' : 'bottom-6'} right-6 z-50 flex items-center gap-2 bg-black text-white text-xs font-bold px-4 py-2 shadow-xl border border-white/20 hover:bg-neutral-800 transition-all`}
       >
         <Code2 className="w-4 h-4 text-[#E67E32]" />
         Demo — Artifex
