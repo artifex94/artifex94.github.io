@@ -14,12 +14,12 @@ const DonationsSection = () => (
     <div className="flex flex-col gap-6">
       <div>
         <p className="text-secondary text-xs font-mono mb-1">// SUPPORT_MODULE</p>
-        <h2 className="text-xl font-bold text-primary mb-2">Si el contenido te sirvio, considerá invitarme algo</h2>
+        <h2 className="text-xl font-bold text-primary mb-2">Si el contenido te sirvió, considerá invitarme algo</h2>
         <p className="text-sm text-[#aaaaaa] leading-relaxed max-w-2xl">
           Este blog no tiene publicidad, no tiene paywall y nunca va a tener.
-          Cada articulo lleva horas de investigación, prueba y escritura — y lo comparto libre porque creo
-          que el conocimiento tiene que circular. Si algo de lo que escribi te ahorro tiempo, te destrabo
-          un problema o simplemente te gusto, podes devolver un poco de esa energía aca abajo.
+          Cada artículo lleva horas de investigación, prueba y escritura — y lo comparto libre porque creo
+          que el conocimiento tiene que circular. Si algo de lo que escribí te ahorró tiempo, te destrabó
+          un problema o simplemente te gustó, podés devolver un poco de esa energía acá abajo.
           Cualquier colaboración, por mínima que sea, significa muchísimo y me motiva a seguir publicando.
         </p>
       </div>
@@ -39,7 +39,7 @@ const DonationsSection = () => (
               <span className="font-bold text-primary group-hover:text-[#E67E32] transition-colors">Cafecito</span>
             </div>
             <span className="text-[10px] font-mono border border-[#E67E32]/40 text-[#E67E32] bg-[#E67E32]/10 px-2 py-0.5">
-              En pesos, facil
+              En pesos, fácil
             </span>
           </div>
           <p className="text-xs text-[#909090] leading-relaxed">
@@ -131,7 +131,7 @@ export const Blog = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3 tracking-tight">Blog & Notas</h1>
               <p className="text-[#c8c8c8] text-sm md:text-base leading-relaxed max-w-2xl">
                 Apuntes de estudio, exploraciones técnicas e implementaciones que vale la pena documentar.
-                Sin pretensiones -- ésto es un registro de lo que aprendo mientras lo aprendo.
+                Sin pretensiones -- esto es un registro de lo que aprendo mientras lo aprendo.
               </p>
             </div>
           </div>
@@ -139,7 +139,7 @@ export const Blog = () => {
 
         {/* Categorias */}
         <section>
-          <p className="text-secondary text-xs font-mono mb-5">// CATEGORIAS ({categories.length})</p>
+          <p className="text-secondary text-xs font-mono mb-5">// CATEGORÍAS ({categories.length})</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             {categories.map(cat => {
               const count = countByCategory(cat.slug);
@@ -260,7 +260,7 @@ export const Blog = () => {
                   <>
                     <p className="text-secondary text-xs font-mono mb-3">// STATUS: INITIALIZING</p>
                     <p className="text-[#909090] text-sm max-w-md mx-auto leading-relaxed">
-                      Las categorías estan listas. Las primeras publicaciones apareceran aqui cuando cambien a estado publicado en blog.ts.
+                      Las categorías están listas. Las primeras publicaciones aparecerán aquí cuando cambien a estado publicado en blog.ts.
                     </p>
                   </>
                 )}

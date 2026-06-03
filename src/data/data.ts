@@ -67,9 +67,9 @@ export const data: PortfolioData = {
       whatsapp: "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20tu%20portfolio%20y%20me%20interesa%20hablar%20sobre%20un%20proyecto.",
     },
     aboutMe:
-      "Si tu negocio no tiene presencia online, te estas perdiendo clientes que ya buscan lo que ofrecés. " +
+      "Si tu negocio no tiene presencia online, te estás perdiendo clientes que ya buscan lo que ofrecés. " +
       "Desarrollo sitios web y sistemas digitales para empresas y emprendedores que quieren resultados concretos: " +
-      "mas consultas, operaciones ordenadas y una imagen profesional que genera confianza. " +
+      "más consultas, operaciones ordenadas y una imagen profesional que genera confianza. " +
       "Precios claros, entrega en tiempo y soporte real.",
   },
 
@@ -79,8 +79,8 @@ export const data: PortfolioData = {
       role: "Administrador de Sistemas & Software Developer",
       period: "2016 - Presente",
       description: [
-        "Implementacion y gestion de software de monitoreo SoftGuard para sistemas de seguridad, domotica, control de acceso y rastreo GPS.",
-        "Administracion integral del CRM, saneamiento de bases de datos y configuracion de sistemas de alarma mediante Beat Netio.",
+        "Implementación y gestión de software de monitoreo SoftGuard para sistemas de seguridad, domótica, control de acceso y rastreo GPS.",
+        "Administración integral del CRM, saneamiento de bases de datos y configuración de sistemas de alarma mediante Beat Netio.",
         "Desarrollo y mantenimiento de la Landing Page corporativa utilizando Next.js y TypeScript.",
         "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad.",
       ],
@@ -90,7 +90,7 @@ export const data: PortfolioData = {
   education: [
     {
       institution: "Universidad Siglo XXI",
-      degree: "Ciencias de la Computacion (cursado parcial)",
+      degree: "Ciencias de la Computación (cursado parcial)",
       period: "2022 - Presente",
       details: "Cursado parcial equivalente a Analista de Sistemas. Materias completadas: Algoritmos, Estructuras de Datos y Pruebas de Software.",
     },
@@ -121,7 +121,7 @@ export const data: PortfolioData = {
       skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"],
     },
     {
-      category: "Administracion & Sistemas",
+      category: "Administración & Sistemas",
       skills: ["SoftGuard", "Beat Netio", "CRM", "Redes & Infraestructura"],
     },
   ],
@@ -130,8 +130,8 @@ export const data: PortfolioData = {
     {
       title: "Escobar Instalaciones - Plataforma Corporativa",
       description:
-        "Empresa de seguridad y domotica que necesitaba presencia profesional online y reducir la carga de atencion telefonica. " +
-        "Desarrolle el sitio corporativo completo y un portal de autogestion para que los clientes gestionen sus cuentas sin llamar.",
+        "Empresa de seguridad y domótica que necesitaba presencia profesional online y reducir la carga de atención telefónica. " +
+        "Desarrollé el sitio corporativo completo y un portal de autogestión para que los clientes gestionen sus cuentas sin llamar.",
       technologies: ["Next.js", "TypeScript", "React", "TailwindCSS"],
       liveUrl: "https://instalacionescob.ar",
       githubUrl: "https://github.com/artifex94/Ei-LandingPage.git",
@@ -140,8 +140,8 @@ export const data: PortfolioData = {
     {
       title: "Portal de Autogestion - Escobar Instalaciones",
       description:
-        "Los clientes no tenian forma de consultar el estado de sus cuentas sin llamar. " +
-        "Desarrollando un portal privado con autenticacion, dashboard de cuenta y gestion de servicios contratados.",
+        "Los clientes no tenían forma de consultar el estado de sus cuentas sin llamar. " +
+        "Desarrollando un portal privado con autenticación, dashboard de cuenta y gestión de servicios contratados.",
       technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"],
       tag: "En Desarrollo",
     },
@@ -149,15 +149,15 @@ export const data: PortfolioData = {
       title: "Demo - Presencia Digital para Profesionales",
       description:
         "Landing page para profesionales independientes que necesitan captar clientes online. " +
-        "Seccion de servicios, formulario de contacto, integracion WhatsApp y diseño mobile-first orientado a conversion.",
+        "Sección de servicios, formulario de contacto, integración WhatsApp y diseño mobile-first orientado a conversión.",
       technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"],
       tag: "Demo",
     },
     {
-      title: "Demo - Catalogo Digital para Comercios",
+      title: "Demo - Catálogo Digital para Comercios",
       description:
-        "Sitio para tiendas y restaurantes que venden por WhatsApp sin catalogo ordenado. " +
-        "Productos o menu en formato visual, pedidos por WhatsApp y ubicacion en Google Maps. Optimizado para mobile.",
+        "Sitio para tiendas y restaurantes que venden por WhatsApp sin catálogo ordenado. " +
+        "Productos o menú en formato visual, pedidos por WhatsApp y ubicación en Google Maps. Optimizado para mobile.",
       technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"],
       tag: "Demo",
     },

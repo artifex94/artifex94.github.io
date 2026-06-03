@@ -33,7 +33,7 @@ export interface BlogCategory {
   accent:      string;  // clase tailwind para color de acento
 }
 
-// --- CATEGORIAS ---
+// --- CATEGORÍAS ---
 
 export const categories: BlogCategory[] = [
   {
@@ -44,14 +44,14 @@ export const categories: BlogCategory[] = [
   },
   {
     slug:        'ingenieria',
-    title:       'Ingenieria de Software',
-    description: 'Clean Code, Git, arquitectura, testing y algoritmos. Lo que aprendo en la carrera y lo que aplico en produccion.',
+    title:       'Ingeniería de Software',
+    description: 'Clean Code, Git, arquitectura, testing y algoritmos. Lo que aprendo en la carrera y lo que aplico en producción.',
     accent:      'text-accent border-accent',
   },
   {
     slug:        'backend',
     title:       'Backend & Sistemas',
-    description: 'Node.js, APIs REST, SQL, Java y administracion de sistemas. Desde la base de datos hasta la infraestructura.',
+    description: 'Node.js, APIs REST, SQL, Java y administración de sistemas. Desde la base de datos hasta la infraestructura.',
     accent:      'text-green-400 border-green-400',
   },
   {
@@ -63,7 +63,7 @@ export const categories: BlogCategory[] = [
   {
     slug:        'producto',
     title:       'Producto & Negocio',
-    description: 'SCRUM, ADRs, OKRs y la interseccion entre desarrollo e ingenieria de producto. Construir cosas que sirven.',
+    description: 'SCRUM, ADRs, OKRs y la intersección entre desarrollo e ingeniería de producto. Construir cosas que sirven.',
     accent:      'text-yellow-400 border-yellow-400',
   },
 ];
@@ -76,25 +76,25 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'adrs-documentar-decisiones-arquitectura',
-    title:    'ADRs: como documento mis decisiones de arquitectura',
+    title:    'ADRs: cómo documento mis decisiones de arquitectura',
     date:     '2026-04-20',
     category: 'ingenieria',
     tags:     ['arquitectura', 'documentacion', 'workflow'],
-    summary:  'Un ADR (Architecture Decision Record) es un archivo de texto que responde una sola pregunta: por que tomamos esta decision y no otra. Llevo usandolos en todos mis proyectos y cambio la forma en que trabajo.',
+    summary:  'Un ADR (Architecture Decision Record) es un archivo de texto que responde una sola pregunta: por qué tomamos esta decisión y no otra. Llevo usándolos en todos mis proyectos y cambio la forma en que trabajo.',
     readTime: 4,
     status:   'published',
     content:  [
       {
         type: 'p',
-        text: 'Cada proyecto tiene decisiones que parecen obvias en el momento y meses despues no recorda por que se tomaron. Un ADR resuelve exactamente ese problema.',
+        text: 'Cada proyecto tiene decisiones que parecen obvias en el momento y meses después no recorda por qué se tomaron. Un ADR resuelve exactamente ese problema.',
       },
       {
         type: 'h2',
-        text: 'Que es un ADR',
+        text: 'Qué es un ADR',
       },
       {
         type: 'p',
-        text: 'Un Architecture Decision Record es un documento corto — tipicamente entre 20 y 50 lineas — que captura una decision arquitectonica importante: que se decidio, por que, cuales eran las alternativas y cuales son las consecuencias esperadas.',
+        text: 'Un Architecture Decision Record es un documento corto — típicamente entre 20 y 50 líneas — que captura una decisión arquitectónica importante: qué se decidió, por qué, cuáles eran las alternativas y cuáles son las consecuencias esperadas.',
       },
       {
         type: 'h2',
@@ -103,12 +103,12 @@ export const posts: BlogPost[] = [
       {
         type: 'ul',
         items: [
-          'Titulo: una oracion que describe la decision (ej: "Usar Supabase como backend para el portal de clientes")',
+          'Título: una oración que describe la decisión (ej: "Usar Supabase como backend para el portal de clientes")',
           'Estado: propuesto / aceptado / deprecado / reemplazado',
-          'Contexto: que problema existia que llevo a tomar esta decision',
-          'Decision: que se decidio hacer',
-          'Alternativas consideradas: que otras opciones se evaluaron y por que se descartaron',
-          'Consecuencias: que implica esta decision a futuro (ventajas, limitaciones, deuda tecnica potencial)',
+          'Contexto: qué problema existía que llevó a tomar esta decisión',
+          'Decisión: qué se decidió hacer',
+          'Alternativas consideradas: qué otras opciones se evaluaron y por qué se descartaron',
+          'Consecuencias: qué implica esta decisión a futuro (ventajas, limitaciones, deuda técnica potencial)',
         ],
       },
       {
@@ -117,7 +117,7 @@ export const posts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: 'La regla que uso: si la decision afecta la arquitectura del sistema, va un ADR antes de escribir codigo. Esto incluye: eleccion de stack, estructura de base de datos, metodo de autenticacion, estrategia de deployment y cualquier libreria de terceros que sea dificil de reemplazar.',
+        text: 'La regla que uso: si la decisión afecta la arquitectura del sistema, va un ADR antes de escribir código. Esto incluye: elección de stack, estructura de base de datos, método de autenticación, estrategia de deployment y cualquier librería de terceros que sea difícil de reemplazar.',
       },
       {
         type: 'callout',
@@ -129,7 +129,7 @@ export const posts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: 'En el repositorio del proyecto, dentro de una carpeta /docs/ADRs/. Estan versionados junto al codigo, entonces cualquier persona que entre al proyecto entiende las decisiones solo con git log.',
+        text: 'En el repositorio del proyecto, dentro de una carpeta /docs/ADRs/. Están versionados junto al código, entonces cualquier persona que entre al proyecto entiende las decisiones solo con git log.',
       },
     ],
   },
@@ -140,13 +140,13 @@ export const posts: BlogPost[] = [
     date:     '2026-04-15',
     category: 'ingenieria',
     tags:     ['git', 'workflow', 'gitflow'],
-    summary:  'GitFlow tiene fama de ser complejo para proyectos chicos. Mi version simplificada tiene solo tres reglas y funciona bien para proyectos de un solo desarrollador con clientes reales.',
+    summary:  'GitFlow tiene fama de ser complejo para proyectos chicos. Mi versión simplificada tiene solo tres reglas y funciona bien para proyectos de un solo desarrollador con clientes reales.',
     readTime: 5,
     status:   'published',
     content:  [
       {
         type: 'p',
-        text: 'Cuando trabajas solo en un proyecto para un cliente, la tentacion es commitear directo a main. Funciona hasta que no funciona — hasta que un hotfix urgente pisa una feature a mitad de desarrollo.',
+        text: 'Cuando trabajas solo en un proyecto para un cliente, la tentación es commitear directo a main. Funciona hasta que no funciona — hasta que un hotfix urgente pisa una feature a mitad de desarrollo.',
       },
       {
         type: 'h2',
@@ -155,14 +155,14 @@ export const posts: BlogPost[] = [
       {
         type: 'ul',
         items: [
-          'main: codigo en produccion. Nadie toca main directamente.',
+          'main: código en producción. Nadie toca main directamente.',
           'develop: rama de integracion. Todo feature terminado llega aca primero.',
           'feature/nombre-descriptivo: una rama por cada funcionalidad nueva.',
         ],
       },
       {
         type: 'h2',
-        text: 'El flujo en la practica',
+        text: 'El flujo en la práctica',
       },
       {
         type: 'ol',
@@ -170,13 +170,13 @@ export const posts: BlogPost[] = [
           'Creo una rama feature/ desde develop: git checkout -b feature/portal-login',
           'Desarrollo la funcionalidad con commits descriptivos',
           'Cuando esta lista, PR o merge a develop',
-          'Cuando develop esta estable, merge a main + tag de version',
+          'Cuando develop está estable, merge a main + tag de versión',
         ],
       },
       {
         type: 'code',
         lang: 'bash',
-        text: '# Nueva feature\ngit checkout develop\ngit checkout -b feature/mi-feature\n\n# Merge a develop cuando esta lista\ngit checkout develop\ngit merge feature/mi-feature --no-ff\n\n# Release a produccion\ngit checkout main\ngit merge develop --no-ff\ngit tag -a v1.2.0 -m "Portal de login"',
+        text: '# Nueva feature\ngit checkout develop\ngit checkout -b feature/mi-feature\n\n# Merge a develop cuando esta lista\ngit checkout develop\ngit merge feature/mi-feature --no-ff\n\n# Release a producción\ngit checkout main\ngit merge develop --no-ff\ngit tag -a v1.2.0 -m "Portal de login"',
       },
       {
         type: 'h2',
@@ -184,7 +184,7 @@ export const posts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: 'Si hay un bug critico en produccion: rama hotfix/ desde main, fix, merge a main Y a develop para que el fix no se pierda en el proximo release.',
+        text: 'Si hay un bug crítico en producción: rama hotfix/ desde main, fix, merge a main Y a develop para que el fix no se pierda en el próximo release.',
       },
       {
         type: 'callout',
@@ -198,7 +198,7 @@ export const posts: BlogPost[] = [
     title:    'La evolución del testing de software: de corregir errores a garantizar calidad',
     date:     '2026-04-30',
     category: 'ingenieria',
-    tags:     ['testing', 'calidad', 'iso', 'ingenieria-software', 'apuntes'],
+    tags:     ['testing', 'calidad', 'iso', 'ingeniería-software', 'apuntes'],
     summary:  'Setenta años de historia del testing en un artículo: las cinco visiones que transformaron la disciplina, terminología ISTQB (error, falla, defecto), el modelo de calidad McCall con sus 11 factores, la norma ISO 9126 y los cinco principios fundamentales del tester profesional.',
     readTime: 12,
     status:   'published',
@@ -316,7 +316,7 @@ export const posts: BlogPost[] = [
       ]},
       { type: 'h2', text: 'Proceso de desarrollo y roles en metodologías' },
       { type: 'p', text: 'El proceso de desarrollo tradicional tiene cinco etapas — Análisis de Requerimientos, Diseño de la Solución, Desarrollo y Evaluación, Despliegue, y Mantenimiento y Evolución — aunque en metodologías ágiles varias ocurren de forma iterativa y simultánea.' },
-      { type: 'p', text: 'Una distinción importante: el rol no es lo mismo que el puesto de trabajo. En equipos pequeños, una misma persona puede cumplir varios roles. En metodologías tradicionales existen el Experto del dominio, el Analista, el Administrador de sistemas, el QA, el Desarrollador, el Arquitecto y el Gestor de proyecto. En metodologías ágiles, los roles equivalentes son los Stakeholders, el Product Owner, el DevOps/SRE, el Equipo de desarrollo autogestionado y el Facilitador.' },
+      { type: 'p', text: 'Una distinción importante: el rol no es lo mismo que el puesto de trabajo. En equipos pequeños, una misma persona puede cumplir varios roles. En metodologías tradicionales existen el Experto del dominio, el Analista, el Administrador de sistemas, el QA, el Desarrollador, el Arquitecto y el Gestor de proyecto. En metodologías ágiles, los roles equivalentes son los Stakeholders, el Product Owner, el DevOps/SRE, el Equipo de desarrollo autogestiónado y el Facilitador.' },
       { type: 'p', text: 'La diferencia más significativa está en quién tiene autoridad sobre los requerimientos. En metodologías tradicionales, el Analista indaga qué hay que resolver. En metodologías ágiles, el Product Owner arma las historias de usuario, las prioriza y define iterativamente qué construye el equipo en cada sprint.' },
     ],
   },
@@ -359,11 +359,11 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'clean-code-practico',
-    title:    'Clean Code en la practica: lo que realmente uso',
+    title:    'Clean Code en la práctica: lo que realmente uso',
     date:     '2026-04-10',
     category: 'ingenieria',
-    tags:     ['clean-code', 'buenas-practicas', 'typescript'],
-    summary:  'Clean Code de Robert Martin tiene principios excelentes y algunos que no aplican bien a proyectos web modernos. Este es el subconjunto que uso todos los dias.',
+    tags:     ['clean-code', 'buenas-prácticas', 'typescript'],
+    summary:  'Clean Code de Robert Martin tiene principios excelentes y algunos que no aplican bien a proyectos web modernos. Este es el subconjunto que uso todos los días.',
     readTime: 6,
     status:   'draft',
     content:  [],
@@ -397,17 +397,17 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'typescript-por-que-lo-uso-siempre',
-    title:    'Por que uso TypeScript en cada proyecto nuevo',
+    title:    'Por qué uso TypeScript en cada proyecto nuevo',
     date:     '2026-04-22',
     category: 'frontend',
     tags:     ['typescript', 'javascript', 'react'],
-    summary:  'No es por los tipos en si mismos. Es por el autocompletado, el refactoring seguro y la documentacion que emerge naturalmente del codigo. Argumentos concretos para convencer al cliente skeptico.',
+    summary:  'No es por los tipos en sí mismos. Es por el autocompletado, el refactoring seguro y la documentación que emerge naturalmente del código. Argumentos concretos para convencer al cliente escéptico.',
     readTime: 5,
     status:   'published',
     content:  [
       {
         type: 'p',
-        text: 'La conversacion tipica: el cliente pregunta si "necesitamos TypeScript" o si alcanza con JavaScript. La respuesta corta es: si el proyecto va a durar mas de un mes o lo va a tocar mas de una persona, TypeScript.',
+        text: 'La conversación típica: el cliente pregunta si "necesitamos TypeScript" o si alcanza con JavaScript. La respuesta corta es: si el proyecto va a durar más de un mes o lo va a tocar más de una persona, TypeScript.',
       },
       {
         type: 'h2',
@@ -415,32 +415,32 @@ export const posts: BlogPost[] = [
       },
       {
         type: 'p',
-        text: 'El beneficio principal de TypeScript no es que detecta errores de tipo — aunque lo hace. Es que el IDE pasa a conocer la forma de tus datos y te ofrece autocompletado preciso, refactoring automatico confiable y documentacion inline que nunca queda desactualizada.',
+        text: 'El beneficio principal de TypeScript no es que detecta errores de tipo — aunque lo hace. Es que el IDE pasa a conocer la forma de tus datos y te ofrece autocompletado preciso, refactoring automático confiable y documentación inline que nunca queda desactualizada.',
       },
       {
         type: 'h2',
-        text: 'Tres situaciones donde TypeScript pago la deuda',
+        text: 'Tres situaciones donde TypeScript pagó la deuda',
       },
       {
         type: 'ul',
         items: [
-          'Cambiar el nombre de una prop en un componente React: TypeScript marca todos los lugares donde se usa. En JS tendrias que buscar manualmente.',
-          'Agregar un campo nuevo a una interfaz: el compilador te dice exactamente donde falta actualizar el resto del codigo.',
-          'Consumir una API externa: definir el tipo de respuesta hace que el editor te diga que campos existen sin tener que volver a la documentacion.',
+          'Cambiar el nombre de una prop en un componente React: TypeScript marca todos los lugares donde se usa. En JS tendrías que buscar manualmente.',
+          'Agregar un campo nuevo a una interfaz: el compilador te dice exactamente dónde falta actualizar el resto del código.',
+          'Consumir una API externa: definir el tipo de respuesta hace que el editor te diga qué campos existen sin tener que volver a la documentación.',
         ],
       },
       {
         type: 'h2',
-        text: 'Como lo configuro en proyectos nuevos',
+        text: 'Cómo lo configuro en proyectos nuevos',
       },
       {
         type: 'code',
         lang: 'json',
-        text: '// tsconfig.json — configuracion que uso como base\n{\n  "compilerOptions": {\n    "strict": true,\n    "noUncheckedIndexedAccess": true,\n    "exactOptionalPropertyTypes": true\n  }\n}',
+        text: '// tsconfig.json — configuración que uso como base\n{\n  "compilerOptions": {\n    "strict": true,\n    "noUncheckedIndexedAccess": true,\n    "exactOptionalPropertyTypes": true\n  }\n}',
       },
       {
         type: 'callout',
-        text: 'Consejo: habilitá strict mode desde el inicio del proyecto. Agregarlo despues es doloroso.',
+        text: 'Consejo: habilitá strict mode desde el inicio del proyecto. Agregarlo después es doloroso.',
       },
     ],
   },
@@ -463,7 +463,7 @@ export const posts: BlogPost[] = [
     date:     '2026-04-05',
     category: 'frontend',
     tags:     ['tailwindcss', 'css', 'ui'],
-    summary:  'Tailwind genera opiniones fuertes. Pasados dos anos usandolo en produccion, estos son los patrones que resuelven los problemas recurrentes: componentes consistentes, dark mode, responsive sin caos.',
+    summary:  'Tailwind genera opiniones fuertes. Pasados dos años usándolo en producción, estos son los patrones que resuelven los problemas recurrentes: componentes consistentes, dark mode, responsive sin caos.',
     readTime: 7,
     status:   'draft',
     content:  [],
@@ -475,7 +475,7 @@ export const posts: BlogPost[] = [
     date:     '2026-03-28',
     category: 'frontend',
     tags:     ['react', 'hooks', 'typescript', 'API'],
-    summary:  'El patron que uso para conectar componentes React a APIs REST: custom hooks, manejo de estados de carga/error y tipado end-to-end con TypeScript.',
+    summary:  'El patrón que uso para conectar componentes React a APIs REST: custom hooks, manejo de estados de carga/error y tipado end-to-end con TypeScript.',
     readTime: 8,
     status:   'draft',
     content:  [],
@@ -487,7 +487,7 @@ export const posts: BlogPost[] = [
     date:     '2026-03-10',
     category: 'frontend',
     tags:     ['framer-motion', 'animaciones', 'ux'],
-    summary:  'El error mas comun con animaciones es exagerar. Principios de motion design y los tres tipos de animacion que agrego a cualquier proyecto: entrada, transicion de estado y feedback de interaccion.',
+    summary:  'El error más común con animaciones es exagerar. Principios de motion design y los tres tipos de animación que agrego a cualquier proyecto: entrada, transición de estado y feedback de interacción.',
     readTime: 5,
     status:   'draft',
     content:  [],
@@ -497,7 +497,7 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'rest-api-nodejs-estructura',
-    title:    'REST APIs con Node.js: estructura basica que escala',
+    title:    'REST APIs con Node.js: estructura básica que escala',
     date:     '2026-04-18',
     category: 'backend',
     tags:     ['nodejs', 'api', 'express', 'arquitectura'],
@@ -525,7 +525,7 @@ export const posts: BlogPost[] = [
     date:     '2026-04-01',
     category: 'backend',
     tags:     ['sql', 'base-de-datos', 'postgres'],
-    summary:  'Las consultas SQL que aparecen en practicamente todos los proyectos: paginacion, busqueda full-text, conteos con filtros y joins sin explotar la performance.',
+    summary:  'Las consultas SQL que aparecen en prácticamente todos los proyectos: paginación, búsqueda full-text, conteos con filtros y joins sin explotar la performance.',
     readTime: 10,
     status:   'draft',
     content:  [],
@@ -533,11 +533,11 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'softguard-configuracion-monitoreo',
-    title:    'SoftGuard: configuracion de un sistema de monitoreo real',
+    title:    'SoftGuard: configuración de un sistema de monitoreo real',
     date:     '2026-03-05',
     category: 'backend',
     tags:     ['softguard', 'sistemas', 'seguridad'],
-    summary:  'Ocho anos administrando sistemas SoftGuard para seguridad electronica. Configuracion de cuentas, zonas de alarma, integracion con Beat Netio y lo que aprendi gestionando una plataforma de monitoreo en produccion.',
+    summary:  'Ocho años administrando sistemas SoftGuard para seguridad electrónica. Configuración de cuentas, zonas de alarma, integración con Beat Netio y lo que aprendí gestionando una plataforma de monitoreo en producción.',
     readTime: 11,
     status:   'draft',
     content:  [],
@@ -551,7 +551,7 @@ export const posts: BlogPost[] = [
     date:     '2026-04-12',
     category: 'herramientas',
     tags:     ['vercel', 'deployment', 'ci-cd'],
-    summary:  'Como configuro Vercel para proyectos de clientes: dominios custom, variables de entorno por ambiente, preview deployments y rollbacks en un clic.',
+    summary:  'Cómo configuro Vercel para proyectos de clientes: dominios custom, variables de entorno por ambiente, preview deployments y rollbacks en un clic.',
     readTime: 6,
     status:   'draft',
     content:  [],
@@ -583,11 +583,11 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'git-comandos-diarios',
-    title:    'Git: los comandos que uso todos los dias',
+    title:    'Git: los comandos que uso todos los días',
     date:     '2026-04-08',
     category: 'herramientas',
     tags:     ['git', 'terminal', 'workflow'],
-    summary:  'No los comandos basicos que ya sabe todo el mundo. Los que uso para situaciones reales: rebase interactivo, cherry-pick, bisect para encontrar bugs, y stash con nombre.',
+    summary:  'No los comandos básicos que ya sabe todo el mundo. Los que uso para situaciones reales: rebase interactivo, cherry-pick, bisect para encontrar bugs, y stash con nombre.',
     readTime: 7,
     status:   'draft',
     content:  [],
@@ -595,11 +595,11 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'obsidian-gestion-conocimiento',
-    title:    'Obsidian como sistema de gestion de conocimiento personal',
+    title:    'Obsidian como sistema de gestión de conocimiento personal',
     date:     '2026-03-25',
     category: 'herramientas',
     tags:     ['obsidian', 'productividad', 'conocimiento'],
-    summary:  'Como estructure mi vault de Obsidian para gestionar conocimiento tecnico, proyectos y sesiones de trabajo. La arquitectura de lobulos y por que funciona mejor que un simple sistema de carpetas.',
+    summary:  'Cómo estructuré mi vault de Obsidian para gestionar conocimiento técnico, proyectos y sesiones de trabajo. La arquitectura de lóbulos y por qué funciona mejor que un simple sistema de carpetas.',
     readTime: 8,
     status:   'draft',
     content:  [],
@@ -613,7 +613,7 @@ export const posts: BlogPost[] = [
     date:     '2026-04-25',
     category: 'producto',
     tags:     ['scrum', 'agile', 'gestion', 'freelance'],
-    summary:  'SCRUM completo tiene ceremonia que no escala a proyectos de un desarrollador. Esta version reducida — con backlog, sprints de dos semanas y definition of done — funciona bien con clientes reales.',
+    summary:  'SCRUM completo tiene ceremonia que no escala a proyectos de un desarrollador. Esta versión reducida — con backlog, sprints de dos semanas y definition of done — funciona bien con clientes reales.',
     readTime: 6,
     status:   'draft',
     content:  [],
@@ -625,7 +625,7 @@ export const posts: BlogPost[] = [
     date:     '2026-04-27',
     category: 'producto',
     tags:     ['freelance', 'presupuesto', 'negocio', 'argentina'],
-    summary:  'Descomponer un proyecto en horas reales, aplicar la tarifa correcta, manejar los pedidos de "algo rapido" y establecer condiciones de pago que protegen el trabajo. El método que uso para proyectos a medida desde landing pages hasta sistemas completos.',
+    summary:  'Descomponer un proyecto en horas reales, aplicar la tarifa correcta, manejar los pedidos de "algo rápido" y establecer condiciones de pago que protegen el trabajo. El método que uso para proyectos a medida desde landing pages hasta sistemas completos.',
     readTime: 7,
     status:   'draft',
     content:  [],
@@ -645,11 +645,11 @@ export const posts: BlogPost[] = [
 
   {
     slug:     'okrs-proyectos-personales',
-    title:    'OKRs para proyectos personales: como los uso',
+    title:    'OKRs para proyectos personales: cómo los uso',
     date:     '2026-03-30',
     category: 'producto',
     tags:     ['okr', 'planificacion', 'objetivos'],
-    summary:  'Los OKRs tienen fama de ser una herramienta corporativa. Llevo usandolos para gestionar mis propios proyectos y el ejercicio de definir resultados clave medibles cambia completamente como priorizo el trabajo.',
+    summary:  'Los OKRs tienen fama de ser una herramienta corporativa. Llevo usándolos para gestionar mis propios proyectos y el ejercicio de definir resultados clave medibles cambia completamente cómo priorizo el trabajo.',
     readTime: 5,
     status:   'draft',
     content:  [],
