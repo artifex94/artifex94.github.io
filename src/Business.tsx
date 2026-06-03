@@ -41,17 +41,17 @@ const pricingTiers: PricingTier[] = [
     setupPrice: "$200.000 ARS",
     setupOptions: [
       {
-        label: "Crece",
+        label: "Presencia",
         description: "Crece el alcance de tu presencia mediante una landing page que le muestre al mundo quién sos y qué hacés.",
         price: "$200.000 ARS",
       },
       {
-        label: "Expande",
+        label: "Contenido",
         description: "Expande tu trabajo mostrando, compartiendo y actualizando tu contenido digital con un blog o secciones administrables.",
         price: "$400.000 ARS",
       },
       {
-        label: "Explota",
+        label: "Negocio",
         description: "Explota tu negocio mediante una tienda web que te permita vender online, gestionar productos y ordenar tu proceso comercial.",
         price: "$600.000 ARS",
       },
