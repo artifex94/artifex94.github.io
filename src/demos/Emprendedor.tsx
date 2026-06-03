@@ -1,4 +1,4 @@
-import { Star, MessageCircle, CheckCircle, Heart, Award, Sparkles, ArrowRight, Menu } from 'lucide-react';
+import { Star, MessageCircle, CheckCircle, Heart, Award, Sparkles, ArrowRight } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
 
 const WA      = "https://wa.me/5493436431987?text=Hola%2C%20me%20interesa%20hablar%20con%20Valentina%20sobre%20coaching.";
@@ -61,7 +61,6 @@ export const Emprendedor = () => {
             className="flex items-center gap-2 bg-[#7DA87B] text-white text-sm font-semibold px-4 py-2 hover:bg-[#6B9869] transition-colors">
             Sesión gratuita
           </a>
-          <button className="md:hidden text-stone-500"><Menu className="w-5 h-5" /></button>
         </div>
       </nav>
 

@@ -38,8 +38,8 @@ export const Inmobiliaria: React.FC = () => {
           <a href={WA} target="_blank" rel="noreferrer" className="hover:text-[#C9A84C] transition-colors">Tasaciones</a>
           <a href={WA} target="_blank" rel="noreferrer" className="hover:text-[#C9A84C] transition-colors">Contacto</a>
         </div>
-        <a href={WA} target="_blank" rel="noreferrer" className="hidden md:flex items-center gap-2 bg-[#C9A84C] text-[#1B2A4A] px-4 py-2 text-sm font-bold hover:bg-yellow-400 transition-colors">
-          <Phone className="w-4 h-4" /> Llamanos
+        <a href={WA} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-[#C9A84C] text-[#1B2A4A] px-3 md:px-4 py-2 text-sm font-bold hover:bg-yellow-400 transition-colors">
+          <Phone className="w-4 h-4" /> <span className="hidden sm:inline">Llamanos</span>
         </a>
       </nav>
 
