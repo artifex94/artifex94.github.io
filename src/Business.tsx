@@ -63,8 +63,8 @@ const pricingTiers: PricingTier[] = [
       "Sección de servicios o productos clara y orientada a conversión",
       "Formulario de contacto + botón WhatsApp destacado",
       "Google Maps integrado",
-      "Dominio y deploy incluidos",
-      "Mobile-first: el 80% de tus clientes llegan desde el celular",
+      "Dominio y publicación incluidos",
+      "Optimizado para celular: el 80% de tus clientes llegan desde ahí",
     ],
   },
   {
@@ -91,7 +91,7 @@ const onboardingSteps: Step[] = [
   { step: "01", icon: Search,   title: "Discovery",         desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo ni compromiso." },
   { step: "02", icon: FileText, title: "Propuesta",         desc: "Alcance, arquitectura, tiempos y presupuesto fijo detallado. Sin sorpresas después." },
   { step: "03", icon: Code2,    title: "Desarrollo",        desc: "Ciclo de desarrollo con entregas parciales. Ves el avance y das feedback en cada etapa." },
-  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Deploy a producción, documentación entregada y transición al plan de mantenimiento." },
+  { step: "04", icon: Rocket,   title: "Entrega & Soporte", desc: "Publicación del sitio en vivo, documentación entregada y transición al plan de mantenimiento." },
 ];
 
 const targetSegments: Segment[] = [
@@ -107,7 +107,7 @@ const differentiators: Differentiator[] = [
   {
     icon: MessageSquare,
     title: "Comunicación directa",
-    desc: "Sin intermediarios, sin ticketing, sin su consulta fue derivada al equipo. Hablás conmigo durante todo el proyecto, desde el primer mensaje hasta el deploy.",
+    desc: "Sin intermediarios, sin ticketing, sin su consulta fue derivada al equipo. Hablás conmigo durante todo el proyecto, desde el primer mensaje hasta la entrega final.",
   },
   {
     icon: Lock,
