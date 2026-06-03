@@ -41,7 +41,7 @@ export const PricingBox: React.FC<PricingTier> = ({
 
       <div className="flex flex-col gap-4 mb-8 flex-grow">
         <div className="bg-[#000000] p-5 border border-[#262626] group-hover:border-[#E67E32]/30 transition-colors">
-          <span className="block text-xs text-[#E67E32] uppercase tracking-wider mb-2">Setup Inicial</span>
+          <span className="block text-xs text-[#E67E32] uppercase tracking-wider mb-2">Inversión Inicial</span>
           {setupOptions ? (
             <div className="flex flex-col gap-4">
               {setupOptions.map((option) => (
@@ -59,7 +59,7 @@ export const PricingBox: React.FC<PricingTier> = ({
           )}
         </div>
         <div className="bg-[#000000] p-5 border border-[#262626] group-hover:border-[#E67E32]/30 transition-colors">
-          <span className="block text-xs text-[#E67E32] uppercase tracking-wider mb-2">Retainer Mensual</span>
+          <span className="block text-xs text-[#E67E32] uppercase tracking-wider mb-2">Abono Mensual</span>
           <span className="text-3xl font-bold text-[#e5e5e5]">{retainerPrice}</span>
           <span className="block text-xs text-[#a3a3a3] mt-2">+ Servidores y Mantenimiento</span>
         </div>
