@@ -8,5 +8,8 @@ export default defineConfig({
     react(), 
     tailwindcss()
   ],
-  base: './',
+  // Sitio de usuario de GitHub Pages servido desde la raíz del dominio.
+  // Con BrowserRouter el base debe ser absoluto: './' rompe los assets
+  // cuando se carga una ruta anidada como /business.
+  base: '/',
 })

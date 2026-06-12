@@ -8,18 +8,40 @@
     <meta name="description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
     <meta name="keywords" content="Software Solution Developer, React, TypeScript, Next.js, Frontend, IoT, Domótica, Administración de Sistemas, Artifex Dev, Ramiro Escobar" />
     <meta name="author" content="Ramiro Aníbal Escobar" />
+    <!-- El mismo build se sirve en artifex.click (Hostinger) y artifex94.github.io;
+         el canonical consolida el SEO en el dominio del negocio. -->
+    <link rel="canonical" href="https://artifex.click/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://artifex.click/" />
     <meta property="og:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
     <meta property="og:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image" content="https://artifex.click/og-image.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
     <meta property="twitter:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="twitter:image" content="/og-image.png" />
+    <meta property="twitter:image" content="https://artifex.click/og-image.png" />
+
+    <script type="text/javascript">
+      // Decodifica la ruta que 404.html guardó en el query string y la
+      // restaura antes de que React Router lea la URL.
+      // Técnica: https://github.com/rafgraph/spa-github-pages
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>

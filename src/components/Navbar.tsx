@@ -12,17 +12,17 @@ export const Navbar: React.FC = () => {
           <span className="text-secondary text-sm hidden sm:inline-block">// System_Core</span>
         </div>
         <div className="flex gap-6">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className={`text-sm font-mono transition-colors ${location.pathname === '/' ? 'text-accent' : 'text-secondary hover:text-primary'}`}
           >
-            ./Portfolio
-          </Link>
-          <Link 
-            to="/business" 
-            className={`text-sm font-mono transition-colors ${location.pathname === '/business' ? 'text-accent' : 'text-secondary hover:text-primary'}`}
-          >
             ./Business
+          </Link>
+          <Link
+            to="/portfolio"
+            className={`text-sm font-mono transition-colors ${location.pathname === '/portfolio' ? 'text-accent' : 'text-secondary hover:text-primary'}`}
+          >
+            ./Portfolio
           </Link>
         </div>
       </div>
