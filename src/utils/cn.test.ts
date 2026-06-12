@@ -17,13 +17,16 @@ describe('cn', () => {
   });
 
   it('drops falsy conditional classes', () => {
-    expect(cn('foo', false && 'bar', 'baz')).toBe('foo baz');
+    const isHidden: boolean = false;
+    const count: number = 0;
+    expect(cn('foo', isHidden && 'bar', 'baz')).toBe('foo baz');
     expect(cn('foo', undefined, null, 'bar')).toBe('foo bar');
-    expect(cn('foo', 0 && 'bar')).toBe('foo');
+    expect(cn('foo', count > 0 && 'bar')).toBe('foo');
   });
 
   it('includes truthy conditional classes', () => {
-    expect(cn('foo', true && 'bar')).toBe('foo bar');
+    const isActive: boolean = true;
+    expect(cn('foo', isActive && 'bar')).toBe('foo bar');
   });
 
   it('handles object syntax', () => {
