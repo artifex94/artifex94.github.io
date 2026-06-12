@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, writeFileSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -79,6 +79,13 @@ function staticFilesPlugin(): Plugin {
       const rss = buildRssXml();
       writeFileSync('public/sitemap.xml', sitemap, 'utf-8');
       writeFileSync('public/rss.xml', rss, 'utf-8');
+    },
+    closeBundle() {
+      // GitHub Pages has no SPA rewrites: serve index.html as the 404 page
+      // so deep links like /blog/:category/:slug survive a hard refresh.
+      if (existsSync('dist/index.html')) {
+        copyFileSync('dist/index.html', 'dist/404.html');
+      }
     },
   };
 }
