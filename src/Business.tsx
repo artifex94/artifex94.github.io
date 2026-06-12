@@ -394,6 +394,16 @@ export const Business = () => {
           </div>
         </BlueprintBox>
 
+        {/* Client portal access */}
+        <div className="text-center mt-10">
+          <a
+            href="https://portal.artifex.click"
+            className="text-sm text-[#737373] hover:text-[#E67E32] transition-colors"
+          >
+            Acceso clientes →
+          </a>
+        </div>
+
       </div>
     </motion.div>
     </>
