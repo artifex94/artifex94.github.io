@@ -53,7 +53,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   // Sumamos la rotación del puntero + la del scroll para el eje X
   const rotateX = useTransform(
     [rotateXPointer, rotateXScroll],
-    ([pointer, scroll]: any[]) => `${pointer + scroll}deg`
+    ([pointer, scroll]: number[]) => `${pointer + scroll}deg`
   );
   
   // El eje Y solo responde al puntero (mouse/dedo)

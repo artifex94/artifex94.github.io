@@ -36,15 +36,15 @@ export const Portfolio = () => {
               </h3>
               
               <div className="flex flex-col gap-6">
-                {data.skills.map((skillGroup, idx) => (
-                  <div key={idx}>
+                {data.skills.map((skillGroup) => (
+                  <div key={skillGroup.category}>
                     <h4 className="text-sm text-secondary uppercase tracking-wider mb-3">
                       // {skillGroup.category}
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {skillGroup.skills.map((skill, i) => (
-                        <span 
-                          key={i} 
+                      {skillGroup.skills.map((skill) => (
+                        <span
+                          key={skill}
                           className="text-xs text-primary border border-line bg-base px-2 py-1 hover:border-accent hover:text-accent transition-colors cursor-default"
                         >
                           {skill}

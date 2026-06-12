@@ -25,8 +25,8 @@ export const Experience: React.FC = () => {
             </div>
             <h5 className="text-accent/80 text-sm mb-3">{exp.company}</h5>
             <ul className="flex flex-col gap-2">
-              {exp.description.map((item, i) => (
-                <li key={i} className="text-sm text-primary/70 flex items-start gap-2">
+              {exp.description.map((item) => (
+                <li key={item} className="text-sm text-primary/70 flex items-start gap-2">
                   <span className="text-secondary mt-0.5">&gt;</span>
                   {item}
                 </li>

@@ -73,4 +73,11 @@
        Ayuda a evitar tirones en dispositivos móviles al preparar la GPU/CPU. */
     will-change: background-position;
   }
+
+  /* Accesibilidad: la grilla queda estática para usuarios que piden menos movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    .bg-blueprint-grid::before {
+      animation: none;
+    }
+  }
 }

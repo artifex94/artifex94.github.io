@@ -13,9 +13,8 @@ export const Projects: React.FC = () => {
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* ... resto del código sin cambios ... */}
-        {data.projects.map((project, index) => (
-          <div key={index} className="border border-dashed border-line p-5 bg-base/30 hover:bg-base/60 transition-colors flex flex-col h-full">
+        {data.projects.map((project) => (
+          <div key={project.title} className="border border-dashed border-line p-5 bg-base/30 hover:bg-base/60 transition-colors flex flex-col h-full">
             <div className="flex justify-between items-start mb-3">
               <h4 className="text-primary font-bold text-lg">{project.title}</h4>
               <div className="flex gap-3">
@@ -35,8 +34,8 @@ export const Projects: React.FC = () => {
               {project.description}
             </p>
             <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-dashed border-line/50">
-              {project.technologies.map((tech, i) => (
-                <span key={i} className="text-[10px] text-accent font-mono bg-accent/10 px-1.5 py-0.5 border border-accent/20">
+              {project.technologies.map((tech) => (
+                <span key={tech} className="text-[10px] text-accent font-mono bg-accent/10 px-1.5 py-0.5 border border-accent/20">
                   {tech}
                 </span>
               ))}
