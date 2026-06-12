@@ -9,7 +9,7 @@
  * Debug HTML           : DEBUG=1 node scripts/fetch-platzi.mjs
  */
 
-import { writeFileSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 
 const PLATZI_USERNAME = 'Ramiroesc18';
 const OUTPUT_FILE     = 'src/data/platzi-certs.json';
@@ -147,11 +147,33 @@ async function fetchViaRSC() {
 
 // ── save ───────────────────────────────────────────────────────────────────
 
+function loadCachedCerts() {
+  if (!existsSync(OUTPUT_FILE)) return [];
+  try {
+    const parsed = JSON.parse(readFileSync(OUTPUT_FILE, 'utf-8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function saveCerts(rawList) {
   const normalized = rawList
     .filter(c => c.progress === 100 || c.diploma?.diploma_url)
     .map(normalizeCert)
     .filter(c => c.name.length > 0);
+
+  // El JSON commiteado actúa como cache: si el fetch trae MENOS certs que el
+  // cache (típico cuando la API falla y entra el fallback RSC con ~9), no lo
+  // pisamos — un perfil real nunca pierde diplomas. PLATZI_FORCE=1 lo anula.
+  const cached = loadCachedCerts();
+  if (normalized.length < cached.length && !process.env.PLATZI_FORCE) {
+    console.warn(
+      `[Platzi] ⚠ Fetched only ${normalized.length} certs but cache has ${cached.length}. ` +
+      `Keeping cached ${OUTPUT_FILE} (set PLATZI_FORCE=1 to overwrite).`
+    );
+    return cached.length;
+  }
 
   writeFileSync(OUTPUT_FILE, JSON.stringify(normalized, null, 2), 'utf-8');
   console.log(`[Platzi] ✓ ${normalized.length} certifications saved → ${OUTPUT_FILE}`);
