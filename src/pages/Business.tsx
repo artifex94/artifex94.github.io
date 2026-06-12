@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BlueprintBox } from './components/BlueprintBox';
-import { PricingBox } from './components/PricingBox';
-import { pricingTiers, onboardingSteps } from './data/business';
-import { data } from './data/data';
+import { BlueprintBox } from '../components/BlueprintBox';
+import { PricingBox } from '../components/PricingBox';
+import { pricingTiers, onboardingSteps } from '../data/business';
+import { data } from '../data/data';
 
 const auditMailto = `mailto:${data.personal.emails.professional}?subject=${encodeURIComponent('Auditoría Gratuita - Headless E-commerce')}`;
 

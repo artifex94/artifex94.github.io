@@ -1,11 +1,11 @@
-import { Hero } from './components/Hero';
-import { Experience } from './components/Experience';
-import { Education } from './components/Education';
-import { Projects } from './components/Projects';
-import { BlueprintBox } from './components/BlueprintBox';
-import { data } from './data/data';
+import { Hero } from '../components/Hero';
+import { Experience } from '../components/Experience';
+import { Education } from '../components/Education';
+import { Projects } from '../components/Projects';
+import { BlueprintBox } from '../components/BlueprintBox';
+import { data } from '../data/data';
 import { motion } from 'framer-motion';
-import { Typewriter } from './components/Typewriter';
+import { Typewriter } from '../components/Typewriter';
 
 export const Portfolio = () => {
   return (
