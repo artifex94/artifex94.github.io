@@ -1,10 +1,9 @@
 // Contacto centralizado: única fuente de verdad para email y WhatsApp.
 // Todos los CTAs del sitio (mailto y wa.me) se construyen desde acá.
 
-// TODO: completar con el número real en formato internacional SIN '+' ni guiones.
-// Argentina: 549 + código de área + número (sin el 15). Ej: '5492611234567'.
-// Mientras esté vacío, los botones de WhatsApp no se muestran (el sitio degrada a email).
-export const WHATSAPP_NUMBER = '';
+// Formato internacional SIN '+' ni guiones (549 + área + número, sin el 15).
+// Si se vacía, los botones de WhatsApp desaparecen y el sitio degrada a email.
+export const WHATSAPP_NUMBER = '5493436431987';
 
 export const CONTACT_EMAIL = 'dev@artifex.click';
 
