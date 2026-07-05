@@ -2,26 +2,50 @@
 <html lang="es-419">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./vite.svg?v=2" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Artifex Dev - Ramiro Aníbal Escobar</title>
-    <meta name="description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta name="keywords" content="Software Solution Developer, React, TypeScript, Next.js, Frontend, IoT, Domótica, Administración de Sistemas, Artifex Dev, Ramiro Escobar" />
+    <title>Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar</title>
+    <meta name="description" content="Artifex es el taller de Ramiro Escobar: desarrollo de tiendas e-commerce headless (Next.js + Shopify), fotografía de eventos, retratos y producto, y piezas de tufting artesanales." />
+    <meta name="keywords" content="Desarrollo E-commerce, Headless, React, Next.js, Shopify, Fotografía de eventos, Books, Fotografía de producto, Tufting, Alfombras artesanales, Tapices, Artifex, Ramiro Escobar, Argentina" />
     <meta name="author" content="Ramiro Aníbal Escobar" />
+    <!-- El mismo build se sirve en artifex.click (Hostinger) y artifex94.github.io;
+         el canonical consolida el SEO en el dominio del negocio. -->
+    <link rel="canonical" href="https://artifex.click/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
-    <meta property="og:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="og:image" content="./og-image.png" />
+    <meta property="og:url" content="https://artifex.click/" />
+    <meta property="og:title" content="Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar" />
+    <meta property="og:description" content="Desarrollo de tiendas e-commerce headless, fotografía de eventos, retratos y producto, y piezas de tufting artesanales. Un taller, tres oficios." />
+    <meta property="og:image" content="https://artifex.click/og-image.png" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="Artifex Dev - Ramiro Aníbal Escobar" />
-    <meta property="twitter:description" content="Portafolio de Ramiro Aníbal Escobar (Artifex Dev). Software Solution Developer especializado en React, TypeScript, administración de sistemas e IoT." />
-    <meta property="twitter:image" content="/og-image.png" />
-    <script type="module" crossorigin src="./assets/index-FRkdfgZ7.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BdHoighQ.css">
+    <meta property="twitter:title" content="Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar" />
+    <meta property="twitter:description" content="Desarrollo de tiendas e-commerce headless, fotografía de eventos, retratos y producto, y piezas de tufting artesanales. Un taller, tres oficios." />
+    <meta property="twitter:image" content="https://artifex.click/og-image.png" />
+
+    <script type="text/javascript">
+      // Decodifica la ruta que 404.html guardó en el query string y la
+      // restaura antes de que React Router lea la URL.
+      // Técnica: https://github.com/rafgraph/spa-github-pages
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      })(window.location);
+    </script>
+    <script type="module" crossorigin src="/assets/index-BHuVEV9T.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-Db0DjQYK.js">
+    <link rel="modulepreload" crossorigin href="/assets/createLucideIcon-BlWg0vmX.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Jc0XExU1.css">
   </head>
   <body>
     <div id="root"></div>
