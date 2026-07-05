@@ -7,11 +7,13 @@ export const WHATSAPP_NUMBER = '5493436431987';
 
 export const CONTACT_EMAIL = 'dev@artifex.click';
 
-export type ServiceKey = 'desarrollo' | 'fotografia' | 'tufting' | 'general';
+export type ServiceKey = 'desarrollo' | 'fotografia' | 'tufting' | 'demo' | 'general';
 
 export const whatsappMessages: Record<ServiceKey, string> = {
   desarrollo:
     'Hola Ramiro! Vi tu página en artifex.click y quiero consultarte por el desarrollo de una tienda online.',
+  demo:
+    'Hola Ramiro, vi el demo y me interesa un sitio similar para mi negocio.',
   fotografia:
     'Hola Ramiro! Vi tu página de fotografía en artifex.click y quiero consultarte por una sesión.',
   tufting:

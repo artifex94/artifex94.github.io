@@ -55,6 +55,22 @@ export const pricingTiers: PricingTier[] = [
   }
 ];
 
+export interface DemoPage {
+  slug: string;
+  label: string;
+  desc: string;
+}
+
+// Demos interactivas por rubro: mini-sitios de venta en /business/<slug>
+export const demoPages: DemoPage[] = [
+  { slug: 'inmobiliarias', label: 'Inmobiliarias', desc: 'Listado de propiedades con filtros y fichas.' },
+  { slug: 'profesionales', label: 'Profesionales', desc: 'Reserva de turnos online para consultorios.' },
+  { slug: 'gastronomia', label: 'Gastronomía', desc: 'Menú digital con categorías y destacados.' },
+  { slug: 'comercios', label: 'Comercios', desc: 'Tienda con búsqueda, filtros y favoritos.' },
+  { slug: 'emprendedores', label: 'Emprendedores', desc: 'Landing de servicios con planes y precios.' },
+  { slug: 'empresas', label: 'Empresas', desc: 'Dashboard de gestión con KPIs y reportes.' },
+];
+
 export const onboardingSteps: OnboardingStep[] = [
   { step: "01", title: "Discovery", desc: "Auditoría técnica profunda y trazado del plan de acción enfocado en el CRO." },
   { step: "02", title: "Propuesta", desc: "Definición de arquitectura de datos, estimación de ROI e hitos de proyecto." },

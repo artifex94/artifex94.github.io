@@ -13,8 +13,11 @@ Sitio de Artifex (Ramiro Aníbal Escobar): hub de servicios con tres rubros —d
 
 ```bash
 npm run dev      # servidor de desarrollo
-npm run build    # tsc + build de producción en dist/
+npm run build    # tsc + build de producción en dist/ (genera sitemap.xml y rss.xml)
 npm run lint     # eslint
+npm run test     # vitest en modo watch
+npm run test:run # vitest una sola vez (lo corre el CI)
+npm run coverage # cobertura de tests
 npm run preview  # sirve dist/ localmente
 ```
 
@@ -23,9 +26,12 @@ npm run preview  # sirve dist/ localmente
 ```
 src/
 ├── pages/        # una página por área del sitio, cargadas lazy por ruta
+│   └── blog/     # índice, categoría y post del blog (contenido en data/blog.ts)
+├── demos/        # mini-sitios de venta por rubro (/business/*), sin chrome del sitio
 ├── components/   # componentes compartidos (Navbar, Footer, BlueprintBox, gallery/, ...)
-├── data/         # contenido separado de la UI (contact.ts, services.ts, photography.ts, ...)
-├── hooks/        # usePageMeta (SEO por ruta)
+├── data/         # contenido separado de la UI (contact.ts, blog.ts, photography.ts, ...)
+├── hooks/        # usePageMeta (SEO por ruta + JSON-LD)
+├── test/         # setup de vitest (mock de framer-motion) y render con providers
 └── index.css     # theme Blueprint + temas por servicio ([data-theme=...])
 public/
 └── photos/       # imágenes de fotografía y tufting, por categoría
@@ -40,9 +46,18 @@ public/
 | `/servicios/fotografia`  | Fotografía: galería, categorías y paquetes        |
 | `/servicios/tufting`     | Tufting: líneas de servicio y piezas              |
 | `/portfolio`             | Portfolio profesional                             |
+| `/blog`                  | Blog & Notas (índice con buscador)                |
+| `/blog/:cat`             | Posts por categoría                               |
+| `/blog/:cat/:post`       | Post individual (JSON-LD BlogPosting)             |
+| `/business/<rubro>`      | Demos de venta (inmobiliarias, gastronomía, ...)  |
 | `/servicios`             | Redirect a `/` (el hub es el índice)              |
 | `/business`              | Redirect a `/servicios/desarrollo` (links viejos) |
-| `*`                      | Redirect a `/`                                    |
+| `*`                      | Página 404                                        |
+
+Las demos (`/business/*`) se muestran **sin** Navbar/Footer del sitio: ese prefijo
+queda reservado para mini-sitios de venta. El contenido del blog vive en
+`src/data/blog.ts` (posts como data tipada; los `draft` no se publican ni entran
+al sitemap/RSS, que se regeneran en cada build desde `vite.config.ts`).
 
 ## Contacto (WhatsApp + email)
 

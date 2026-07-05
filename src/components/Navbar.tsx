@@ -14,6 +14,7 @@ const navItems: NavItem[] = [
   { to: '/servicios/fotografia', label: './Fotografía' },
   { to: '/servicios/tufting', label: './Tufting' },
   { to: '/portfolio', label: './Portfolio' },
+  { to: '/blog', label: './Blog' },
 ];
 
 const isActive = (pathname: string, to: string) =>

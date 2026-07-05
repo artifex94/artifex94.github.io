@@ -27,6 +27,8 @@ jobs:
 
       - run: npm run lint
 
+      - run: npm run test:run
+
       - run: npm run build
 
       # Publica dist/ en la rama gh-pages (misma rama que usa `npm run deploy`)

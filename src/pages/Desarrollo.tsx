@@ -2,7 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BlueprintBox } from '../components/BlueprintBox';
 import { PricingBox } from '../components/PricingBox';
-import { pricingTiers, onboardingSteps } from '../data/business';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { pricingTiers, onboardingSteps, demoPages } from '../data/business';
 import { buildMailto } from '../data/contact';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { ContactCTA } from '../components/ContactCTA';
@@ -107,6 +109,34 @@ export const Desarrollo: React.FC = () => {
                 <h4 className="text-xl font-bold text-primary mb-3 relative z-10">{step.title}</h4>
                 <p className="text-sm text-secondary relative z-10">{step.desc}</p>
               </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Demos por rubro */}
+        <section>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-white mb-4">Mirá ejemplos por rubro</h2>
+            <p className="text-secondary">
+              Demos interactivas y navegables: así puede verse el sitio de tu negocio.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {demoPages.map((demo) => (
+              <Link
+                key={demo.slug}
+                to={`/business/${demo.slug}`}
+                className="group bg-surface border border-line p-6 hover:border-accent transition-colors"
+              >
+                <h4 className="text-lg font-bold text-primary mb-2 group-hover:text-accent transition-colors">
+                  {demo.label}
+                </h4>
+                <p className="text-sm text-secondary mb-4">{demo.desc}</p>
+                <span className="inline-flex items-center gap-2 text-xs font-bold text-accent">
+                  Ver demo
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
             ))}
           </div>
         </section>

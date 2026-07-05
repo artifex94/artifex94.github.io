@@ -9,6 +9,7 @@ const serviceLinks = [
   { to: '/servicios/fotografia', label: 'Fotografía' },
   { to: '/servicios/tufting', label: 'Tufting' },
   { to: '/portfolio', label: 'Portfolio' },
+  { to: '/blog', label: 'Blog & Notas' },
 ];
 
 export const Footer: React.FC = () => {
