@@ -124,11 +124,34 @@ export const data: PortfolioData = {
 
   projects: [
     {
-      title: "Escobar Instalaciones - Landing Page",
-      description: "Plataforma web corporativa desarrollada desde cero para presentar servicios de seguridad electrónica, domótica y monitoreo.",
+      title: "Escobar Instalaciones - Plataforma Corporativa",
+      description:
+        "Empresa de seguridad y domótica que necesitaba presencia profesional online y reducir la carga de atención telefónica. " +
+        "Desarrollé el sitio corporativo completo y un portal de autogestión para que los clientes gestionen sus cuentas sin llamar.",
       technologies: ["Next.js", "TypeScript", "React", "TailwindCSS"],
       liveUrl: "https://instalacionescob.ar",
       githubUrl: "https://github.com/artifex94/Ei-LandingPage.git"
+    },
+    {
+      title: "Portal de Autogestion - Escobar Instalaciones",
+      description:
+        "Los clientes no tenían forma de consultar el estado de sus cuentas sin llamar. " +
+        "Desarrollando un portal privado con autenticación, dashboard de cuenta y gestión de servicios contratados.",
+      technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"]
+    },
+    {
+      title: "Demo - Presencia Digital para Profesionales",
+      description:
+        "Landing page para profesionales independientes que necesitan captar clientes online. " +
+        "Sección de servicios, formulario de contacto, integración WhatsApp y diseño mobile-first orientado a conversión.",
+      technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"]
+    },
+    {
+      title: "Demo - Catálogo Digital para Comercios",
+      description:
+        "Sitio para tiendas y restaurantes que venden por WhatsApp sin catálogo ordenado. " +
+        "Productos o menú en formato visual, pedidos por WhatsApp y ubicación en Google Maps. Optimizado para mobile.",
+      technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"]
     }
   ]
 };
