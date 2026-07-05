@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL } from './contact';
+import platziCerts from './platzi-certs.json';
 
 // Tipados base para asegurar la escalabilidad de los datos
 export interface Project {
@@ -21,6 +22,14 @@ export interface Education {
   degree: string;
   period: string;
   details?: string;
+}
+
+export interface PlatziCert {
+  name: string;
+  school: string;
+  completedAt: string | null;
+  url: string | null;
+  imageUrl: string | null;
 }
 
 export interface SkillGroup {
@@ -69,7 +78,7 @@ export const data: PortfolioData = {
         "Implementación y gestión de software de monitoreo SoftGuard para sistemas de seguridad, domótica, control de acceso y rastreo GPS.",
         "Administración integral del CRM, saneamiento de bases de datos y configuración de sistemas de alarma mediante Beat Netio.",
         "Desarrollo y mantenimiento de la Landing Page corporativa utilizando Next.js y TypeScript.",
-        "Proyecto actual: Desarrollo de un portal de clientes (sección de usuario) para el monitoreo autogestionado de cuentas."
+        "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad."
       ]
     }
   ],
@@ -77,8 +86,9 @@ export const data: PortfolioData = {
   education: [
     {
       institution: "Universidad Siglo XXI",
-      degree: "Licenciatura en Ciencias de la Computación (Cursado parcial equivalente a Analista de Sistemas)",
-      period: "2021 - 2023",
+      degree: "Ciencias de la Computación (cursado parcial)",
+      period: "2022 - Presente",
+      details: "Cursado parcial equivalente a Analista de Sistemas. Materias completadas: Algoritmos, Estructuras de Datos y Pruebas de Software.",
     },
     {
       institution: "Argentina Programa",
@@ -87,24 +97,28 @@ export const data: PortfolioData = {
     },
     {
       institution: "Platzi",
-      degree: "Más de 30 certificaciones en Desarrollo Web y Tecnologías",
+      degree: `+${(platziCerts as PlatziCert[]).length} certificaciones en Desarrollo Web`,
       period: "2020 - Presente",
-      details: "Cursos destacados en React, Next.js, Node.js y TypeScript. (Enlace a Linktree en construcción)."
+      details: "React, Next.js, Node.js, TypeScript, Arquitectura de Software, Bases de Datos.",
     }
   ],
 
   skills: [
     {
       category: "Frontend",
-      skills: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "TailwindCSS"]
+      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Framer Motion"]
     },
     {
       category: "Backend & Bases de Datos",
-      skills: ["Node.js", "Java", "SQL", "JPA", "JDBC"]
+      skills: ["Node.js", "Java", "SQL", "REST APIs"]
     },
     {
-      category: "Intereses & Exploración",
-      skills: ["IoT (Internet of Things)", "Electrónica", "Arduino"]
+      category: "Herramientas & Workflow",
+      skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"]
+    },
+    {
+      category: "Administración & Sistemas",
+      skills: ["SoftGuard", "Beat Netio", "CRM", "Redes & Infraestructura"]
     }
   ],
 

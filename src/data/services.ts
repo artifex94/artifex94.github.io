@@ -17,10 +17,10 @@ export interface ServiceSummary {
 export const services: ServiceSummary[] = [
   {
     id: 'desarrollo',
-    title: 'Desarrollo E-commerce',
-    tagline: 'Tiendas headless que convierten',
+    title: 'Desarrollo Web',
+    tagline: 'Sitios y sistemas a medida',
     description:
-      'Arquitecturas Next.js + Shopify para marcas que escalan: velocidad, SEO técnico y soporte continuo.',
+      'Sitios web y sistemas para empresas, negocios y emprendedores: presencia digital clara y soporte continuo.',
     href: '/servicios/desarrollo',
     icon: Code2,
   },

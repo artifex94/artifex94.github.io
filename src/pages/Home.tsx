@@ -13,7 +13,7 @@ export const Home: React.FC = () => {
   usePageMeta({
     title: 'Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar',
     description:
-      'Artifex es el taller de Ramiro Escobar: desarrollo de tiendas e-commerce headless, fotografía de eventos, retratos y producto, y piezas de tufting artesanales.',
+      'Artifex es el taller de Ramiro Escobar: desarrollo de sitios y sistemas web a medida, fotografía de eventos, retratos y producto, y piezas de tufting artesanales.',
     canonicalPath: '/',
   });
 

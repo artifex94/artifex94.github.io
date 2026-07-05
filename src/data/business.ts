@@ -17,41 +17,58 @@ export interface OnboardingStep {
 // Precios en ARS: revisar periódicamente por inflación
 export const pricingTiers: PricingTier[] = [
   {
-    name: "Growth Headless",
-    target: "Marcas DTC preparadas para dar el gran salto (Shopify Basic).",
-    setupPrice: "~$2.8M ARS",
-    retainerPrice: "~$250K ARS",
+    name: "Presencia",
+    target: "Landing page que muestre quién sos y qué hacés: tu negocio visible y captando consultas en menos de 2 semanas.",
+    setupPrice: "$200.000 ARS",
+    retainerPrice: "$50.000 ARS",
     features: [
-      "Arquitectura Headless (Next.js + Shopify)",
-      "Diseño UI/UX orientado a conversión",
-      "Optimización Core Web Vitals",
-      "Soporte técnico estándar"
+      "Sección de servicios o productos clara y orientada a conversión",
+      "Formulario de contacto + botón de WhatsApp destacado",
+      "Google Maps integrado",
+      "Dominio y publicación incluidos",
+      "Optimizado para celular: el 80% de tus clientes llegan desde ahí"
     ]
   },
   {
-    name: "Scale & Optimize",
-    target: "Operaciones de Retail B2B / Fuerte enfoque en SEO (Shopify Advanced).",
-    setupPrice: "~$5.5M ARS",
-    retainerPrice: "~$450K ARS",
+    name: "Contenido",
+    target: "Todo lo de Presencia, más un blog o secciones administrables para compartir y actualizar tu contenido vos mismo.",
+    setupPrice: "$400.000 ARS",
+    retainerPrice: "$50.000 ARS",
     features: [
-      "Todo lo incluido en Growth",
-      "Rutas de e-commerce complejas y filtrado dinámico",
-      "Optimización SEO Técnica Avanzada",
+      "Todo lo incluido en Presencia",
+      "Blog o secciones administrables desde un panel simple",
+      "Actualización de contenido sin depender de un desarrollador",
+      "SEO on-page básico para aparecer en Google",
+      "Soporte prioritario ante cambios de contenido"
+    ]
+  },
+  {
+    name: "Negocio",
+    target: "Tienda web que te permita vender online, gestionar productos y ordenar tu proceso comercial de punta a punta.",
+    setupPrice: "$600.000 ARS",
+    retainerPrice: "$50.000 ARS",
+    features: [
+      "Todo lo incluido en Contenido",
+      "Catálogo de productos con búsqueda y filtros",
+      "Gestión de pedidos y stock desde un panel propio",
+      "Integración de medios de pago y WhatsApp",
       "Soporte prioritario y monitorización activa"
+    ]
+  },
+  {
+    name: "Sistema Web a Medida",
+    target: "Para negocios que necesitan sistematizar operaciones: gestión de clientes, turnos, catálogos o dashboards.",
+    setupPrice: "$1.000.000 ARS",
+    retainerPrice: "$50.000 ARS",
+    features: [
+      "Sistema productivo en 90 días, con soporte incluido el primer año",
+      "Panel de administración propio: control total desde una sola pantalla",
+      "Base de datos y lógica de negocio diseñada para crecer",
+      "Autenticación de usuarios y roles",
+      "Entregas parciales cada sprint: ves el avance en tiempo real",
+      "Mantenimiento mensual incluido post-entrega"
     ],
     isPopular: true
-  },
-  {
-    name: "Enterprise",
-    target: "Marcas Omnicanal con catálogos masivos (Shopify Plus).",
-    setupPrice: "Desde $9.8M",
-    retainerPrice: "~$900K ARS",
-    features: [
-      "Integraciones con ERPs/CRMs de terceros",
-      "Multi-región y Multi-moneda nativo",
-      "Desarrollo de features a medida",
-      "SLA garantizado y línea directa"
-    ]
   }
 ];
 
@@ -72,8 +89,8 @@ export const demoPages: DemoPage[] = [
 ];
 
 export const onboardingSteps: OnboardingStep[] = [
-  { step: "01", title: "Discovery", desc: "Auditoría técnica profunda y trazado del plan de acción enfocado en el CRO." },
-  { step: "02", title: "Propuesta", desc: "Definición de arquitectura de datos, estimación de ROI e hitos de proyecto." },
-  { step: "03", title: "Desarrollo", desc: "Sprints ágiles semanales para desacoplar e integrar Next.js con Shopify." },
-  { step: "04", title: "Lanzamiento", desc: "Despliegue a producción y entrada al ciclo de Retainer para escalabilidad." },
+  { step: "01", title: "Discovery", desc: "Reunión de diagnóstico para entender el negocio, el problema y los objetivos. Sin costo ni compromiso." },
+  { step: "02", title: "Propuesta", desc: "Alcance, arquitectura, tiempos y presupuesto fijo detallado. Sin sorpresas después." },
+  { step: "03", title: "Desarrollo", desc: "Ciclo de desarrollo con entregas parciales. Ves el avance y das feedback en cada etapa." },
+  { step: "04", title: "Entrega & Soporte", desc: "Publicación del sitio en vivo, documentación entregada y transición al plan de mantenimiento." },
 ];
