@@ -10,9 +10,12 @@ function buildSitemapXml(): string {
   const published = getAllPublished();
 
   const staticUrls = [
-    { loc: BASE_URL,            changefreq: 'weekly',  priority: '1.0' },
-    { loc: `${BASE_URL}/blog`,  changefreq: 'weekly',  priority: '0.9' },
-    { loc: `${BASE_URL}/business`, changefreq: 'monthly', priority: '0.7' },
+    { loc: BASE_URL, changefreq: 'weekly', priority: '1.0' },
+    { loc: `${BASE_URL}/blog`, changefreq: 'weekly', priority: '0.9' },
+    { loc: `${BASE_URL}/servicios/desarrollo`, changefreq: 'monthly', priority: '0.8' },
+    { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8' },
+    { loc: `${BASE_URL}/servicios/tufting`, changefreq: 'monthly', priority: '0.8' },
+    { loc: `${BASE_URL}/portfolio`, changefreq: 'monthly', priority: '0.6' },
   ];
 
   const categoryUrls = categories.map(cat => ({
@@ -71,14 +74,15 @@ ${items}
 </rss>`;
 }
 
+// Genera sitemap.xml y rss.xml desde src/data/blog.ts en cada build.
+// Las demos (/business/*) y los redirects quedan fuera a propósito:
+// son piezas de venta, no contenido indexable.
 function staticFilesPlugin(): Plugin {
   return {
     name: 'static-files-generator',
     buildStart() {
-      const sitemap = buildSitemapXml();
-      const rss = buildRssXml();
-      writeFileSync('public/sitemap.xml', sitemap, 'utf-8');
-      writeFileSync('public/rss.xml', rss, 'utf-8');
+      writeFileSync('public/sitemap.xml', buildSitemapXml(), 'utf-8');
+      writeFileSync('public/rss.xml', buildRssXml(), 'utf-8');
     },
   };
 }
@@ -89,5 +93,8 @@ export default defineConfig({
     tailwindcss(),
     staticFilesPlugin(),
   ],
+  // Sitio de usuario de GitHub Pages servido desde la raíz del dominio.
+  // Con BrowserRouter el base debe ser absoluto: './' rompe los assets
+  // cuando se carga una ruta anidada como /business.
   base: '/',
 });

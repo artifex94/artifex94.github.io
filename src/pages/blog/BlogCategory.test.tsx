@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { renderWithProviders } from '../../test/render';
 import { BlogCategory } from './BlogCategory';
 import { categories, getPostsByCategory } from '../../data/blog';

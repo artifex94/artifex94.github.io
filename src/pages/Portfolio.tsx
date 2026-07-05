@@ -1,0 +1,83 @@
+import { Hero } from '../components/Hero';
+import { Experience } from '../components/Experience';
+import { Education } from '../components/Education';
+import { Projects } from '../components/Projects';
+import { BlueprintBox } from '../components/BlueprintBox';
+import { data } from '../data/data';
+import { motion } from 'framer-motion';
+import { Typewriter } from '../components/Typewriter';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+export const Portfolio = () => {
+  usePageMeta({
+    title: 'Portfolio | Artifex — Ramiro Escobar',
+    description:
+      'Portfolio profesional de Ramiro Aníbal Escobar (Artifex): experiencia, formación, skills y proyectos de desarrollo web y sistemas.',
+    canonicalPath: '/portfolio',
+  });
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 1 }}
+      className="min-h-screen w-full bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-5xl mx-auto flex flex-col gap-8">
+        
+        {/* Renderizado del Hero */}
+        <Hero />
+
+        {/* Grilla 1: Experiencia y Skills */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          
+          <div className="lg:col-span-3">
+            <Experience />
+          </div>
+
+          <div className="lg:col-span-2 flex flex-col gap-8">
+            {/* Componente rápido de Skills inyectado en un BlueprintBox */}
+            <BlueprintBox coords={{ x: 20, y: 30 }} className="flex-grow" delay={0.2}>
+              <h3 className="text-xl font-bold text-accent mb-6 flex items-center gap-2">
+                <span className="text-secondary text-sm">##</span> 
+                <Typewriter text="System_Skills" delay={0.7} speed="fast" />
+              </h3>
+              
+              <div className="flex flex-col gap-6">
+                {data.skills.map((skillGroup) => (
+                  <div key={skillGroup.category}>
+                    <h4 className="text-sm text-secondary uppercase tracking-wider mb-3">
+                      // {skillGroup.category}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {skillGroup.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="text-xs text-primary border border-line bg-base px-2 py-1 hover:border-accent hover:text-accent transition-colors cursor-default"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </BlueprintBox>
+          </div>
+
+        </div>
+
+        {/* Grilla 2: Educación y Proyectos */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1">
+             <Education />
+          </div>
+          <div className="lg:col-span-2">
+             <Projects />
+          </div>
+        </div>
+
+      </div>
+    </motion.div>
+  );
+};

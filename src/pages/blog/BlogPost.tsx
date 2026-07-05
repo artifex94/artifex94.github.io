@@ -1,9 +1,9 @@
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Clock, Tag, Calendar } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { getPostBySlug, getCategoryBySlug, type ContentBlock } from '../../data/blog';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 function formatPostDate(raw: string): string {
   const d = new Date(raw);
@@ -69,10 +69,8 @@ export const BlogPost = () => {
   const post = getPostBySlug(categorySlug ?? '', postSlug ?? '');
   const cat  = getCategoryBySlug(categorySlug ?? '');
 
-  if (!post || !cat) return <Navigate to="/blog" replace />;
-
-  const canonicalUrl   = `https://artifex.click/blog/${cat.slug}/${post.slug}`;
-  const breadcrumbData = {
+  const canonicalUrl   = `https://artifex.click/blog/${cat?.slug}/${post?.slug}`;
+  const breadcrumbData = post && cat && {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     'itemListElement': [
@@ -82,7 +80,7 @@ export const BlogPost = () => {
       { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': canonicalUrl },
     ],
   };
-  const structuredData = {
+  const structuredData = post && {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     'headline': post.title,
@@ -102,27 +100,19 @@ export const BlogPost = () => {
     'keywords': post.tags.join(', '),
   };
 
+  // Los hooks van SIEMPRE antes del early-return (regla de hooks):
+  // si el slug es inválido se usan fallbacks y la página redirige igual.
+  usePageMeta({
+    title: post ? `${post.title} — Artifex Blog` : 'Blog & Notas — Artifex Dev',
+    description: post?.summary ?? 'Blog de Ramiro Escobar.',
+    canonicalPath: post && cat ? `/blog/${cat.slug}/${post.slug}` : '/blog',
+    jsonLd: structuredData && breadcrumbData ? [structuredData, breadcrumbData] : undefined,
+  });
+
+  if (!post || !cat) return <Navigate to="/blog" replace />;
+
   return (
     <>
-      <Helmet>
-        <title>{post.title} — Artifex Blog</title>
-        <meta name="description" content={post.summary} />
-        <meta name="keywords" content={post.tags.join(', ')} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${post.title} — Artifex Blog`} />
-        <meta property="og:description" content={post.summary} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:locale" content="es_AR" />
-        <meta property="article:published_time" content={post.date} />
-        <meta property="article:author" content="Ramiro Aníbal Escobar" />
-        <meta property="article:tag" content={post.tags.join(', ')} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${post.title} — Artifex Blog`} />
-        <meta name="twitter:description" content={post.summary} />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbData)}</script>
-      </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

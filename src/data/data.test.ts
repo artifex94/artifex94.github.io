@@ -28,10 +28,6 @@ describe('portfolio data', () => {
       expect(data.personal.social.linkedin).toMatch(/^https:\/\//);
     });
 
-    it('WhatsApp URL starts with https', () => {
-      expect(data.personal.social.whatsapp).toMatch(/^https:\/\//);
-    });
-
     it('aboutMe is non-empty', () => {
       expect(data.personal.aboutMe.trim().length).toBeGreaterThan(0);
     });

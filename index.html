@@ -1,138 +1,46 @@
 <!doctype html>
-<html lang="es-AR">
+<html lang="es-419">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050505" />
-
-    <!-- ===== Favicon ===== -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg?v=2" />
-
-    <!-- ===== Primary SEO ===== -->
-    <title>Ramiro Escobar — Software Developer | Artifex Dev</title>
-    <meta name="description" content="Desarrollo de plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores. React, TypeScript, Next.js. Victoria, Entre Ríos, Argentina." />
-    <meta name="keywords" content="desarrollador web, software a medida, React, TypeScript, Next.js, landing page, sistema web, Artifex Dev, Ramiro Escobar, Victoria Entre Ríos, Argentina" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar</title>
+    <meta name="description" content="Artifex es el taller de Ramiro Escobar: desarrollo de tiendas e-commerce headless (Next.js + Shopify), fotografía de eventos, retratos y producto, y piezas de tufting artesanales." />
+    <meta name="keywords" content="Desarrollo E-commerce, Headless, React, Next.js, Shopify, Fotografía de eventos, Books, Fotografía de producto, Tufting, Alfombras artesanales, Tapices, Artifex, Ramiro Escobar, Argentina" />
     <meta name="author" content="Ramiro Aníbal Escobar" />
-    <meta name="robots" content="index, follow" />
+    <!-- El mismo build se sirve en artifex.click (Hostinger) y artifex94.github.io;
+         el canonical consolida el SEO en el dominio del negocio. -->
     <link rel="canonical" href="https://artifex.click/" />
 
-    <!-- ===== Geo ===== -->
-    <meta name="geo.region" content="AR-E" />
-    <meta name="geo.placename" content="Victoria, Entre Ríos, Argentina" />
-    <meta name="geo.position" content="-32.621;-60.155" />
-    <meta name="ICBM" content="-32.621, -60.155" />
-
-    <!-- ===== Hreflang ===== -->
-    <link rel="alternate" hreflang="es-AR" href="https://artifex.click/" />
-    <link rel="alternate" hreflang="es" href="https://artifex.click/" />
-    <link rel="alternate" hreflang="x-default" href="https://artifex.click/" />
-
-    <!-- ===== RSS ===== -->
-    <link rel="alternate" type="application/rss+xml" title="Artifex Blog — RSS" href="https://artifex.click/rss.xml" />
-
-    <!-- ===== Open Graph ===== -->
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Artifex Dev" />
     <meta property="og:url" content="https://artifex.click/" />
-    <meta property="og:title" content="Ramiro Escobar — Software Developer | Artifex Dev" />
-    <meta property="og:description" content="Desarrollo plataformas digitales y sistemas web a medida. Entrega rápida, precios transparentes y soporte continuo. Victoria, Entre Ríos, Argentina." />
+    <meta property="og:title" content="Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar" />
+    <meta property="og:description" content="Desarrollo de tiendas e-commerce headless, fotografía de eventos, retratos y producto, y piezas de tufting artesanales. Un taller, tres oficios." />
     <meta property="og:image" content="https://artifex.click/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="Ramiro Escobar — Artifex Dev — Software Developer Portfolio" />
-    <meta property="og:locale" content="es_AR" />
 
-    <!-- ===== Twitter Card ===== -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ramiro Escobar — Software Developer | Artifex Dev" />
-    <meta name="twitter:description" content="Desarrollo plataformas digitales y sistemas web a medida. Entrega rápida, precios transparentes y soporte continuo." />
-    <meta name="twitter:image" content="https://artifex.click/og-image.png" />
-    <meta name="twitter:image:alt" content="Ramiro Escobar — Artifex Dev portfolio preview" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar" />
+    <meta property="twitter:description" content="Desarrollo de tiendas e-commerce headless, fotografía de eventos, retratos y producto, y piezas de tufting artesanales. Un taller, tres oficios." />
+    <meta property="twitter:image" content="https://artifex.click/og-image.png" />
 
-    <!-- ===== Performance: preconnect a dominios externos ===== -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://images.unsplash.com" />
-
-    <!-- ===== JSON-LD: @graph completo ===== -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Person",
-          "@id": "https://artifex.click/#person",
-          "name": "Ramiro Aníbal Escobar",
-          "alternateName": "Artifex Dev",
-          "jobTitle": "Software Solution Developer",
-          "description": "Desarrollo plataformas digitales y sistemas web a medida para empresas, negocios y emprendedores en Argentina.",
-          "url": "https://artifex.click/",
-          "email": "dev@artifex.click",
-          "image": {
-            "@type": "ImageObject",
-            "url": "https://artifex.click/og-image.png",
-            "width": 1200,
-            "height": 630
-          },
-          "sameAs": [
-            "https://github.com/artifex94",
-            "https://www.linkedin.com/in/ramiroescobar"
-          ],
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Victoria",
-            "addressRegion": "Entre Ríos",
-            "addressCountry": "AR"
-          },
-          "knowsAbout": ["React", "TypeScript", "Next.js", "Node.js", "TailwindCSS", "Software Development"]
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://artifex.click/#website",
-          "url": "https://artifex.click/",
-          "name": "Artifex Dev — Ramiro Escobar",
-          "description": "Portfolio y servicios de desarrollo web a medida",
-          "publisher": { "@id": "https://artifex.click/#person" },
-          "inLanguage": "es-AR"
-        },
-        {
-          "@type": "Blog",
-          "@id": "https://artifex.click/#blog",
-          "name": "Artifex Blog",
-          "description": "Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más.",
-          "url": "https://artifex.click/blog",
-          "inLanguage": "es-AR",
-          "author": { "@id": "https://artifex.click/#person" },
-          "publisher": { "@id": "https://artifex.click/#person" }
-        },
-        {
-          "@type": "ProfessionalService",
-          "@id": "https://artifex.click/#service",
-          "name": "Artifex Dev — Desarrollo Web a Medida",
-          "description": "Diseño y desarrollo de plataformas digitales, landing pages y sistemas web para negocios y emprendedores.",
-          "url": "https://artifex.click/business",
-          "provider": { "@id": "https://artifex.click/#person" },
-          "areaServed": { "@type": "Country", "name": "Argentina" },
-          "serviceType": "Desarrollo de Software",
-          "offers": [
-            {
-              "@type": "Offer",
-              "name": "Presencia Digital Express",
-              "description": "Landing page profesional mobile-first con entrega en 1 a 2 semanas.",
-              "priceCurrency": "ARS",
-              "price": "200000"
-            },
-            {
-              "@type": "Offer",
-              "name": "Sistema Web a Medida",
-              "description": "Aplicación web completa con panel de administración y lógica de negocio a medida.",
-              "priceCurrency": "ARS",
-              "price": "1000000"
-            }
-          ]
+    <script type="text/javascript">
+      // Decodifica la ruta que 404.html guardó en el query string y la
+      // restaura antes de que React Router lea la URL.
+      // Técnica: https://github.com/rafgraph/spa-github-pages
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
         }
-      ]
-    }
+      })(window.location);
     </script>
   </head>
   <body>

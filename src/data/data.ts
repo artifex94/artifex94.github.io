@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from './contact';
 import platziCerts from './platzi-certs.json';
 
 // Tipados base para asegurar la escalabilidad de los datos
@@ -7,7 +8,6 @@ export interface Project {
   technologies: string[];
   liveUrl?: string;
   githubUrl?: string;
-  tag?: string;
 }
 
 export interface Experience {
@@ -43,7 +43,7 @@ export interface PortfolioData {
     aka: string;
     title: string;
     emails: { professional: string; personal: string };
-    social: { github: string; linkedin: string; whatsapp: string };
+    social: { github: string; linkedin: string };
     aboutMe: string;
   };
   experience: Experience[];
@@ -52,27 +52,23 @@ export interface PortfolioData {
   projects: Project[];
 }
 
+// Los datos reales que alimentarán tu UI
 export const data: PortfolioData = {
   personal: {
-    name: "Ramiro Anibal Escobar",
+    name: "Ramiro Aníbal Escobar",
     aka: "Artifex Dev",
     title: "Software Solution Developer",
     emails: {
-      professional: "dev@artifex.click",
+      professional: CONTACT_EMAIL,
       personal: "ramiroesc18@gmail.com",
     },
     social: {
       github: "https://github.com/artifex94",
       linkedin: "https://www.linkedin.com/in/ramiroescobar",
-      whatsapp: "https://wa.me/5493436431987?text=Hola%20Ramiro%2C%20vi%20tu%20portfolio%20y%20me%20interesa%20hablar%20sobre%20un%20proyecto.",
     },
-    aboutMe:
-      "Si tu negocio no tiene presencia online, te estás perdiendo clientes que ya buscan lo que ofrecés. " +
-      "Desarrollo sitios web y sistemas digitales para empresas y emprendedores que quieren resultados concretos: " +
-      "más consultas, operaciones ordenadas y una imagen profesional que genera confianza. " +
-      "Precios claros, entrega en tiempo y soporte real.",
+    aboutMe: "Desarrollador orientado a soluciones con un fuerte background en administración de sistemas e integración de software. Combino mi experiencia técnica en redes y bases de datos con el desarrollo moderno frontend y backend para crear herramientas eficientes y escalables.",
   },
-
+  
   experience: [
     {
       company: "Escobar Instalaciones",
@@ -82,9 +78,9 @@ export const data: PortfolioData = {
         "Implementación y gestión de software de monitoreo SoftGuard para sistemas de seguridad, domótica, control de acceso y rastreo GPS.",
         "Administración integral del CRM, saneamiento de bases de datos y configuración de sistemas de alarma mediante Beat Netio.",
         "Desarrollo y mantenimiento de la Landing Page corporativa utilizando Next.js y TypeScript.",
-        "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad.",
-      ],
-    },
+        "Desarrollo de portal de clientes para monitoreo autogestionado de cuentas de seguridad."
+      ]
+    }
   ],
 
   education: [
@@ -101,29 +97,29 @@ export const data: PortfolioData = {
     },
     {
       institution: "Platzi",
-      degree: `+${(platziCerts as unknown[]).length} certificaciones en Desarrollo Web`,
+      degree: `+${(platziCerts as PlatziCert[]).length} certificaciones en Desarrollo Web`,
       period: "2020 - Presente",
       details: "React, Next.js, Node.js, TypeScript, Arquitectura de Software, Bases de Datos.",
-    },
+    }
   ],
 
   skills: [
     {
       category: "Frontend",
-      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Framer Motion"],
+      skills: ["React", "Next.js", "TypeScript", "TailwindCSS", "Framer Motion"]
     },
     {
       category: "Backend & Bases de Datos",
-      skills: ["Node.js", "Java", "SQL", "REST APIs"],
+      skills: ["Node.js", "Java", "SQL", "REST APIs"]
     },
     {
       category: "Herramientas & Workflow",
-      skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"],
+      skills: ["Git", "GitHub", "Vercel", "Figma", "Clean Code"]
     },
     {
       category: "Administración & Sistemas",
-      skills: ["SoftGuard", "Beat Netio", "CRM", "Redes & Infraestructura"],
-    },
+      skills: ["SoftGuard", "Beat Netio", "CRM", "Redes & Infraestructura"]
+    }
   ],
 
   projects: [
@@ -134,32 +130,28 @@ export const data: PortfolioData = {
         "Desarrollé el sitio corporativo completo y un portal de autogestión para que los clientes gestionen sus cuentas sin llamar.",
       technologies: ["Next.js", "TypeScript", "React", "TailwindCSS"],
       liveUrl: "https://instalacionescob.ar",
-      githubUrl: "https://github.com/artifex94/Ei-LandingPage.git",
-      tag: "Proyecto Real",
+      githubUrl: "https://github.com/artifex94/Ei-LandingPage.git"
     },
     {
-      title: "Portal de Autogestion - Escobar Instalaciones",
+      title: "Portal de Autogestión - Escobar Instalaciones",
       description:
         "Los clientes no tenían forma de consultar el estado de sus cuentas sin llamar. " +
         "Desarrollando un portal privado con autenticación, dashboard de cuenta y gestión de servicios contratados.",
-      technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"],
-      tag: "En Desarrollo",
+      technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"]
     },
     {
       title: "Demo - Presencia Digital para Profesionales",
       description:
         "Landing page para profesionales independientes que necesitan captar clientes online. " +
         "Sección de servicios, formulario de contacto, integración WhatsApp y diseño mobile-first orientado a conversión.",
-      technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"],
-      tag: "Demo",
+      technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"]
     },
     {
       title: "Demo - Catálogo Digital para Comercios",
       description:
         "Sitio para tiendas y restaurantes que venden por WhatsApp sin catálogo ordenado. " +
         "Productos o menú en formato visual, pedidos por WhatsApp y ubicación en Google Maps. Optimizado para mobile.",
-      technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"],
-      tag: "Demo",
-    },
-  ],
+      technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"]
+    }
+  ]
 };

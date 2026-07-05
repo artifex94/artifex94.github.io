@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { BookOpen, ArrowRight, Clock, Tag, Heart, ExternalLink, Search, X } from 'lucide-react';
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { categories, getAllPublished, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const CAFECITO_URL = "https://cafecito.app/artifex";
 const MATECITO_URL = "https://matecito.app/artifex"; // actualizar cuando esté validado
@@ -86,6 +86,13 @@ const DonationsSection = () => (
 );
 
 export const Blog = () => {
+  usePageMeta({
+    title: 'Blog & Notas — Artifex Dev',
+    description:
+      'Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más. Blog de Ramiro Escobar.',
+    canonicalPath: '/blog',
+  });
+
   const [query, setQuery] = useState('');
   const allPublished = useMemo(() => getAllPublished(), []);
 
@@ -101,19 +108,6 @@ export const Blog = () => {
 
   return (
     <>
-    <Helmet>
-      <title>Blog & Notas — Artifex Dev</title>
-      <meta name="description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más. Blog de Ramiro Escobar." />
-      <link rel="canonical" href="https://artifex.click/blog" />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content="Blog & Notas — Artifex Dev" />
-      <meta property="og:description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más." />
-      <meta property="og:url" content="https://artifex.click/blog" />
-      <meta property="og:locale" content="es_AR" />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content="Blog & Notas — Artifex Dev" />
-      <meta name="twitter:description" content="Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript y desarrollo web." />
-    </Helmet>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
