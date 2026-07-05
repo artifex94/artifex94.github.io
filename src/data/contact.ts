@@ -11,7 +11,7 @@ export type ServiceKey = 'desarrollo' | 'fotografia' | 'tufting' | 'demo' | 'gen
 
 export const whatsappMessages: Record<ServiceKey, string> = {
   desarrollo:
-    'Hola Ramiro! Vi tu página en artifex.click y quiero consultarte por el desarrollo de una tienda online.',
+    'Hola Ramiro! Vi tu página en artifex.click y quiero consultarte por el desarrollo de un sitio web para mi negocio.',
   demo:
     'Hola Ramiro, vi el demo y me interesa un sitio similar para mi negocio.',
   fotografia:

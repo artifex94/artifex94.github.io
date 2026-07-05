@@ -133,7 +133,7 @@ export const data: PortfolioData = {
       githubUrl: "https://github.com/artifex94/Ei-LandingPage.git"
     },
     {
-      title: "Portal de Autogestion - Escobar Instalaciones",
+      title: "Portal de Autogestión - Escobar Instalaciones",
       description:
         "Los clientes no tenían forma de consultar el estado de sus cuentas sin llamar. " +
         "Desarrollando un portal privado con autenticación, dashboard de cuenta y gestión de servicios contratados.",
