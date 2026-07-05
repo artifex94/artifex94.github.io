@@ -3,11 +3,20 @@ import { motion } from 'framer-motion';
 import { BlueprintBox } from '../components/BlueprintBox';
 import { PricingBox } from '../components/PricingBox';
 import { pricingTiers, onboardingSteps } from '../data/business';
-import { data } from '../data/data';
+import { buildMailto } from '../data/contact';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { ContactCTA } from '../components/ContactCTA';
 
-const auditMailto = `mailto:${data.personal.emails.professional}?subject=${encodeURIComponent('Auditoría Gratuita - Headless E-commerce')}`;
+const auditMailto = buildMailto('Auditoría Gratuita - Headless E-commerce');
 
-export const Business: React.FC = () => {
+export const Desarrollo: React.FC = () => {
+  usePageMeta({
+    title: 'Desarrollo E-commerce Headless | Artifex — Ramiro Escobar',
+    description:
+      'Arquitecturas headless (Next.js + Shopify) para marcas que escalan: velocidad, conversión y soporte continuo. Planes de inversión transparentes.',
+    canonicalPath: '/servicios/desarrollo',
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -89,7 +98,7 @@ export const Business: React.FC = () => {
         </BlueprintBox>
 
         {/* Onboarding Process */}
-        <section className="mb-16">
+        <section>
           <h2 className="text-3xl font-bold text-white mb-10 text-center">Proceso de Onboarding</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {onboardingSteps.map((step) => (
@@ -100,6 +109,12 @@ export const Business: React.FC = () => {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* CTA de cierre */}
+        <section className="mb-16 text-center">
+          <h2 className="text-2xl font-bold text-white mb-6">¿Hablamos de tu proyecto?</h2>
+          <ContactCTA service="desarrollo" emailSubject="Consulta - Desarrollo E-commerce" />
         </section>
       </div>
     </motion.div>

@@ -7,7 +7,12 @@
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   --color-accent: var(--accent-orange);
+  /* Color del texto que va SOBRE el acento (botones): cada theme lo ajusta */
+  --color-on-accent: #000000;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  /* Serif display para las páginas artísticas (fotografía/tufting).
+     El CSS de la fuente se importa dentro de esas páginas: solo pesa en sus chunks. */
+  --font-display: 'Fraunces Variable', Georgia, serif;
 }
 
 @layer base {
@@ -23,6 +28,32 @@
 
   body {
     @apply bg-base text-primary font-mono antialiased;
+  }
+
+  /* Temas por servicio: cada página artística envuelve su contenido en un
+     div con data-theme y todas las utilidades (bg-base, text-accent, ...)
+     se re-skinean solas dentro de ese subtree.
+     IMPORTANTE: hay que sobrescribir los tokens --color-* directamente, NO las
+     vars intermedias (--bg-base...): @theme las resuelve en :root y los hijos
+     heredan el valor ya computado. */
+  [data-theme='fotografia'] {
+    --color-base: #0d0b09; /* negro cálido de galería */
+    --color-surface: #1a1613;
+    --color-line: rgba(237, 231, 222, 0.12);
+    --color-primary: #ede7de;
+    --color-secondary: #9a8f80;
+    --color-accent: #d4a24e; /* ámbar dorado */
+    --color-on-accent: #14100a;
+  }
+
+  [data-theme='tufting'] {
+    --color-base: #f5efe6; /* crema cálido: contraste total con el mundo dev */
+    --color-surface: #ffffff;
+    --color-line: rgba(43, 35, 32, 0.15);
+    --color-primary: #2b2320;
+    --color-secondary: #7a6f66;
+    --color-accent: #c25e4c; /* terracota */
+    --color-on-accent: #fdf9f3;
   }
 }
 
@@ -79,5 +110,22 @@
     .bg-blueprint-grid::before {
       animation: none;
     }
+  }
+
+  /* Fondos de las páginas artísticas (sin grilla blueprint) */
+  .bg-gallery-photo {
+    background-color: var(--color-base);
+    background-image: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      rgba(212, 162, 78, 0.08),
+      transparent 70%
+    );
+  }
+
+  .bg-tufting-warm {
+    background-color: var(--color-base);
+    background-image:
+      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(194, 94, 76, 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
   }
 }

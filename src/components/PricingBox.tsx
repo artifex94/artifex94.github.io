@@ -1,6 +1,6 @@
 import React from 'react';
 import { type PricingTier } from '../data/business';
-import { data } from '../data/data';
+import { buildMailto } from '../data/contact';
 
 export const PricingBox: React.FC<PricingTier> = ({
   name,
@@ -10,7 +10,7 @@ export const PricingBox: React.FC<PricingTier> = ({
   features,
   isPopular
 }) => {
-  const proposalMailto = `mailto:${data.personal.emails.professional}?subject=${encodeURIComponent(`Solicitud de Propuesta - Plan ${name}`)}`;
+  const proposalMailto = buildMailto(`Solicitud de Propuesta - Plan ${name}`);
 
   return (
     <div className={`relative flex flex-col p-8 bg-surface border ${isPopular ? 'border-accent shadow-[0_0_20px_rgba(255,107,0,0.15)] scale-105 z-10' : 'border-line'} transition-transform duration-300 hover:border-accent group`}>

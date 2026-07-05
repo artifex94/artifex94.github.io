@@ -6,8 +6,16 @@ import { BlueprintBox } from '../components/BlueprintBox';
 import { data } from '../data/data';
 import { motion } from 'framer-motion';
 import { Typewriter } from '../components/Typewriter';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const Portfolio = () => {
+  usePageMeta({
+    title: 'Portfolio | Artifex — Ramiro Escobar',
+    description:
+      'Portfolio profesional de Ramiro Aníbal Escobar (Artifex): experiencia, formación, skills y proyectos de desarrollo web y sistemas.',
+    canonicalPath: '/portfolio',
+  });
+
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
@@ -68,19 +76,6 @@ export const Portfolio = () => {
              <Projects />
           </div>
         </div>
-
-        {/* Footer técnico animado */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mt-8 mb-4 border-t border-dashed border-line pt-6"
-        >
-           <p className="text-xs text-secondary font-mono">
-             &gt; Artifex Dev Core // System Ready // {new Date().getFullYear()}
-           </p>
-        </motion.div>
 
       </div>
     </motion.div>

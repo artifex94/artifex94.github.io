@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from './contact';
+
 // Tipados base para asegurar la escalabilidad de los datos
 export interface Project {
   title: string;
@@ -48,7 +50,7 @@ export const data: PortfolioData = {
     aka: "Artifex Dev",
     title: "Software Solution Developer",
     emails: {
-      professional: "dev@artifex.click",
+      professional: CONTACT_EMAIL,
       personal: "ramiroesc18@gmail.com",
     },
     social: {
