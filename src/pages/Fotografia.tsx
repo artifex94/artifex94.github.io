@@ -24,7 +24,7 @@ export const Fotografia: React.FC = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 0.5 }}
       data-theme="fotografia"
       className="min-h-screen w-full bg-gallery-photo py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
