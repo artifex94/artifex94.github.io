@@ -29,7 +29,20 @@ jobs:
 
       - run: npm run test:run
 
-      - run: npm run build
+      # Chromium para el prerender (build:static). Cacheado por versión de
+      # playwright-core para no re-descargarlo en cada corrida.
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Chromium for prerender
+        run: node node_modules/playwright-core/cli.js install --with-deps chromium
+
+      # build:static = build + prerender: escribe el HTML estático por ruta con
+      # H1/meta/JSON-LD reales, para que los crawlers sociales sin JS los lean.
+      - run: npm run build:static
 
       # Publica dist/ en la rama gh-pages (misma rama que usa `npm run deploy`)
       - uses: peaceiris/actions-gh-pages@v4
