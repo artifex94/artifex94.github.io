@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ShoppingCart, MapPin, Clock, Star, Phone, Flame, Leaf, Award } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA_ORDER = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20hacer%20un%20pedido.";
 const WA_RESERVA = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20hacer%20una%20reserva.";
@@ -21,6 +22,13 @@ const menu = [
 ];
 
 export const Gastronomia: React.FC = () => {
+  usePageMeta({
+    title: 'Restaurante — Demo Gastronomía | Artifex',
+    description:
+      'Sitio demo para gastronomía: menú digital con categorías, pedidos y reservas por WhatsApp.',
+    canonicalPath: '/business/gastronomia',
+    noindex: true,
+  });
   const [cat, setCat] = useState('Todo');
 
   const lista = cat === 'Todo' ? menu : menu.filter(m => m.cat === cat);

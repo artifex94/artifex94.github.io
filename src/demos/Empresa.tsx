@@ -7,6 +7,7 @@ import {
   Filter, Calendar, DollarSign, UserCheck, Clock,
 } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA = "https://wa.me/5493436431987?text=Hola%2C%20me%20interesa%20un%20sistema%20de%20gesti%C3%B3n%20para%20mi%20empresa.";
 
@@ -656,6 +657,13 @@ const ViewDocumentos = () => (
 // ── Componente principal ────────────────────────────────────────────────────
 
 export const Empresa = () => {
+  usePageMeta({
+    title: 'Panel de Gestión — Demo Empresa | Artifex',
+    description:
+      'Sistema demo para empresas: dashboard de KPIs, obras, clientes y facturación en una sola vista.',
+    canonicalPath: '/business/empresas',
+    noindex: true,
+  });
   const [activeNav, setActiveNav] = useState('dashboard');
   const meta = sectionMeta[activeNav];
 

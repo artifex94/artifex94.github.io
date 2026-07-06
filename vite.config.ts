@@ -8,20 +8,23 @@ const BASE_URL = 'https://artifex.click';
 
 function buildSitemapXml(): string {
   const published = getAllPublished();
+  // Fecha del build para las páginas estáticas (los posts traen su propia fecha).
+  const buildDate = new Date().toISOString().split('T')[0];
 
   const staticUrls = [
-    { loc: BASE_URL, changefreq: 'weekly', priority: '1.0' },
-    { loc: `${BASE_URL}/blog`, changefreq: 'weekly', priority: '0.9' },
-    { loc: `${BASE_URL}/servicios/desarrollo`, changefreq: 'monthly', priority: '0.8' },
-    { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8' },
-    { loc: `${BASE_URL}/servicios/tufting`, changefreq: 'monthly', priority: '0.8' },
-    { loc: `${BASE_URL}/portfolio`, changefreq: 'monthly', priority: '0.6' },
+    { loc: BASE_URL, changefreq: 'weekly', priority: '1.0', lastmod: buildDate },
+    { loc: `${BASE_URL}/blog`, changefreq: 'weekly', priority: '0.9', lastmod: buildDate },
+    { loc: `${BASE_URL}/servicios/desarrollo`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
+    { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
+    { loc: `${BASE_URL}/servicios/tufting`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
+    { loc: `${BASE_URL}/portfolio`, changefreq: 'monthly', priority: '0.6', lastmod: buildDate },
   ];
 
   const categoryUrls = categories.map(cat => ({
     loc: `${BASE_URL}/blog/${cat.slug}`,
     changefreq: 'weekly',
     priority: '0.8',
+    lastmod: buildDate,
   }));
 
   const postUrls = published.map(post => ({
