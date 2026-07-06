@@ -68,7 +68,7 @@ function App() {
       {/* Navbar y Footer viven fuera de las rutas: conservan siempre la estética
           blueprint y funcionan como marco común entre los temas por servicio. */}
       {!isDemo && <Navbar />}
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="min-h-screen bg-base" aria-hidden="true" />}>
         <Routes>
           {/* La home es el hub de servicios: cada cliente entra al rubro que busca */}
           <Route path="/" element={<Home />} />
