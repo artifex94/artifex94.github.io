@@ -107,7 +107,9 @@ async function main() {
       await page.goto(origin + route, { waitUntil: 'networkidle', timeout: 30000 });
 
       // Real H1 present (covers Typewriter even though the seed resolves it).
-      await page
+      // If it never appears, skip this route: writing a headless-partial page
+      // and counting it as a success would mask a real failure.
+      const h1Ok = await page
         .waitForFunction(
           () => {
             const h1 = document.querySelector('#root h1');
@@ -115,7 +117,14 @@ async function main() {
           },
           { timeout: 8000 }
         )
-        .catch(() => warnings.push(`${route}: no h1`));
+        .then(() => true)
+        .catch(() => false);
+      if (!h1Ok) {
+        warnings.push(`${route}: no h1 — skipped`);
+        console.log(`  ✗ ${route} — no H1, skipped`);
+        await page.close();
+        continue;
+      }
 
       // framer opacity settled → content visible in the snapshot.
       await page

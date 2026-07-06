@@ -28,8 +28,10 @@ const META_DESCRIPTION_MAX = 160;
 // an ellipsis so long post summaries don't get cut mid-word in results. The
 // full text still lives in the visible page and the JSON-LD description.
 const truncateForMeta = (text: string): string => {
-  if (text.length <= META_DESCRIPTION_MAX) return text;
-  const slice = text.slice(0, META_DESCRIPTION_MAX - 1);
+  // Spread por code points para no partir un par surrogate (emoji) al cortar.
+  const chars = [...text];
+  if (chars.length <= META_DESCRIPTION_MAX) return text;
+  const slice = chars.slice(0, META_DESCRIPTION_MAX - 1).join('');
   const lastSpace = slice.lastIndexOf(' ');
   return `${slice.slice(0, lastSpace > 0 ? lastSpace : slice.length).trimEnd()}…`;
 };

@@ -48,7 +48,9 @@ export const person: JsonLdNode = {
   name: data.personal.name,
   // Cubre las variantes de búsqueda de marca personal (Ramiro Escobar / Dev / Artifex).
   alternateName: ['Ramiro Escobar', 'Ramiro Dev', 'Artifex'],
-  jobTitle: data.personal.title,
+  // Los tres oficios como títulos de la persona: ancla "Ramiro Fotografía" y
+  // "Ramiro Tufting" a la entidad personal, no solo a la organización.
+  jobTitle: [data.personal.title, 'Fotógrafo', 'Artista textil (tufting)'],
   url: `${BASE}/portfolio`,
   image: OG_IMAGE,
   email: CONTACT_EMAIL,

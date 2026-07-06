@@ -80,13 +80,16 @@ export const BlogPost = () => {
       { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': canonicalUrl },
     ],
   };
+  // Fecha-sola a ISO 8601 con hora y huso de Argentina (-03:00): formato estricto
+  // que piden Google/OG para article y BlogPosting.
+  const isoDate = post ? `${post.date}T00:00:00-03:00` : undefined;
   const structuredData = post && {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     'headline': post.title,
     'description': post.summary,
-    'datePublished': post.date,
-    'dateModified': post.date,
+    'datePublished': isoDate,
+    'dateModified': isoDate,
     'image': 'https://artifex.click/og-image.png',
     'url': canonicalUrl,
     'inLanguage': 'es-AR',
@@ -95,9 +98,10 @@ export const BlogPost = () => {
       '@id': 'https://artifex.click/#person',
       'name': 'Ramiro Aníbal Escobar',
     },
+    // publisher como la organización (tiene logo): lo que Google recomienda para
+    // Article, en vez de una Person sin logo.
     'publisher': {
-      '@type': 'Person',
-      '@id': 'https://artifex.click/#person',
+      '@id': 'https://artifex.click/#org',
     },
     'keywords': post.tags.join(', '),
   };
@@ -109,8 +113,8 @@ export const BlogPost = () => {
     description: post?.summary ?? 'Blog de Ramiro Escobar.',
     canonicalPath: post && cat ? `/blog/${cat.slug}/${post.slug}` : '/blog',
     ogType: post ? 'article' : undefined,
-    articlePublishedTime: post?.date,
-    articleModifiedTime: post?.date,
+    articlePublishedTime: isoDate,
+    articleModifiedTime: isoDate,
     jsonLd: structuredData && breadcrumbData ? [structuredData, breadcrumbData] : undefined,
   });
 
