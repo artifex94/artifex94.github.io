@@ -11,7 +11,8 @@
     "start": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "photos:sync": "node --env-file-if-exists=.env scripts/photos-sync.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.2.9",
@@ -39,6 +40,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^29.1.1",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.3.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
