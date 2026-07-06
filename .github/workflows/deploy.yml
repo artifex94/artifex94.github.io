@@ -67,4 +67,6 @@ jobs:
           protocol: ftps
           port: 21
           local-dir: ./dist/
-          server-dir: public_html/
+          # La cuenta FTP de Hostinger ya tiene su home en la raíz web
+          # (public_html), así que subimos directo a ./ y no a public_html/.
+          server-dir: ./
