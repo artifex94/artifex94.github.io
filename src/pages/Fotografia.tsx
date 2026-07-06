@@ -66,7 +66,10 @@ export const Fotografia: React.FC = () => {
         <section>
           <div className="text-center mb-10">
             <h2 className="font-display text-3xl font-semibold mb-3">Trabajo seleccionado</h2>
-            <p className="text-secondary">Una muestra de cada rubro. Tocá cualquier foto para ampliarla.</p>
+            <p className="text-secondary">
+              Un paneo general por el trabajo hecho hasta ahora. Tocá cualquier foto para
+              ampliarla.
+            </p>
           </div>
           <GalleryGrid photos={galleryPhotos} />
         </section>
