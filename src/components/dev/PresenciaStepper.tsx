@@ -28,7 +28,7 @@ export const PresenciaStepper: React.FC = () => {
 
       {/* Segmented control */}
       <div
-        role="tablist"
+        role="group"
         aria-label="Nivel de Presencia Digital"
         className="relative flex gap-1 rounded-sm border border-line bg-base p-1"
       >
@@ -37,9 +37,8 @@ export const PresenciaStepper: React.FC = () => {
           return (
             <button
               key={lvl.id}
-              role="tab"
               type="button"
-              aria-selected={selected}
+              aria-pressed={selected}
               onClick={() => setActive(i)}
               className="relative flex min-h-[44px] flex-1 items-center justify-center rounded-sm px-2 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
