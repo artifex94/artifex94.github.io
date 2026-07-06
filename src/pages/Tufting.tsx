@@ -5,15 +5,8 @@ import { motion } from 'framer-motion';
 import '@fontsource-variable/fraunces/index.css';
 import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
-import { tuftingLines, tuftingPieces, type PieceStatus } from '../data/tufting';
+import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { cn } from '../utils/cn';
-
-const statusLabels: Record<PieceStatus, { label: string; className: string }> = {
-  disponible: { label: 'Disponible', className: 'bg-accent text-on-accent' },
-  vendida: { label: 'Vendida', className: 'bg-primary/10 text-secondary' },
-  encargo: { label: 'A pedido', className: 'border border-accent text-accent' },
-};
 
 export const Tufting: React.FC = () => {
   usePageMeta({
@@ -27,7 +20,7 @@ export const Tufting: React.FC = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 0.5 }}
       data-theme="tufting"
       className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
@@ -70,59 +63,45 @@ export const Tufting: React.FC = () => {
           })}
         </section>
 
-        {/* Piezas */}
+        {/* Categorías */}
         <section>
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl font-semibold mb-3">Piezas</h2>
+            <h2 className="font-display text-3xl font-semibold mb-3">Qué tejo</h2>
             <p className="text-secondary max-w-2xl mx-auto">
-              Algunas piezas hechas y ejemplos de encargos. Cada una es única: si querés algo
-              parecido, lo diseñamos a tu medida.
+              Tres formatos para arrancar. Contame tu idea y la armamos juntos, a tu medida.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tuftingPieces.map((piece, index) => {
-              const status = statusLabels[piece.status];
-              return (
-                <motion.div
-                  key={piece.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-30px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-surface border border-line rounded-2xl overflow-hidden shadow-sm"
-                >
-                  {piece.image ? (
-                    <img
-                      src={piece.image}
-                      alt={`Pieza de tufting: ${piece.title}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full aspect-square object-cover"
-                    />
-                  ) : (
-                    <ImagePlaceholder className="border-0 rounded-none" />
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                      <h3 className="font-display text-lg font-semibold">{piece.title}</h3>
-                      <span
-                        className={cn(
-                          'text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap',
-                          status.className
-                        )}
-                      >
-                        {status.label}
-                      </span>
-                    </div>
-                    <p className="text-sm text-secondary mb-1">{piece.size}</p>
-                    <p className="text-xs text-secondary mb-3">{piece.materials}</p>
-                    {piece.price && piece.status === 'disponible' && (
-                      <p className="text-accent font-bold">{piece.price}</p>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {tuftingCategories.map((category, index) => (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-surface border border-line rounded-2xl overflow-hidden shadow-sm"
+              >
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={`Pieza de tufting: ${category.title}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full aspect-square object-cover"
+                  />
+                ) : (
+                  <ImagePlaceholder
+                    label="Producto en proceso"
+                    elegantLabel
+                    className="border-0 rounded-none"
+                  />
+                )}
+                <div className="p-6">
+                  <h3 className="font-display text-lg font-semibold mb-2">{category.title}</h3>
+                  <p className="text-sm text-secondary leading-relaxed">{category.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
 
