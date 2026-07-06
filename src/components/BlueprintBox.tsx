@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import { cn } from '../utils/cn';
-import { 
-  motion, 
-  useMotionValue, 
-  useSpring, 
-  useTransform, 
-  useScroll, 
-  useVelocity 
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useScroll,
+  useVelocity,
+  useReducedMotion
 } from 'framer-motion';
 
 interface BlueprintBoxProps {
@@ -26,6 +27,7 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   delay = 0
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
 
   // ==========================================
   // 1. LÓGICA DE PUNTERO (Ratón y Táctil)
@@ -87,25 +89,25 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   };
 
   return (
-    <motion.div 
+    <motion.div
       style={{ perspective: 1200 }}
-      initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={reduce ? false : { opacity: 0, y: 20, filter: "blur(5px)" }}
+      whileInView={reduce ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-30px" }}
       transition={{ duration: 0.6, ease: "easeOut", delay }}
       className={cn("relative", className)}
     >
       <motion.div
         ref={ref}
-        onPointerMove={handlePointerMove}
+        onPointerMove={reduce ? undefined : handlePointerMove}
         onPointerLeave={handlePointerReset}
         onPointerUp={handlePointerReset}     // Reset al levantar el dedo (permite clic)
         onPointerCancel={handlePointerReset} // Reset si el navegador toma el control (scroll nativo)
-        style={{ 
-          rotateX, 
-          rotateY,
-          transformStyle: "preserve-3d" 
-        }}
+        style={
+          reduce
+            ? { transformStyle: "preserve-3d" }
+            : { rotateX, rotateY, transformStyle: "preserve-3d" }
+        }
         className={cn(
           "relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40",
           innerClassName

@@ -45,7 +45,7 @@ describe('Desarrollo page', () => {
     renderWithProviders(<Desarrollo />);
     expect(screen.getByText('$200.000')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Contenido' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Contenido' }));
 
     expect(screen.getByText('$400.000')).toBeInTheDocument();
     expect(screen.queryByText('$200.000')).not.toBeInTheDocument();
