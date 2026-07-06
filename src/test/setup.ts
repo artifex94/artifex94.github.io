@@ -40,24 +40,31 @@ vi.mock('framer-motion', async () => {
     get: (_target, tag: string) => createMotionEl(tag),
   });
 
+  // Minimal MotionValue stub. `.on()` and `.subscribe()` return an unsubscribe fn
+  // so scroll-driven code (useScroll/useSpring/useTransform) can attach listeners.
+  const motionValue = (initial = 0) => ({
+    get: () => initial,
+    set: vi.fn(),
+    on: vi.fn(() => vi.fn()),
+    subscribe: vi.fn(() => vi.fn()),
+    destroy: vi.fn(),
+  });
+
   return {
     motion,
     AnimatePresence: ({ children }: { children: unknown }) =>
+      createElement(Fragment, null, children as React.ReactNode),
+    LayoutGroup: ({ children }: { children: unknown }) =>
       createElement(Fragment, null, children as React.ReactNode),
     MotionConfig: ({ children }: { children: unknown }) =>
       createElement(Fragment, null, children as React.ReactNode),
     useReducedMotion: () => false,
     useInView: () => true,
-    useMotionValue: (initial: number) => ({
-      get: () => initial,
-      set: vi.fn(),
-      subscribe: vi.fn(() => vi.fn()),
-      destroy: vi.fn(),
-    }),
+    useMotionValue: (initial: number) => motionValue(initial),
     useSpring: (v: unknown) => v,
-    useTransform: () => ({ get: () => 0, set: vi.fn(), subscribe: vi.fn(() => vi.fn()) }),
-    useVelocity: () => ({ get: () => 0, subscribe: vi.fn(() => vi.fn()) }),
-    useScroll: () => ({ scrollY: { get: () => 0, subscribe: vi.fn(() => vi.fn()) } }),
+    useTransform: () => motionValue(0),
+    useVelocity: () => motionValue(0),
+    useScroll: () => ({ scrollY: motionValue(0), scrollYProgress: motionValue(0) }),
     animate: vi.fn(() => ({ stop: vi.fn() })),
   };
 });
