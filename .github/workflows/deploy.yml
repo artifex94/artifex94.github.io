@@ -15,10 +15,6 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # Expuesto a nivel job para poder saltear el deploy FTP con `if` cuando el
-    # secret todavía no está cargado (los secrets no se pueden usar en `if:`).
-    env:
-      FTP_SERVER: ${{ secrets.FTP_SERVER }}
     steps:
       - uses: actions/checkout@v5
 
@@ -48,29 +44,12 @@ jobs:
       # H1/meta/JSON-LD reales, para que los crawlers sociales sin JS los lean.
       - run: npm run build:static
 
-      # Publica dist/ en la rama gh-pages (misma rama que usa `npm run deploy`)
+      # Publica dist/ prerenderizado en la rama gh-pages (GitHub Pages).
+      # Nota: artifex.click (Hostinger) se sirve por un mecanismo del hPanel que
+      # no se pudo alcanzar por FTP — la carpeta de la cuenta FTP no es el web
+      # root real. Para que artifex.click sirva el prerender, apuntar ese deploy
+      # de Hostinger a la rama gh-pages (que ya trae el HTML por-ruta).
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-
-      # Sube el mismo dist/ prerenderizado a Hostinger (dominio canonical
-      # artifex.click) por FTPS. Se saltea si los secrets no están cargados, así
-      # el deploy a gh-pages nunca se rompe por falta de credenciales.
-      - name: Deploy to Hostinger (FTPS)
-        if: ${{ env.FTP_SERVER != '' }}
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          local-dir: ./dist/
-          # La cuenta FTP inicia sesión en el home (/home/uXXXX), no en el web
-          # root. El sitio se sirve desde domains/artifex.click/public_html, así
-          # que subimos ahí (ruta relativa al home de la cuenta).
-          server-dir: /home/u356429122/domains/artifex.click/public_html/
-          # Nombre de estado propio: al cambiar de carpeta no hay estado previo
-          # aquí, así que fuerza una subida completa; luego es incremental.
-          state-name: .artifex-ftp-state.json
