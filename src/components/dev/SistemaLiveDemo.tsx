@@ -35,6 +35,8 @@ export const SistemaLiveDemo: React.FC = () => {
   const clientes = CLIENTES[tick % CLIENTES.length];
   const cobranzas = COBRANZAS[tick % COBRANZAS.length];
   const bars = CHART[tick % CHART.length];
+  const maxBar = Math.max(...bars);
+  const peakIndex = bars.indexOf(maxBar);
 
   return (
     <div
@@ -85,21 +87,37 @@ export const SistemaLiveDemo: React.FC = () => {
             </div>
           </div>
 
-          {/* Chart — baseline ties the bars to the KPIs above */}
+          {/* Chart — baseline ties the bars to the KPIs above. Full orange is
+              reserved for the single peak so it never competes with the CTAs;
+              the rest step down in opacity. */}
           <div className="relative mt-4 flex h-24 items-end gap-2 border-b border-t border-line/60 pb-px pt-3">
-            {bars.map((h, i) => (
-              <motion.div
-                key={i}
-                className="flex-1 rounded-t-sm bg-accent/80"
-                initial={reduce ? false : { height: 0 }}
-                animate={{ height: `${h}%` }}
-                transition={
-                  reduce
-                    ? { duration: 0 }
-                    : { type: 'spring', stiffness: 200, damping: 22, delay: active ? 0 : i * 0.05 }
-                }
-              />
-            ))}
+            {bars.map((h, i) => {
+              const isPeak = i === peakIndex;
+              const opacity = isPeak ? 1 : 0.35 + (h / maxBar) * 0.25;
+              return (
+                <div key={i} className="relative flex h-full flex-1 items-end">
+                  {isPeak && (
+                    <span
+                      className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1 whitespace-nowrap font-mono text-[10px] font-bold text-accent"
+                      style={{ bottom: `${h}%` }}
+                    >
+                      $92K
+                    </span>
+                  )}
+                  <motion.div
+                    className="w-full rounded-t-sm bg-accent"
+                    style={{ opacity }}
+                    initial={reduce ? false : { height: 0 }}
+                    animate={{ height: `${h}%` }}
+                    transition={
+                      reduce
+                        ? { duration: 0 }
+                        : { type: 'spring', stiffness: 200, damping: 22, delay: active ? 0 : i * 0.05 }
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

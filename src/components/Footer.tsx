@@ -67,7 +67,7 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
             )}
-            <li className="flex gap-4 mt-1">
+            <li className="flex gap-6 mt-1">
               <a
                 href={data.personal.social.github}
                 target="_blank"

@@ -12,6 +12,8 @@ import {
 interface BlueprintBoxProps {
   children: React.ReactNode;
   className?: string;
+  /** Overrides for the inner framed box (e.g. tighter padding). */
+  innerClassName?: string;
   coords?: { x: number; y: number };
   delay?: number;
 }
@@ -19,6 +21,7 @@ interface BlueprintBoxProps {
 export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
   children,
   className,
+  innerClassName,
   coords,
   delay = 0
 }) => {
@@ -103,7 +106,10 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
           rotateY,
           transformStyle: "preserve-3d" 
         }}
-        className="relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40"
+        className={cn(
+          "relative w-full h-full border border-dashed border-line bg-base/80 backdrop-blur-sm p-6 sm:p-8 transition-colors hover:border-accent/40",
+          innerClassName
+        )}
       >
         <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: "translateZ(20px)" }} className="absolute -top-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>

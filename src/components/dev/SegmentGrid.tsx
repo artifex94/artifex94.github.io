@@ -13,7 +13,7 @@ export const SegmentGrid: React.FC = () => {
     <section>
       <Reveal className="mb-8 text-center md:mb-10">
         <h2 className="text-3xl font-bold text-white">¿Con qué trabajás?</h2>
-        <p className="mt-3 text-primary/70">
+        <p className="mt-3 text-primary/80">
           Elegí tu rubro y mirá cómo se ve resuelto. Cada uno tiene su demo navegable.
         </p>
       </Reveal>

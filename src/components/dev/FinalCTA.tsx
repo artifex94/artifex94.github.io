@@ -7,14 +7,14 @@ import { ContactCTA } from '../ContactCTA';
 export const FinalCTA: React.FC = () => {
   return (
     <section className="-mt-10 md:-mt-12">
-      <BlueprintBox>
+      <BlueprintBox innerClassName="p-4 sm:p-6">
         <div className="py-5 text-center sm:py-6">
           <h2 className="text-3xl font-bold text-white">¿Tenés algo en mente?</h2>
-          <p className="mx-auto mt-4 max-w-xl text-primary/70">
+          <p className="mx-auto mt-4 max-w-xl text-primary/80">
             Contame qué necesitás para tu negocio. Te respondo yo — no un bot, no un equipo de
             ventas.
           </p>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-primary/60">
+          <p className="mx-auto mt-2 max-w-xl text-sm text-primary/70">
             La primera charla es sin cargo y sin compromiso.
           </p>
           <ContactCTA
