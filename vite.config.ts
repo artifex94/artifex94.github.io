@@ -97,4 +97,25 @@ export default defineConfig({
   // Con BrowserRouter el base debe ser absoluto: './' rompe los assets
   // cuando se carga una ruta anidada como /business.
   base: '/',
+  build: {
+    rollupOptions: {
+      output: {
+        // Separa las libs pesadas del chunk de entrada: quedan cacheadas por
+        // el navegador entre deploys que no las tocan (cambian con poca
+        // frecuencia respecto del código propio).
+        advancedChunks: {
+          groups: [
+            {
+              name: 'react-vendor',
+              test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/,
+            },
+            {
+              name: 'framer-vendor',
+              test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
 });
