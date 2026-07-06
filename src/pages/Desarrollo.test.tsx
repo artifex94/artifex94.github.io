@@ -48,7 +48,7 @@ describe('Desarrollo page', () => {
 
     expect(screen.getByText('$400.000')).toBeInTheDocument();
     expect(screen.queryByText('$200.000')).not.toBeInTheDocument();
-    expect(screen.getByText(/Todo lo de Presencia, más un blog/)).toBeInTheDocument();
+    expect(screen.getByText(/Todo lo de Esencial, más un blog/)).toBeInTheDocument();
   });
 
   it('expands a segment card via aria-expanded on click', () => {

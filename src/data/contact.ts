@@ -29,11 +29,11 @@ export type TierVariant = 'presencia' | 'contenido' | 'negocio' | 'sistema';
 
 export const whatsappTierMessages: Record<TierVariant, string> = {
   presencia:
-    'Hola Ramiro! Vi tu página y me interesa el plan Presencia ($200.000). Quiero contarte sobre mi negocio.',
+    'Hola Ramiro! Vi tu página y me interesa el plan Esencial ($200.000). Quiero contarte sobre mi negocio.',
   contenido:
     'Hola Ramiro! Vi tu página y me interesa el plan Contenido ($400.000). Quiero contarte sobre mi negocio.',
   negocio:
-    'Hola Ramiro! Vi tu página y me interesa el plan Negocio ($600.000). Quiero contarte sobre mi negocio.',
+    'Hola Ramiro! Vi tu página y me interesa el plan Tienda ($600.000). Quiero contarte sobre mi negocio.',
   sistema:
     'Hola Ramiro! Vi tu página y me interesa un Sistema Web a Medida. Quiero contarte qué necesito.',
 };

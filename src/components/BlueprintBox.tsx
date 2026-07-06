@@ -16,11 +16,11 @@ interface BlueprintBoxProps {
   delay?: number;
 }
 
-export const BlueprintBox: React.FC<BlueprintBoxProps> = ({ 
-  children, 
-  className, 
-  coords = { x: 10, y: 20 },
-  delay = 0 
+export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
+  children,
+  className,
+  coords,
+  delay = 0
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -110,9 +110,11 @@ export const BlueprintBox: React.FC<BlueprintBoxProps> = ({
         <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -left-[5px] text-accent text-xs opacity-80 leading-none">+</div>
         <div style={{ transform: "translateZ(20px)" }} className="absolute -bottom-[5px] -right-[5px] text-accent text-xs opacity-80 leading-none">+</div>
 
-        <div style={{ transform: "translateZ(30px)" }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
-          [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
-        </div>
+        {coords && (
+          <div style={{ transform: "translateZ(30px)" }} className="absolute -top-3 right-4 bg-base px-2 text-[10px] text-secondary border border-dashed border-line tracking-wider">
+            [x:{coords.x.toString().padStart(2, '0')}, y:{coords.y.toString().padStart(2, '0')}]
+          </div>
+        )}
 
         <div style={{ transform: "translateZ(40px)" }} className="relative z-10">
           {children}

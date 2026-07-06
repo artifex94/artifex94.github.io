@@ -5,7 +5,7 @@ import { data } from '../data/data';
 import { CONTACT_EMAIL, buildWhatsAppUrl } from '../data/contact';
 
 const serviceLinks = [
-  { to: '/servicios/desarrollo', label: 'Desarrollo e-commerce' },
+  { to: '/servicios/desarrollo', label: 'Desarrollo web' },
   { to: '/servicios/fotografia', label: 'Fotografía' },
   { to: '/servicios/tufting', label: 'Tufting' },
   { to: '/portfolio', label: 'Portfolio' },

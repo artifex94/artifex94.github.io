@@ -80,7 +80,7 @@ export interface PresenciaLevel {
 export const presenciaLevels: PresenciaLevel[] = [
   {
     id: 'presencia',
-    label: 'Presencia',
+    label: 'Esencial',
     price: '$200.000',
     pitch: 'Una web clara que muestra quién sos y qué hacés: tu negocio visible y captando consultas en menos de dos semanas.',
     features: [
@@ -95,9 +95,9 @@ export const presenciaLevels: PresenciaLevel[] = [
     id: 'contenido',
     label: 'Contenido',
     price: '$400.000',
-    pitch: 'Todo lo de Presencia, más un blog o secciones que actualizás vos mismo, sin depender de nadie.',
+    pitch: 'Todo lo de Esencial, más un blog o secciones que actualizás vos mismo, sin depender de nadie.',
     features: [
-      'Todo lo de Presencia',
+      'Todo lo de Esencial',
       'Blog o secciones que administrás desde un panel simple',
       'Actualizás el contenido sin llamar a un desarrollador',
       'Optimización básica para aparecer en Google',
@@ -106,9 +106,9 @@ export const presenciaLevels: PresenciaLevel[] = [
   },
   {
     id: 'negocio',
-    label: 'Negocio',
+    label: 'Tienda',
     price: '$600.000',
-    pitch: 'Una tienda online completa para vender, gestionar productos y ordenar tu proceso comercial de punta a punta.',
+    pitch: 'Una tienda online completa para vender por internet: catálogo, carrito y pagos, con tu proceso comercial ordenado de punta a punta.',
     features: [
       'Todo lo de Contenido',
       'Catálogo de productos con búsqueda y filtros',
@@ -132,7 +132,7 @@ export const sistemaTier: SistemaTier = {
   name: 'Sistema Web a Medida',
   target: 'Para negocios que necesitan sistematizar su operación: clientes, turnos, catálogos o tableros de control.',
   price: '$1.000.000',
-  badge: 'Recomendado',
+  badge: 'El más completo',
   features: [
     'Sistema funcionando en 90 días, con soporte incluido el primer año',
     'Panel de administración propio: todo el control desde una pantalla',
@@ -157,7 +157,7 @@ export const procesoSteps: ProcessStep[] = [
   {
     icon: MessagesSquare,
     title: 'Charlamos',
-    desc: 'Una charla para entender tu negocio, el problema y a dónde querés llegar. Sin cargo y sin compromiso.',
+    desc: 'Una charla para entender tu negocio, el problema y a dónde querés llegar.',
   },
   {
     icon: FileText,

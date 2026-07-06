@@ -17,7 +17,7 @@ interface StepNodeProps {
 // via useTransform — no state is set on scroll, which keeps it test-safe.
 const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, reduce }) => {
   const fill = useTransform(progress, [threshold - 0.04, threshold + 0.02], [0, 1]);
-  const dim = useTransform(progress, [threshold - 0.06, threshold], [0.4, 1]);
+  const dim = useTransform(progress, [threshold - 0.06, threshold], [0.7, 1]);
   const Icon = step.icon;
 
   return (

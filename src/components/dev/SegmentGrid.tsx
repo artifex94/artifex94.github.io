@@ -19,7 +19,7 @@ export const SegmentGrid: React.FC = () => {
       </Reveal>
 
       <LayoutGroup>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {segments.map((segment) => {
             const isOpen = openSlug === segment.slug;
             return (

@@ -19,7 +19,7 @@ export const WhyMe: React.FC = () => {
         {differentiators.map((item, i) => {
           const Icon = item.icon;
           return (
-            <BlueprintBox key={item.title} coords={{ x: 20 + i * 25, y: 60 }} delay={i * 0.1}>
+            <BlueprintBox key={item.title} delay={i * 0.1}>
               <Icon className="mb-4 h-6 w-6 text-accent" aria-hidden="true" />
               <h3 className="mb-2 font-bold text-white">{item.title}</h3>
               <p className="text-sm leading-relaxed text-secondary">{item.desc}</p>
