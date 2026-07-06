@@ -22,10 +22,15 @@ const address: JsonLdNode = {
   '@type': 'PostalAddress',
   addressLocality: 'Victoria',
   addressRegion: 'Entre Ríos',
+  postalCode: '3153',
   addressCountry: 'AR',
 };
 
-const sameAs = [data.personal.social.github, data.personal.social.linkedin];
+const sameAs = [
+  data.personal.social.github,
+  data.personal.social.linkedin,
+  // TODO: agregar Instagram/Behance cuando el usuario los pase
+];
 
 export const website: JsonLdNode = {
   '@type': 'WebSite',
@@ -54,15 +59,28 @@ export const person: JsonLdNode = {
 };
 
 export const org: JsonLdNode = {
-  // ProfessionalService (subtipo de LocalBusiness): aporta señales geo/locales
-  // sin exigir una vidriera física con horarios.
-  '@type': 'ProfessionalService',
+  // ProfessionalService + LocalBusiness: aporta señales geo/locales fuertes
+  // (teléfono, coordenadas, horario, rango de precios) sin exponer domicilio.
+  '@type': ['ProfessionalService', 'LocalBusiness'],
   '@id': ORG_ID,
   name: 'Artifex',
   url: `${BASE}/`,
   founder: { '@id': PERSON_ID },
   areaServed: AREA_SERVED,
   address,
+  telephone: '+5493436431987',
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: -32.6197,
+    longitude: -60.156,
+  },
+  priceRange: '$$',
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '09:00',
+    closes: '18:00',
+  },
   sameAs,
   logo: `${BASE}/favicon.svg`,
   image: OG_IMAGE,
@@ -72,16 +90,23 @@ export const org: JsonLdNode = {
   })),
 };
 
-// Nodos base que sobreviven a la navegación (inyectados una sola vez).
-export const baseGraph: JsonLdNode[] = [website, person, org];
+// Overrides por servicio: refuerzan el keyword del oficio sin inventar datos.
+// (tufting apunta a "alfombra"/"tapiz", que es como el prospecto busca).
+const serviceOverrides: Record<string, JsonLdNode> = {
+  tufting: {
+    serviceType: 'Alfombras y tapices artesanales de tufting',
+    alternateName: ['Alfombras artesanales', 'Tapices artesanales', 'Tufting'],
+  },
+};
 
-// Un Service por servicio del hub. Se inyectan por página (no en el grafo base),
-// como scripts autónomos, por eso llevan su propio @context.
+// Un Service por servicio del hub. Viven en el grafo base (no por página),
+// así org.makesOffer[].itemOffered → #service-* resuelve en TODAS las rutas
+// y no quedan referencias colgantes fuera de Home. Sin @context propio: son
+// nodos del @graph que envuelve withContext.
 export const serviceSchemas: Record<string, JsonLdNode> = Object.fromEntries(
   services.map((s) => [
     s.id,
     {
-      '@context': 'https://schema.org',
       '@type': 'Service',
       '@id': serviceId(s.id),
       name: s.title,
@@ -90,9 +115,18 @@ export const serviceSchemas: Record<string, JsonLdNode> = Object.fromEntries(
       url: `${BASE}${s.href}`,
       provider: { '@id': ORG_ID },
       areaServed: AREA_SERVED,
+      ...serviceOverrides[s.id],
     },
   ]),
 );
+
+// Nodos base que sobreviven a la navegación (inyectados una sola vez).
+export const baseGraph: JsonLdNode[] = [
+  website,
+  person,
+  org,
+  ...Object.values(serviceSchemas),
+];
 
 // Envuelve nodos en un único documento JSON-LD con @graph.
 export const withContext = (nodes: JsonLdNode[]): JsonLdNode => ({

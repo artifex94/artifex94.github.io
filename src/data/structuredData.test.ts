@@ -15,22 +15,31 @@ import {
 import { services } from './services';
 
 describe('structuredData graph', () => {
-  it('exposes the three base nodes with their expected @type', () => {
+  it('exposes the base nodes with their expected @type', () => {
     expect(website['@type']).toBe('WebSite');
     expect(person['@type']).toBe('Person');
-    expect(org['@type']).toBe('ProfessionalService');
-    expect(baseGraph).toEqual([website, person, org]);
+    // El org es ProfessionalService + LocalBusiness (señales locales fuertes).
+    expect(org['@type']).toEqual(['ProfessionalService', 'LocalBusiness']);
   });
 
-  it('assigns stable, unique @ids across the base graph and services', () => {
-    const ids = [
-      ...baseGraph.map((n) => n['@id']),
-      ...Object.values(serviceSchemas).map((n) => n['@id']),
-    ];
+  it('includes website, person, org and the three services in the base graph', () => {
+    // Los Service viven en el grafo base para que org.makesOffer resuelva en
+    // TODAS las rutas (antes quedaban colgantes fuera de Home).
+    expect(baseGraph).toHaveLength(6);
+    expect(baseGraph).toEqual(
+      expect.arrayContaining([website, person, org, ...Object.values(serviceSchemas)]),
+    );
+  });
+
+  it('assigns stable, unique @ids across the whole base graph', () => {
+    const ids = baseGraph.map((n) => n['@id']);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toContain(WEBSITE_ID);
     expect(ids).toContain(PERSON_ID);
     expect(ids).toContain(ORG_ID);
+    for (const service of services) {
+      expect(ids).toContain(serviceId(service.id));
+    }
   });
 
   it('links the base nodes to each other by @id without dangling refs', () => {
@@ -45,14 +54,35 @@ describe('structuredData graph', () => {
     );
   });
 
-  it('models the org as a ProfessionalService with local areaServed', () => {
-    expect(org['@type']).toBe('ProfessionalService');
+  it('models the org as a local business with geo signals', () => {
+    expect(org['@type']).toEqual(['ProfessionalService', 'LocalBusiness']);
     expect(org.areaServed).toEqual(expect.arrayContaining(['Victoria', 'Entre Ríos', 'Argentina']));
+    expect(org.telephone).toBe('+5493436431987');
+    expect(org.priceRange).toBe('$$');
+    expect(org.geo).toMatchObject({
+      '@type': 'GeoCoordinates',
+      latitude: -32.6197,
+      longitude: -60.156,
+    });
+    expect(org.openingHoursSpecification).toMatchObject({
+      '@type': 'OpeningHoursSpecification',
+      opens: '09:00',
+      closes: '18:00',
+    });
     expect(org.address).toMatchObject({
       addressLocality: 'Victoria',
       addressRegion: 'Entre Ríos',
+      postalCode: '3153',
       addressCountry: 'AR',
     });
+  });
+
+  it('reinforces the tufting service for local rug/tapestry searches', () => {
+    const tufting = serviceSchemas.tufting;
+    expect(tufting.serviceType).toBe('Alfombras y tapices artesanales de tufting');
+    expect(tufting.alternateName).toEqual(
+      expect.arrayContaining(['Alfombras artesanales', 'Tapices artesanales', 'Tufting']),
+    );
   });
 
   it('produces one Service per hub service, each provided by the org', () => {

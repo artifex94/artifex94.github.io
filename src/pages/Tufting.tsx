@@ -7,21 +7,20 @@ import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { serviceSchemas, breadcrumb } from '../data/structuredData';
+import { breadcrumb } from '../data/structuredData';
 
 export const Tufting: React.FC = () => {
   usePageMeta({
-    title: 'Tufting — Alfombras y Tapices Artesanales | Artifex — Ramiro Escobar',
+    title: 'Tufting: Alfombras Artesanales en Victoria | Artifex',
     description:
       'Alfombras artesanales y tapices de tufting hechos a mano: piezas por encargo para hogar o negocio, colaboraciones con artistas y piezas únicas disponibles.',
     canonicalPath: '/servicios/tufting',
-    jsonLd: [
-      serviceSchemas.tufting,
-      breadcrumb([
-        { name: 'Inicio', path: '/' },
-        { name: 'Tufting', path: '/servicios/tufting' },
-      ]),
-    ],
+    // El nodo Service vive en el grafo base (structuredData.ts); acá solo el
+    // breadcrumb propio de la página para no duplicar el @id #service-tufting.
+    jsonLd: breadcrumb([
+      { name: 'Inicio', path: '/' },
+      { name: 'Tufting', path: '/servicios/tufting' },
+    ]),
   });
 
   return (
@@ -36,7 +35,7 @@ export const Tufting: React.FC = () => {
         {/* Hero */}
         <section className="py-12 md:py-20 text-center max-w-3xl mx-auto">
           <span className="text-accent uppercase tracking-widest text-sm font-bold mb-4 block">
-            Tufting
+            Tufting · Alfombras y tapices artesanales · Victoria, Entre Ríos
           </span>
           <h1 className="font-display text-4xl md:text-6xl font-semibold mb-6 leading-tight">
             Tejido a mano, <br />

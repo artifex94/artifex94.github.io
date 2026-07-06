@@ -11,6 +11,10 @@ interface PageMeta {
   noindex?: boolean;
   /** og:type ('website' | 'article' | ...). Por defecto 'website'. */
   ogType?: string;
+  /** ISO date del post: emite article:published_time (solo con ogType 'article'). */
+  articlePublishedTime?: string;
+  /** ISO date de última edición: emite article:modified_time. */
+  articleModifiedTime?: string;
   /** Structured data (schema.org). Se inyecta como <script type="application/ld+json">. */
   jsonLd?: object | object[];
 }
@@ -18,6 +22,17 @@ interface PageMeta {
 const CANONICAL_ORIGIN = 'https://artifex.click';
 const DEFAULT_OG_IMAGE = `${CANONICAL_ORIGIN}/og-image.png`;
 const JSONLD_ATTR = 'data-page-jsonld';
+const META_DESCRIPTION_MAX = 160;
+
+// Google truncates snippets around 160 chars. Trim at a word boundary and add
+// an ellipsis so long post summaries don't get cut mid-word in results. The
+// full text still lives in the visible page and the JSON-LD description.
+const truncateForMeta = (text: string): string => {
+  if (text.length <= META_DESCRIPTION_MAX) return text;
+  const slice = text.slice(0, META_DESCRIPTION_MAX - 1);
+  const lastSpace = slice.lastIndexOf(' ');
+  return `${slice.slice(0, lastSpace > 0 ? lastSpace : slice.length).trimEnd()}…`;
+};
 
 // Crea o actualiza una <meta>. El selector distingue Open Graph (property=)
 // de las etiquetas name= estándar, así no duplicamos las que index.html declara.
@@ -29,6 +44,16 @@ const upsertMeta = (attr: 'name' | 'property', key: string, content: string) => 
     document.head.appendChild(el);
   }
   el.setAttribute('content', content);
+};
+
+// Como upsertMeta, pero si content es undefined elimina la etiqueta: evita que
+// una meta condicional (article:*) quede pegada al navegar a otra página.
+const upsertOrRemoveMeta = (attr: 'name' | 'property', key: string, content?: string) => {
+  if (content === undefined) {
+    document.head.querySelector(`meta[${attr}="${key}"]`)?.remove();
+    return;
+  }
+  upsertMeta(attr, key, content);
 };
 
 // index.html declara las twitter:* con property=; Google/algunos crawlers usan
@@ -56,6 +81,8 @@ export const usePageMeta = ({
   image,
   noindex,
   ogType,
+  articlePublishedTime,
+  articleModifiedTime,
   jsonLd,
 }: PageMeta) => {
   // Serializado como dependencia del effect: evita re-runs cuando la página
@@ -71,9 +98,10 @@ export const usePageMeta = ({
     const url = `${CANONICAL_ORIGIN}${path === '/' ? '/' : path}`;
     const ogImage = image ?? DEFAULT_OG_IMAGE;
     const type = ogType ?? 'website';
+    const metaDesc = truncateForMeta(description);
 
     const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) metaDescription.setAttribute('content', description);
+    if (metaDescription) metaDescription.setAttribute('content', metaDesc);
 
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', url);
@@ -81,16 +109,28 @@ export const usePageMeta = ({
     // Open Graph: la mayoría de los crawlers sociales no ejecutan JS, pero el
     // prerender congela estas etiquetas por página para que sí las lean.
     upsertMeta('property', 'og:title', title);
-    upsertMeta('property', 'og:description', description);
+    upsertMeta('property', 'og:description', metaDesc);
     upsertMeta('property', 'og:url', url);
     upsertMeta('property', 'og:image', ogImage);
     upsertMeta('property', 'og:type', type);
 
+    // article:* solo tiene sentido en og:type article (posts del blog). Se
+    // upsertean si vienen y se limpian al navegar a una página que no los pasa,
+    // así una ruta 'website' no hereda la fecha del post anterior.
+    upsertOrRemoveMeta('property', 'article:published_time', articlePublishedTime);
+    upsertOrRemoveMeta('property', 'article:modified_time', articleModifiedTime);
+
     upsertTwitter('title', title);
-    upsertTwitter('description', description);
+    upsertTwitter('description', metaDesc);
     upsertTwitter('image', ogImage);
 
-    upsertMeta('name', 'robots', noindex ? 'noindex, follow' : 'index, follow');
+    // Indexable pages keep max-image-preview:large so Google can show the photo
+    // work full-size in results (matters for "Ramiro fotografía").
+    upsertMeta(
+      'name',
+      'robots',
+      noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    );
 
     // JSON-LD por página: limpiar los de la página anterior antes de inyectar
     document.head.querySelectorAll(`script[${JSONLD_ATTR}]`).forEach((s) => s.remove());
@@ -108,5 +148,15 @@ export const usePageMeta = ({
       // Una página sin jsonLd no debe heredar el de la anterior
       document.head.querySelectorAll(`script[${JSONLD_ATTR}]`).forEach((s) => s.remove());
     };
-  }, [title, description, canonicalPath, image, noindex, ogType, jsonLdSerialized]);
+  }, [
+    title,
+    description,
+    canonicalPath,
+    image,
+    noindex,
+    ogType,
+    articlePublishedTime,
+    articleModifiedTime,
+    jsonLdSerialized,
+  ]);
 };

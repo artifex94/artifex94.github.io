@@ -3,19 +3,51 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { getAllPublished, categories } from './src/data/blog';
+import { galleryManifest } from './src/data/gallery.generated';
 
 const BASE_URL = 'https://artifex.click';
+
+// Límite de la spec de image sitemap: 1000 imágenes por URL.
+const MAX_SITEMAP_IMAGES = 1000;
+
+// XML entities en los valores que embebemos (URLs con & de query, etc.).
+const escapeXml = (value: string): string =>
+  value.replace(/[&<>"']/g, (c) => {
+    switch (c) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      default: return '&apos;';
+    }
+  });
+
+interface SitemapUrl {
+  loc: string;
+  changefreq: string;
+  priority: string;
+  lastmod?: string;
+  /** URLs de imagen (image sitemap) asociadas a esta página. */
+  images?: string[];
+}
 
 function buildSitemapXml(): string {
   const published = getAllPublished();
   // Fecha del build para las páginas estáticas (los posts traen su propia fecha).
   const buildDate = new Date().toISOString().split('T')[0];
 
-  const staticUrls = [
-    { loc: BASE_URL, changefreq: 'weekly', priority: '1.0', lastmod: buildDate },
+  // Fotos de la galería como image sitemap bajo /servicios/fotografia:
+  // ayuda a que las fotos de Ramiro aparezcan en Google Images.
+  const galleryImages = galleryManifest
+    .map((photo) => photo.fullSrc)
+    .slice(0, MAX_SITEMAP_IMAGES);
+
+  const staticUrls: SitemapUrl[] = [
+    // Barra final: matchea el canonical (https://artifex.click/).
+    { loc: `${BASE_URL}/`, changefreq: 'weekly', priority: '1.0', lastmod: buildDate },
     { loc: `${BASE_URL}/blog`, changefreq: 'weekly', priority: '0.9', lastmod: buildDate },
     { loc: `${BASE_URL}/servicios/desarrollo`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
-    { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
+    { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate, images: galleryImages },
     { loc: `${BASE_URL}/servicios/tufting`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
     { loc: `${BASE_URL}/portfolio`, changefreq: 'monthly', priority: '0.6', lastmod: buildDate },
   ];
@@ -34,14 +66,21 @@ function buildSitemapXml(): string {
     lastmod: post.date,
   }));
 
-  const allUrls = [...staticUrls, ...categoryUrls, ...postUrls];
+  const allUrls: SitemapUrl[] = [...staticUrls, ...categoryUrls, ...postUrls];
+
+  const renderImages = (images?: string[]): string =>
+    images && images.length
+      ? '\n' + images
+          .map((loc) => `    <image:image><image:loc>${escapeXml(loc)}</image:loc></image:image>`)
+          .join('\n')
+      : '';
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${allUrls.map(u => `  <url>
     <loc>${u.loc}</loc>
     <changefreq>${u.changefreq}</changefreq>
-    <priority>${u.priority}</priority>${'lastmod' in u ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''}
+    <priority>${u.priority}</priority>${u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''}${renderImages(u.images)}
   </url>`).join('\n')}
 </urlset>`;
 }

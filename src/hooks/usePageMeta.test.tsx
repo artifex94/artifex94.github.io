@@ -37,7 +37,44 @@ describe('usePageMeta', () => {
     expect(content('meta[property="og:type"]')).toBe('website');
     expect(content('meta[name="twitter:title"]')).toBe('Fotografía — Artifex');
     expect(content('meta[name="twitter:image"]')).toBe('https://artifex.click/custom.png');
-    expect(content('meta[name="robots"]')).toBe('index, follow');
+    // Páginas indexables piden max-image-preview:large para que Google muestre
+    // el trabajo fotográfico a tamaño completo en resultados.
+    expect(content('meta[name="robots"]')).toBe('index, follow, max-image-preview:large');
+  });
+
+  it('truncates the description at a word boundary for the meta tags', () => {
+    document.head.innerHTML = '<meta name="description" content="old" />';
+    const long = 'a'.repeat(120) + ' palabra-que-se-corta ' + 'b'.repeat(60);
+    render(<Probe title="t" description={long} canonicalPath="/" />);
+    const desc = content('meta[name="description"]');
+    expect(desc).toBeDefined();
+    expect(desc!.length).toBeLessThanOrEqual(160);
+    expect(desc!.endsWith('…')).toBe(true);
+    // No corta a mitad de palabra: el fragmento final entero no aparece.
+    expect(desc).not.toContain('bbbbbb');
+  });
+
+  it('emits article:published_time and article:modified_time for ogType article', () => {
+    render(
+      <Probe
+        title="Post"
+        description="d"
+        canonicalPath="/blog/x/y"
+        ogType="article"
+        articlePublishedTime="2026-04-20"
+        articleModifiedTime="2026-04-22"
+      />,
+    );
+    expect(content('meta[property="og:type"]')).toBe('article');
+    expect(content('meta[property="article:published_time"]')).toBe('2026-04-20');
+    expect(content('meta[property="article:modified_time"]')).toBe('2026-04-22');
+  });
+
+  it('removes article:* meta when navigating to a page without them', () => {
+    document.head.innerHTML =
+      '<meta property="article:published_time" content="2026-01-01" />';
+    render(<Probe title="t" description="d" canonicalPath="/" />);
+    expect(document.head.querySelector('meta[property="article:published_time"]')).toBeNull();
   });
 
   it('falls back to the default og-image when none is passed', () => {

@@ -86,6 +86,8 @@ export const BlogPost = () => {
     'headline': post.title,
     'description': post.summary,
     'datePublished': post.date,
+    'dateModified': post.date,
+    'image': 'https://artifex.click/og-image.png',
     'url': canonicalUrl,
     'inLanguage': 'es-AR',
     'author': {
@@ -106,6 +108,9 @@ export const BlogPost = () => {
     title: post ? `${post.title} — Artifex Blog` : 'Blog & Notas — Artifex Dev',
     description: post?.summary ?? 'Blog de Ramiro Escobar.',
     canonicalPath: post && cat ? `/blog/${cat.slug}/${post.slug}` : '/blog',
+    ogType: post ? 'article' : undefined,
+    articlePublishedTime: post?.date,
+    articleModifiedTime: post?.date,
     jsonLd: structuredData && breadcrumbData ? [structuredData, breadcrumbData] : undefined,
   });
 
