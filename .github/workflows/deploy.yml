@@ -70,3 +70,7 @@ jobs:
           # La cuenta FTP de Hostinger ya tiene su home en la raíz web
           # (public_html), así que subimos directo a ./ y no a public_html/.
           server-dir: ./
+          # Nombre de estado propio: ignora el sync-state viejo (de la carpeta
+          # equivocada) y fuerza una subida completa a la raíz. Tras la primera
+          # corrida, los deploys siguientes vuelven a ser incrementales.
+          state-name: .artifex-ftp-state.json
