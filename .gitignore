@@ -34,3 +34,6 @@ dist-ssr
 
 # Testing
 coverage
+
+# Local cache for the photo sync pipeline (scripts/photos-sync.mjs)
+scripts/.photos-sync-cache.json
