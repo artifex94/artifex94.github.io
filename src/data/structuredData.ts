@@ -29,7 +29,7 @@ const address: JsonLdNode = {
 const sameAs = [
   data.personal.social.github,
   data.personal.social.linkedin,
-  // TODO: agregar Instagram/Behance cuando el usuario los pase
+  data.personal.social.instagram,
 ];
 
 export const website: JsonLdNode = {
