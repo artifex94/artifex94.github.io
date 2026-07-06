@@ -110,6 +110,14 @@ export const HeroBuild: React.FC = () => {
           {ctaIsWhatsApp && <MessageCircle size={20} />}
           Consultar por WhatsApp
         </motion.a>
+        <motion.p
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-4 font-mono text-xs text-secondary"
+        >
+          // proyectos desde $200.000
+        </motion.p>
       </div>
 
       {/* Blueprint canvas */}

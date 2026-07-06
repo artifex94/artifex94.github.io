@@ -21,7 +21,7 @@ export const SistemaCard: React.FC = () => {
         A medida
       </div>
       <h3 className="text-xl font-bold text-white">{sistemaTier.name}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-primary/70">{sistemaTier.target}</p>
+      <p className="mt-2 text-sm leading-relaxed text-primary/80">{sistemaTier.target}</p>
 
       <div className="mt-5">
         <SistemaLiveDemo />
@@ -31,7 +31,7 @@ export const SistemaCard: React.FC = () => {
         <span className="text-4xl font-extrabold text-white">{sistemaTier.price}</span>
         <span className="text-sm text-secondary">ARS</span>
       </div>
-      <p className="mt-1.5 font-mono text-xs text-primary/60">soporte del primer año incluido</p>
+      <p className="mt-1.5 font-mono text-xs text-primary/70">soporte del primer año incluido</p>
 
       <ul className="mt-6 flex flex-1 flex-col gap-3">
         {sistemaTier.features.map((feature) => (

@@ -40,7 +40,7 @@ const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, r
           <Icon className="h-4 w-4 text-accent" aria-hidden="true" />
           <h3 className="font-bold text-white">{step.title}</h3>
         </div>
-        <p className="max-w-xs text-sm leading-relaxed text-primary/70">{step.desc}</p>
+        <p className="max-w-xs text-sm leading-relaxed text-primary/80">{step.desc}</p>
       </div>
     </motion.div>
   );
@@ -61,7 +61,7 @@ export const ProcesoTimeline: React.FC = () => {
     <section>
       <Reveal className="mb-10 text-center md:mb-12">
         <h2 className="text-3xl font-bold text-white">Cómo trabajamos</h2>
-        <p className="mt-3 text-primary/70">Cuatro pasos claros, sin vueltas.</p>
+        <p className="mt-3 text-primary/80">Cuatro pasos claros, sin vueltas.</p>
       </Reveal>
 
       <div ref={ref} className="relative">

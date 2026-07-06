@@ -35,7 +35,7 @@ export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDim
     <motion.div
       layout={reduce ? false : true}
       transition={{ layout: { duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] } }}
-      animate={{ opacity: isDimmed ? 0.7 : 1 }}
+      animate={{ opacity: isDimmed ? 0.8 : 1 }}
       onKeyDown={handleKeyDown}
       className={`flex overflow-hidden border bg-surface transition-[border-color,box-shadow] duration-300 ${
         isOpen
@@ -50,7 +50,7 @@ export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDim
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className={`group relative flex flex-col gap-3 p-5 pr-12 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+        className={`group relative flex min-h-[44px] w-full flex-col gap-3 p-5 pr-12 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
           isOpen ? 'md:w-[38%] md:shrink-0 md:justify-center md:border-r md:border-line/60' : ''
         }`}
       >

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check, MessageCircle } from 'lucide-react';
-import { presenciaLevels } from '../../data/business';
+import { presenciaLevels, RETAINER_PRICE } from '../../data/business';
 import { buildWhatsAppUrl, buildMailto } from '../../data/contact';
 import { AnimatedPrice } from './AnimatedPrice';
 
@@ -22,7 +22,7 @@ export const PresenciaStepper: React.FC = () => {
       <div className="mb-1 font-mono text-xs uppercase tracking-widest text-accent">
         Presencia Digital
       </div>
-      <p className="mb-6 text-sm text-primary/70">
+      <p className="mb-6 text-sm text-primary/80">
         Tu negocio online, en el nivel que necesites hoy.
       </p>
 
@@ -70,7 +70,9 @@ export const PresenciaStepper: React.FC = () => {
         />
         <span className="text-sm text-secondary">ARS</span>
       </div>
-      <p className="mt-1.5 font-mono text-xs text-primary/60">+ abono mensual opcional</p>
+      <p className="mt-1.5 font-mono text-xs text-primary/75">
+        + {RETAINER_PRICE}/mes de soporte, opcional
+      </p>
 
       {/* Pitch (crossfade) */}
       <div className="mt-3 min-h-[3.5rem]">
@@ -89,7 +91,7 @@ export const PresenciaStepper: React.FC = () => {
       </div>
 
       {/* Features (reflow) */}
-      <motion.ul layout={reduce ? false : 'position'} className="mt-6 flex flex-1 flex-col gap-3">
+      <motion.ul layout={reduce ? false : 'position'} className="mt-6 flex flex-col gap-3">
         <AnimatePresence initial={false} mode="popLayout">
           {level.features.map((feature) => (
             <motion.li
@@ -108,6 +110,13 @@ export const PresenciaStepper: React.FC = () => {
         </AnimatePresence>
       </motion.ul>
 
+      {/* Blueprint mini-wireframe: fills the free space and echoes the hero's SVG
+          signature — a single "page" with one accent CTA. Simpler than the
+          Sistema dashboard so it never competes with it. */}
+      <div className="mt-6 flex flex-1 items-center justify-center">
+        <PageWireframe reduce={reduce} />
+      </div>
+
       <a
         href={waHref}
         {...(isWhatsApp ? { target: '_blank', rel: 'noreferrer' } : {})}
@@ -117,5 +126,44 @@ export const PresenciaStepper: React.FC = () => {
         Quiero el plan {level.label}
       </a>
     </div>
+  );
+};
+
+// A compact "page" blueprint: a browser frame, a content block, two text bars
+// and one accent action. Same SVG vocabulary as the hero, deliberately smaller
+// and calmer than the Sistema live dashboard.
+const PageWireframe: React.FC<{ reduce: boolean | null }> = ({ reduce }) => {
+  const el = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: reduce ? 0 : 0.35 } },
+  };
+  return (
+    <motion.svg
+      viewBox="0 0 240 150"
+      role="img"
+      aria-label="Vista previa de una página web: encabezado, contenido y un botón de acción."
+      className="h-auto w-full max-w-[280px]"
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: reduce ? 0 : 0.08 } } }}
+      initial={reduce ? 'visible' : 'hidden'}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.6 }}
+    >
+      {/* browser frame */}
+      <motion.rect x="8" y="8" width="224" height="134" rx="6" className="fill-none stroke-line" strokeWidth="1.5" variants={el} />
+      <motion.line x1="8" y1="30" x2="232" y2="30" className="stroke-line" strokeWidth="1.5" variants={el} />
+      <motion.circle cx="20" cy="19" r="2.6" className="fill-line" variants={el} />
+      <motion.circle cx="31" cy="19" r="2.6" className="fill-line" variants={el} />
+      <motion.circle cx="42" cy="19" r="2.6" className="fill-line" variants={el} />
+
+      {/* hero content block + copy */}
+      <motion.rect x="24" y="46" width="108" height="58" rx="4" className="fill-none stroke-line" strokeWidth="1.5" variants={el} />
+      <motion.rect x="150" y="50" width="66" height="9" rx="2" className="fill-line" variants={el} />
+      <motion.rect x="150" y="66" width="50" height="7" rx="2" className="fill-line" variants={el} />
+      {/* the one accent action */}
+      <motion.rect x="150" y="84" width="52" height="18" rx="3" className="fill-accent" variants={el} />
+
+      {/* footer strip */}
+      <motion.rect x="24" y="116" width="192" height="14" rx="3" className="fill-none stroke-line" strokeWidth="1.5" variants={el} />
+    </motion.svg>
   );
 };
