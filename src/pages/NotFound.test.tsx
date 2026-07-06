@@ -24,4 +24,11 @@ describe('NotFound', () => {
     renderWithProviders(<NotFound />);
     expect(screen.getByText(/repositorio/i)).toBeInTheDocument();
   });
+
+  it('marks the page as noindex so it stays out of the index', () => {
+    renderWithProviders(<NotFound />);
+    expect(
+      document.head.querySelector('meta[name="robots"]')?.getAttribute('content'),
+    ).toBe('noindex, follow');
+  });
 });
