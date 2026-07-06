@@ -12,7 +12,7 @@ export const SistemaCard: React.FC = () => {
   const isWhatsApp = waHref.startsWith('https://wa.me/');
 
   return (
-    <div className="relative flex h-full flex-col border border-accent bg-surface p-6 shadow-[0_0_28px_rgba(255,107,0,0.12)] sm:p-8">
+    <div className="relative flex h-full flex-col border border-accent/50 bg-surface p-6 shadow-[0_0_24px_rgba(255,107,0,0.08)] sm:p-8">
       <span className="absolute -top-3 left-6 bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-on-accent">
         {sistemaTier.badge}
       </span>
@@ -21,7 +21,7 @@ export const SistemaCard: React.FC = () => {
         A medida
       </div>
       <h3 className="text-xl font-bold text-white">{sistemaTier.name}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-secondary">{sistemaTier.target}</p>
+      <p className="mt-2 text-sm leading-relaxed text-primary/70">{sistemaTier.target}</p>
 
       <div className="mt-5">
         <SistemaLiveDemo />
@@ -31,6 +31,7 @@ export const SistemaCard: React.FC = () => {
         <span className="text-4xl font-extrabold text-white">{sistemaTier.price}</span>
         <span className="text-sm text-secondary">ARS</span>
       </div>
+      <p className="mt-1.5 font-mono text-xs text-primary/60">soporte del primer año incluido</p>
 
       <ul className="mt-6 flex flex-1 flex-col gap-3">
         {sistemaTier.features.map((feature) => (

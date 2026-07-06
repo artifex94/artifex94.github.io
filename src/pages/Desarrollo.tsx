@@ -23,9 +23,9 @@ export const Desarrollo: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen w-full bg-blueprint-grid px-4 py-12 font-sans text-primary sm:px-6 lg:px-8"
+      className="min-h-screen w-full bg-blueprint-grid px-4 py-10 font-sans text-primary sm:px-6 md:py-16 lg:px-8"
     >
-      <div className="mx-auto flex max-w-6xl flex-col gap-24 md:gap-28">
+      <div className="mx-auto flex max-w-6xl flex-col gap-16 md:gap-24">
         <HeroBuild />
         <SegmentGrid />
         <InvestmentSection />

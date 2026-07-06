@@ -73,7 +73,7 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="text-secondary hover:text-accent transition-colors"
+                className="text-primary hover:text-accent transition-colors"
               >
                 <Github size={18} />
               </a>
@@ -82,7 +82,7 @@ export const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-secondary hover:text-accent transition-colors"
+                className="text-primary hover:text-accent transition-colors"
               >
                 <Linkedin size={18} />
               </a>

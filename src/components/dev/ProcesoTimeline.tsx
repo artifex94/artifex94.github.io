@@ -40,7 +40,7 @@ const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, r
           <Icon className="h-4 w-4 text-accent" aria-hidden="true" />
           <h3 className="font-bold text-white">{step.title}</h3>
         </div>
-        <p className="max-w-xs text-sm leading-relaxed text-secondary">{step.desc}</p>
+        <p className="max-w-xs text-sm leading-relaxed text-primary/70">{step.desc}</p>
       </div>
     </motion.div>
   );
@@ -59,9 +59,9 @@ export const ProcesoTimeline: React.FC = () => {
 
   return (
     <section>
-      <Reveal className="mb-12 text-center">
+      <Reveal className="mb-10 text-center md:mb-12">
         <h2 className="text-3xl font-bold text-white">Cómo trabajamos</h2>
-        <p className="mt-3 text-secondary">Cuatro pasos claros, sin vueltas.</p>
+        <p className="mt-3 text-primary/70">Cuatro pasos claros, sin vueltas.</p>
       </Reveal>
 
       <div ref={ref} className="relative">
@@ -72,10 +72,10 @@ export const ProcesoTimeline: React.FC = () => {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <line x1="0" y1="0.5" x2="100" y2="0.5" stroke="var(--border-line)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <line x1="0" y1="0.5" x2="100" y2="0.5" stroke="var(--accent-orange)" strokeOpacity="0.25" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
           <motion.line
             x1="0" y1="0.5" x2="100" y2="0.5"
-            stroke="var(--accent-orange)" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
+            stroke="var(--accent-orange)" strokeWidth="2.5" vectorEffect="non-scaling-stroke"
             initial={reduce ? undefined : { pathLength: 0 }}
             style={reduce ? undefined : { pathLength: lineProgress }}
           />
@@ -88,10 +88,10 @@ export const ProcesoTimeline: React.FC = () => {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <line x1="0.5" y1="0" x2="0.5" y2="100" stroke="var(--border-line)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <line x1="0.5" y1="0" x2="0.5" y2="100" stroke="var(--accent-orange)" strokeOpacity="0.25" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
           <motion.line
             x1="0.5" y1="0" x2="0.5" y2="100"
-            stroke="var(--accent-orange)" strokeWidth="1.5" vectorEffect="non-scaling-stroke"
+            stroke="var(--accent-orange)" strokeWidth="2.5" vectorEffect="non-scaling-stroke"
             initial={reduce ? undefined : { pathLength: 0 }}
             style={reduce ? undefined : { pathLength: lineProgress }}
           />
