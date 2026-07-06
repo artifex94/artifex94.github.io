@@ -127,7 +127,9 @@ async function uploadObject(objectPath, buffer, contentType) {
     method: 'POST',
     headers: {
       'content-type': contentType,
-      'cache-control': 'max-age=31536000, immutable',
+      // Supabase Storage only parses the bare "max-age=N" form; any extra
+      // directive (e.g. "immutable") makes it fall back to "no-cache".
+      'cache-control': 'max-age=31536000',
       'x-upsert': 'true',
       authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
       apikey: SUPABASE_SERVICE_ROLE_KEY,
