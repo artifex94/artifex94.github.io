@@ -162,7 +162,7 @@ export const procesoSteps: ProcessStep[] = [
   {
     icon: FileText,
     title: 'Te paso una propuesta',
-    desc: 'Te llevo alcance, tiempos y un precio fijo cerrado. Sabés exactamente qué recibís antes de arrancar.',
+    desc: 'Te llevo alcance, tiempos y presupuesto detallado. Sabés exactamente qué recibís antes de arrancar.',
   },
   {
     icon: Blocks,

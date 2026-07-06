@@ -41,7 +41,7 @@ export const PresenciaStepper: React.FC = () => {
               type="button"
               aria-selected={selected}
               onClick={() => setActive(i)}
-              className="relative flex-1 rounded-sm px-2 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="relative flex min-h-[44px] flex-1 items-center justify-center rounded-sm px-2 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {selected && (
                 <motion.span

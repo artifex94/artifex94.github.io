@@ -35,7 +35,7 @@ export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDim
     <motion.div
       layout={reduce ? false : true}
       transition={{ layout: { duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] } }}
-      animate={{ opacity: isDimmed ? 0.8 : 1 }}
+      animate={{ opacity: isDimmed ? 0.85 : 1 }}
       onKeyDown={handleKeyDown}
       className={`flex overflow-hidden border bg-surface transition-[border-color,box-shadow] duration-300 ${
         isOpen
