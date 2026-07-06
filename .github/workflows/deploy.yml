@@ -70,7 +70,7 @@ jobs:
           # La cuenta FTP inicia sesión en el home (/home/uXXXX), no en el web
           # root. El sitio se sirve desde domains/artifex.click/public_html, así
           # que subimos ahí (ruta relativa al home de la cuenta).
-          server-dir: domains/artifex.click/public_html/
+          server-dir: /home/u356429122/domains/artifex.click/public_html/
           # Nombre de estado propio: al cambiar de carpeta no hay estado previo
           # aquí, así que fuerza una subida completa; luego es incremental.
           state-name: .artifex-ftp-state.json
