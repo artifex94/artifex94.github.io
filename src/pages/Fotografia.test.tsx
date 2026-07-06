@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../test/render';
 import { Fotografia } from './Fotografia';
-import { photoCategories, photoPackages } from '../data/photography';
+import { photoCategories, photoPackages, galleryPhotos } from '../data/photography';
 
 describe('Fotografia page', () => {
   it('renders without crashing', () => {
@@ -33,9 +33,15 @@ describe('Fotografia page', () => {
     expect(screen.queryByText(/una muestra de cada rubro/i)).not.toBeInTheDocument();
   });
 
-  it('falls back to the curation placeholder while the manifest is empty', () => {
+  it('renders the gallery photos or the curation placeholder, never neither', () => {
     renderWithProviders(<Fotografia />);
-    expect(screen.getByText('Galería en curaduría')).toBeInTheDocument();
+    const hasPhotos = galleryPhotos.length > 0;
+    if (hasPhotos) {
+      expect(screen.getAllByRole('img').length).toBeGreaterThanOrEqual(galleryPhotos.length);
+      expect(screen.queryByText('Galería en curaduría')).not.toBeInTheDocument();
+    } else {
+      expect(screen.getByText('Galería en curaduría')).toBeInTheDocument();
+    }
   });
 
   it('renders every package name', () => {
