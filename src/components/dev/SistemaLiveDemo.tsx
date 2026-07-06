@@ -41,10 +41,13 @@ export const SistemaLiveDemo: React.FC = () => {
   return (
     <div
       ref={ref}
-      className="overflow-hidden rounded-sm border border-line bg-base"
+      className="relative overflow-hidden rounded-sm border border-line bg-base"
       aria-label="Demostración de un panel de administración a medida"
       role="img"
     >
+      <span className="pointer-events-none absolute bottom-1.5 right-2 font-mono text-[10px] text-primary/50">
+        ejemplo ilustrativo
+      </span>
       <div className="flex">
         {/* Sidebar */}
         <div className="hidden w-14 shrink-0 flex-col items-center gap-5 border-r border-line/70 py-4 sm:flex">

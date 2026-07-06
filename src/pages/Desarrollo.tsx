@@ -7,6 +7,7 @@ import { InvestmentSection } from '../components/dev/InvestmentSection';
 import { ProcesoTimeline } from '../components/dev/ProcesoTimeline';
 import { WhyMe } from '../components/dev/WhyMe';
 import { FinalCTA } from '../components/dev/FinalCTA';
+import { MobileWhatsAppFab } from '../components/dev/MobileWhatsAppFab';
 
 // The development showcase page: six sections that assemble themselves as you
 // scroll and interact. The craft of the motion is the sales argument.
@@ -33,6 +34,7 @@ export const Desarrollo: React.FC = () => {
         <WhyMe />
         <FinalCTA />
       </div>
+      <MobileWhatsAppFab />
     </motion.div>
   );
 };

@@ -47,7 +47,8 @@ export const InvestmentSection: React.FC = () => {
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-primary/80">
             El abono mensual mantiene tu sitio al día, seguro y con soporte directo — respuesta en el
-            día. En el Sistema a Medida, el primer año ya está incluido.
+            día. En el Sistema a Medida, el primer año ya está incluido — después seguís con el mismo
+            abono, si querés.
           </p>
         </div>
       </Reveal>

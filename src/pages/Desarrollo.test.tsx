@@ -4,6 +4,7 @@ import { renderWithProviders } from '../test/render';
 import { Desarrollo } from './Desarrollo';
 import { segments, differentiators } from '../data/business';
 import { services } from '../data/services';
+import { buildWhatsAppUrl } from '../data/contact';
 
 const countOccurrences = (haystack: string, needle: string) =>
   haystack.split(needle).length - 1;
@@ -69,6 +70,13 @@ describe('Desarrollo page', () => {
     for (const item of differentiators) {
       expect(screen.getByText(item.title)).toBeInTheDocument();
     }
+  });
+
+  it('renders the mobile WhatsApp FAB in the DOM with the desarrollo href', () => {
+    const { container } = renderWithProviders(<Desarrollo />);
+    const fab = container.querySelector('a[aria-label="Consultar por WhatsApp"]');
+    expect(fab).not.toBeNull();
+    expect(fab).toHaveAttribute('href', buildWhatsAppUrl('desarrollo'));
   });
 
   it('closes with the final CTA and a discreet client-portal link', () => {
