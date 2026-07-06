@@ -1,8 +1,26 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
+import { baseGraph, withContext } from './data/structuredData';
+
+const BASE_JSONLD_ATTR = 'data-base-jsonld';
+
+// Inyecta el grafo base (WebSite + Person + ProfessionalService) una sola vez.
+// A diferencia del JSON-LD por página (usePageMeta), este NO se limpia al
+// navegar: las entidades del sitio son estables entre rutas.
+function BaseStructuredData() {
+  useEffect(() => {
+    if (document.head.querySelector(`script[${BASE_JSONLD_ATTR}]`)) return;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute(BASE_JSONLD_ATTR, '');
+    script.textContent = JSON.stringify(withContext(baseGraph));
+    document.head.appendChild(script);
+  }, []);
+  return null;
+}
 
 // Cada área vive en src/pages y se carga on-demand: agregar una nueva
 // no engorda el bundle inicial del resto del sitio.
@@ -65,6 +83,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <BaseStructuredData />
       {/* Navbar y Footer viven fuera de las rutas: conservan siempre la estética
           blueprint y funcionan como marco común entre los temas por servicio. */}
       {!isDemo && <Navbar />}

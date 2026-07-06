@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { serviceSchemas, breadcrumb } from '../data/structuredData';
 import { HeroBuild } from '../components/dev/HeroBuild';
 import { SegmentGrid } from '../components/dev/SegmentGrid';
 import { InvestmentSection } from '../components/dev/InvestmentSection';
@@ -17,6 +18,13 @@ export const Desarrollo: React.FC = () => {
     description:
       'Construyo sitios y sistemas a medida para tu negocio: desde una web simple hasta un panel de gestión completo. Precios claros, proceso ordenado y acompañamiento continuo.',
     canonicalPath: '/servicios/desarrollo',
+    jsonLd: [
+      serviceSchemas.desarrollo,
+      breadcrumb([
+        { name: 'Inicio', path: '/' },
+        { name: 'Desarrollo Web', path: '/servicios/desarrollo' },
+      ]),
+    ],
   });
 
   return (

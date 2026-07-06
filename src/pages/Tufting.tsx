@@ -7,13 +7,21 @@ import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { serviceSchemas, breadcrumb } from '../data/structuredData';
 
 export const Tufting: React.FC = () => {
   usePageMeta({
     title: 'Tufting — Alfombras y Tapices Artesanales | Artifex — Ramiro Escobar',
     description:
-      'Piezas de tufting hechas a mano: alfombras y tapices por encargo para hogar o negocio, colaboraciones con artistas y piezas únicas disponibles.',
+      'Alfombras artesanales y tapices de tufting hechos a mano: piezas por encargo para hogar o negocio, colaboraciones con artistas y piezas únicas disponibles.',
     canonicalPath: '/servicios/tufting',
+    jsonLd: [
+      serviceSchemas.tufting,
+      breadcrumb([
+        { name: 'Inicio', path: '/' },
+        { name: 'Tufting', path: '/servicios/tufting' },
+      ]),
+    ],
   });
 
   return (
@@ -35,8 +43,9 @@ export const Tufting: React.FC = () => {
             <span className="text-accent italic">hilo por hilo.</span>
           </h1>
           <p className="text-lg text-secondary leading-relaxed">
-            Alfombras y tapices únicos hechos con pistola de tufting: piezas por encargo para tu
-            casa o tu negocio, colaboraciones con artistas y piezas listas para llevar.
+            Alfombras artesanales y tapices únicos hechos con pistola de tufting: piezas por
+            encargo para tu casa o tu negocio, colaboraciones con artistas y piezas listas para
+            llevar.
           </p>
         </section>
 

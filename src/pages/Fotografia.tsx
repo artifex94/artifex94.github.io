@@ -10,14 +10,21 @@ import { PackageCard } from '../components/PackageCard';
 import { ContactCTA } from '../components/ContactCTA';
 import { galleryPhotos, photoCategories, photoPackages } from '../data/photography';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { serviceSchemas, breadcrumb } from '../data/structuredData';
 
 export const Fotografia: React.FC = () => {
   usePageMeta({
     title: 'Fotografía — Eventos, Retratos y Producto | Artifex — Ramiro Escobar',
-    // TODO: sumar la ciudad/región a la descripción para SEO local (ej: "en Mendoza")
     description:
-      'Fotografía profesional: cobertura de eventos culturales, retratos y books, fotografía de producto para marcas y obra de paisaje.',
+      'Fotografía profesional: cobertura de eventos culturales, retratos y books, fotografía de producto para marcas y obra de paisaje en Victoria, Entre Ríos y la región.',
     canonicalPath: '/servicios/fotografia',
+    jsonLd: [
+      serviceSchemas.fotografia,
+      breadcrumb([
+        { name: 'Inicio', path: '/' },
+        { name: 'Fotografía', path: '/servicios/fotografia' },
+      ]),
+    ],
   });
 
   return (
