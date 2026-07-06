@@ -11,8 +11,8 @@ export const InvestmentSection: React.FC = () => {
     <section>
       <Reveal className="mb-10 text-center">
         <h2 className="text-3xl font-bold text-white">Cuánto sale</h2>
-        <p className="mt-3 text-secondary">
-          Precios claros, cerrados antes de empezar. Elegí por dónde arrancar.
+        <p className="mt-3 font-mono text-sm text-secondary">
+          // Elegí por dónde arrancar.
         </p>
       </Reveal>
 
@@ -33,8 +33,9 @@ export const InvestmentSection: React.FC = () => {
               Y después de la entrega, no te quedás solo.
             </h3>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-secondary">
-              Un abono mensual mantiene tu sitio al día, seguro y con soporte directo. Ante
-              cualquier cambio o problema, respondo en el día.
+              Un abono mensual mantiene tu sitio al día, seguro y con soporte directo, con respuesta
+              en el día. Para los planes de Presencia Digital es opcional; en el Sistema a Medida el
+              primer año ya está incluido y después podés seguir con el mismo abono.
             </p>
           </div>
           <div className="shrink-0 text-left sm:text-right">

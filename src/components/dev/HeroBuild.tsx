@@ -56,6 +56,16 @@ export const HeroBuild: React.FC = () => {
     }),
   };
 
+  // Phase 4: the blueprint annotations (dimension lines, guides, block labels)
+  // fade in last, so the piece reads as a plan under construction, not a mockup.
+  const annotate: Variants = {
+    hidden: { opacity: 0 },
+    visible: (i: number) => ({
+      opacity: 1,
+      transition: { duration: 0.5 * d, delay: (2.0 + i * 0.08) * d, ease: 'easeOut' },
+    }),
+  };
+
   const centered = { transformBox: 'fill-box' as const, transformOrigin: 'center' };
   const fromBottom = { transformBox: 'fill-box' as const, transformOrigin: '50% 100%' };
 
@@ -106,9 +116,9 @@ export const HeroBuild: React.FC = () => {
       <div className="relative">
         <div className="border border-dashed border-line bg-base/60 p-4 backdrop-blur-sm sm:p-6">
           <motion.svg
-            viewBox="0 0 440 320"
+            viewBox="0 0 480 360"
             role="img"
-            aria-label="Una web se construye sola: primero el trazado, después se enciende con contenido."
+            aria-label="Un plano de sitio en construcción: primero el trazado, después se enciende con contenido y aparecen las cotas de medida."
             className="h-auto w-full"
             variants={{ hidden: {}, visible: {} }}
             initial={reduce ? 'visible' : 'hidden'}
@@ -117,55 +127,113 @@ export const HeroBuild: React.FC = () => {
           >
             {/* Filled panels (painted behind the strokes) */}
             <g fill={SURFACE}>
-              <motion.rect x="32" y="68" width="232" height="104" rx="6" variants={surface} custom={0} />
-              <motion.rect x="284" y="68" width="124" height="104" rx="6" variants={surface} custom={1} />
-              <motion.rect x="32" y="192" width="120" height="68" rx="6" variants={surface} custom={2} />
-              <motion.rect x="160" y="192" width="120" height="68" rx="6" variants={surface} custom={3} />
-              <motion.rect x="288" y="192" width="120" height="68" rx="6" variants={surface} custom={4} />
+              <motion.rect x="84" y="92" width="196" height="100" rx="6" variants={surface} custom={0} />
+              <motion.rect x="296" y="92" width="104" height="100" rx="6" variants={surface} custom={1} />
+              <motion.rect x="84" y="206" width="92" height="60" rx="6" variants={surface} custom={2} />
+              <motion.rect x="196" y="206" width="92" height="60" rx="6" variants={surface} custom={3} />
+              <motion.rect x="308" y="206" width="92" height="60" rx="6" variants={surface} custom={4} />
             </g>
 
             {/* Traced wireframe */}
             <g fill="none" stroke={ACCENT} strokeWidth="1.5" strokeLinecap="round">
-              <motion.rect x="12" y="12" width="416" height="296" rx="12" variants={trace} custom={0} />
-              <motion.line x1="12" y1="48" x2="428" y2="48" variants={trace} custom={1} />
-              <motion.rect x="104" y="22" width="300" height="16" rx="8" stroke={LINE} variants={trace} custom={1} />
-              <motion.rect x="32" y="68" width="232" height="104" rx="6" variants={trace} custom={2} />
-              <motion.rect x="284" y="68" width="124" height="104" rx="6" variants={trace} custom={3} />
-              <motion.rect x="32" y="192" width="120" height="68" rx="6" variants={trace} custom={4} />
-              <motion.rect x="160" y="192" width="120" height="68" rx="6" variants={trace} custom={5} />
-              <motion.rect x="288" y="192" width="120" height="68" rx="6" variants={trace} custom={6} />
+              <motion.rect x="64" y="40" width="352" height="244" rx="10" variants={trace} custom={0} />
+              <motion.line x1="64" y1="72" x2="416" y2="72" variants={trace} custom={1} />
+              <motion.rect x="160" y="49" width="180" height="14" rx="7" stroke={LINE} variants={trace} custom={1} />
+              <motion.rect x="84" y="92" width="196" height="100" rx="6" variants={trace} custom={2} />
+              <motion.rect x="296" y="92" width="104" height="100" rx="6" variants={trace} custom={3} />
+              <motion.rect x="84" y="206" width="92" height="60" rx="6" variants={trace} custom={4} />
+              <motion.rect x="196" y="206" width="92" height="60" rx="6" variants={trace} custom={5} />
+              <motion.rect x="308" y="206" width="92" height="60" rx="6" variants={trace} custom={6} />
             </g>
 
-            {/* Lit content: nodes, headings, avatar, button */}
+            {/* Corner crop marks — the piece is a cut sheet on the table */}
+            <g fill="none" stroke={ACCENT} strokeWidth="2" strokeLinecap="round">
+              <motion.path d="M64 54 L64 40 L78 40" variants={trace} custom={0} />
+              <motion.path d="M402 40 L416 40 L416 54" variants={trace} custom={0} />
+              <motion.path d="M64 270 L64 284 L78 284" variants={trace} custom={0} />
+              <motion.path d="M402 284 L416 284 L416 270" variants={trace} custom={0} />
+            </g>
+
+            {/* Lit content: mostly grey wireframe bars, a single orange CTA */}
             <g>
               {/* window dots */}
-              <motion.circle cx="28" cy="30" r="5" fill={ACCENT} style={centered} variants={pop} custom={0} />
-              <motion.circle cx="46" cy="30" r="5" fill={LINE} style={centered} variants={pop} custom={1} />
-              <motion.circle cx="64" cy="30" r="5" fill={LINE} style={centered} variants={pop} custom={2} />
+              <motion.circle cx="80" cy="56" r="4.5" fill={MUTED} style={centered} variants={pop} custom={0} />
+              <motion.circle cx="96" cy="56" r="4.5" fill={LINE} style={centered} variants={pop} custom={1} />
+              <motion.circle cx="112" cy="56" r="4.5" fill={LINE} style={centered} variants={pop} custom={2} />
 
-              {/* hero heading + copy + button */}
-              <motion.rect x="48" y="90" width="150" height="12" rx="3" fill={ACCENT} style={centered} variants={pop} custom={3} />
-              <motion.rect x="48" y="112" width="118" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={4} />
-              <motion.rect x="48" y="126" width="96" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={5} />
-              <motion.rect x="48" y="144" width="92" height="22" rx="4" fill={ACCENT} style={centered} variants={pop} custom={7} />
+              {/* hero heading + copy + the one orange button */}
+              <motion.rect x="100" y="112" width="150" height="11" rx="3" fill={MUTED} style={centered} variants={pop} custom={3} />
+              <motion.rect x="100" y="131" width="118" height="7" rx="3" fill={LINE} style={centered} variants={pop} custom={4} />
+              <motion.rect x="100" y="145" width="96" height="7" rx="3" fill={LINE} style={centered} variants={pop} custom={5} />
+              <motion.rect x="100" y="162" width="92" height="22" rx="4" fill={ACCENT} style={centered} variants={pop} custom={7} />
 
-              {/* side panel: avatar + bio lines */}
-              <motion.circle cx="346" cy="104" r="20" fill="var(--bg-base)" stroke={ACCENT} strokeWidth="1.5" style={centered} variants={pop} custom={6} />
-              <motion.rect x="300" y="138" width="92" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={8} />
-              <motion.rect x="300" y="152" width="66" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={9} />
+              {/* side panel: avatar + bio lines (grey now) */}
+              <motion.circle cx="348" cy="124" r="18" fill="var(--bg-base)" stroke={MUTED} strokeWidth="1.5" style={centered} variants={pop} custom={6} />
+              <motion.rect x="312" y="156" width="80" height="7" rx="3" fill={LINE} style={centered} variants={pop} custom={8} />
+              <motion.rect x="312" y="170" width="56" height="7" rx="3" fill={LINE} style={centered} variants={pop} custom={9} />
 
-              {/* stat cards */}
-              <motion.rect x="44" y="206" width="52" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={9} />
-              <motion.rect x="44" y="222" width="44" height="16" rx="3" fill={ACCENT} style={centered} variants={pop} custom={10} />
-              <motion.rect x="172" y="206" width="52" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={10} />
-              <motion.rect x="172" y="222" width="56" height="16" rx="3" fill={ACCENT} style={centered} variants={pop} custom={11} />
-              <motion.rect x="300" y="206" width="52" height="7" rx="3" fill={MUTED} style={centered} variants={pop} custom={11} />
+              {/* stat cards — grey labels + grey values */}
+              <motion.rect x="96" y="220" width="48" height="6" rx="3" fill={LINE} style={centered} variants={pop} custom={9} />
+              <motion.rect x="96" y="234" width="40" height="14" rx="3" fill={MUTED} style={centered} variants={pop} custom={10} />
+              <motion.rect x="208" y="220" width="48" height="6" rx="3" fill={LINE} style={centered} variants={pop} custom={10} />
+              <motion.rect x="208" y="234" width="52" height="14" rx="3" fill={MUTED} style={centered} variants={pop} custom={11} />
+              <motion.rect x="320" y="220" width="48" height="6" rx="3" fill={LINE} style={centered} variants={pop} custom={11} />
 
-              {/* mini chart growing in the third card */}
-              <motion.rect x="300" y="234" width="12" height="18" rx="2" fill={ACCENT} style={{ ...fromBottom }} variants={grow} custom={0} />
-              <motion.rect x="320" y="222" width="12" height="30" rx="2" fill={ACCENT} style={{ ...fromBottom }} variants={grow} custom={1} />
-              <motion.rect x="340" y="230" width="12" height="22" rx="2" fill={ACCENT} style={{ ...fromBottom }} variants={grow} custom={2} />
-              <motion.rect x="360" y="214" width="12" height="38" rx="2" fill={ACCENT} style={{ ...fromBottom }} variants={grow} custom={3} />
+              {/* mini chart growing in the third card — grey bars */}
+              <motion.rect x="320" y="240" width="10" height="16" rx="2" fill={MUTED} style={{ ...fromBottom }} variants={grow} custom={0} />
+              <motion.rect x="336" y="230" width="10" height="26" rx="2" fill={MUTED} style={{ ...fromBottom }} variants={grow} custom={1} />
+              <motion.rect x="352" y="236" width="10" height="20" rx="2" fill={MUTED} style={{ ...fromBottom }} variants={grow} custom={2} />
+              <motion.rect x="368" y="226" width="10" height="30" rx="2" fill={MUTED} style={{ ...fromBottom }} variants={grow} custom={3} />
+            </g>
+
+            {/* Phase 4: blueprint annotations — construction guides, cotas, labels */}
+            <g>
+              {/* dashed construction guides that run past the sheet */}
+              <g stroke={LINE} strokeWidth="1" strokeDasharray="3 4">
+                <motion.line x1="84" y1="24" x2="84" y2="300" variants={annotate} custom={0} />
+                <motion.line x1="296" y1="24" x2="296" y2="300" variants={annotate} custom={0} />
+                <motion.line x1="40" y1="92" x2="452" y2="92" variants={annotate} custom={1} />
+              </g>
+
+              {/* horizontal dimension line: full width */}
+              <g stroke={MUTED} strokeWidth="1" strokeLinecap="round">
+                <motion.line x1="64" y1="284" x2="64" y2="316" strokeDasharray="3 4" variants={annotate} custom={2} />
+                <motion.line x1="416" y1="284" x2="416" y2="316" strokeDasharray="3 4" variants={annotate} custom={2} />
+                <motion.line x1="64" y1="310" x2="416" y2="310" variants={annotate} custom={3} />
+                <motion.path d="M72 306 L64 310 L72 314" fill="none" variants={annotate} custom={3} />
+                <motion.path d="M408 306 L416 310 L408 314" fill="none" variants={annotate} custom={3} />
+              </g>
+              <motion.text
+                x="240" y="328" textAnchor="middle" fill={MUTED}
+                style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12 }}
+                variants={annotate} custom={4}
+              >
+                1440px
+              </motion.text>
+
+              {/* vertical dimension line: header height */}
+              <g stroke={MUTED} strokeWidth="1" strokeLinecap="round">
+                <motion.line x1="416" y1="40" x2="440" y2="40" strokeDasharray="3 4" variants={annotate} custom={2} />
+                <motion.line x1="416" y1="72" x2="440" y2="72" strokeDasharray="3 4" variants={annotate} custom={2} />
+                <motion.line x1="434" y1="40" x2="434" y2="72" variants={annotate} custom={3} />
+                <motion.path d="M430 48 L434 40 L438 48" fill="none" variants={annotate} custom={3} />
+                <motion.path d="M430 64 L434 72 L438 64" fill="none" variants={annotate} custom={3} />
+              </g>
+              <motion.text
+                x="444" y="60" fill={MUTED}
+                style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11 }}
+                variants={annotate} custom={4}
+              >
+                64px
+              </motion.text>
+
+              {/* mono block labels in the left gutter */}
+              <g fill={MUTED} textAnchor="end" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 10 }}>
+                <motion.text x="56" y="60" variants={annotate} custom={5}>header</motion.text>
+                <motion.text x="56" y="120" variants={annotate} custom={5}>hero</motion.text>
+                <motion.text x="56" y="178" variants={annotate} custom={6}>cta</motion.text>
+                <motion.text x="56" y="240" variants={annotate} custom={6}>stats</motion.text>
+              </g>
             </g>
           </motion.svg>
         </div>

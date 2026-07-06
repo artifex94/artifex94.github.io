@@ -87,7 +87,7 @@ describe('Desarrollo page with reduced motion', () => {
   it('still lets the presencia stepper switch levels', () => {
     renderWithProviders(<Desarrollo />);
     expect(screen.getByText('$200.000')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: 'Negocio' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Tienda' }));
     expect(screen.getByText('$600.000')).toBeInTheDocument();
   });
 
