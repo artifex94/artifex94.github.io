@@ -178,7 +178,6 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, index, onClose, onNa
                 {photo.collection}
               </p>
             )}
-            <p className="text-white/80 text-sm mb-1">{photo.alt}</p>
             <p className="text-white/50 text-xs font-mono">
               {(index ?? 0) + 1} / {photos.length}
             </p>
