@@ -2,23 +2,16 @@ import { Home, Palette, ShoppingBag, type LucideIcon } from 'lucide-react';
 
 // Contenido de la página de Tufting, separado de la UI igual que business.ts.
 //
-// CÓMO AGREGAR PIEZAS:
-// - Cada pieza es una entrada en tuftingPieces. Sin `image`, se muestra un
-//   placeholder elegante ("Foto próximamente").
+// CÓMO AGREGAR LA FOTO REAL DE UNA CATEGORÍA:
+// - Cada categoría es una entrada en tuftingCategories. Sin `image`, se
+//   muestra el placeholder elegante ("Producto en proceso").
 // - Cuando tengas la foto: optimizarla (WebP, ≤1600px, <300KB), guardarla en
 //   public/photos/tufting/ y setear image: '/photos/tufting/nombre.webp'.
-// - status: 'disponible' (se muestra precio), 'vendida' o 'encargo' (pieza de
-//   muestra hecha a pedido; sin precio).
 
-export type PieceStatus = 'disponible' | 'vendida' | 'encargo';
-
-export interface TuftingPiece {
+export interface TuftingCategory {
   id: string;
   title: string;
-  size: string;
-  materials: string;
-  price?: string;
-  status: PieceStatus;
+  desc: string;
   image?: string;
 }
 
@@ -46,28 +39,20 @@ export const tuftingLines: TuftingLine[] = [
   },
 ];
 
-// EDITAR: piezas de ejemplo para mostrar la estructura; reemplazar por las reales.
-export const tuftingPieces: TuftingPiece[] = [
+export const tuftingCategories: TuftingCategory[] = [
   {
-    id: 'onda-terracota',
-    title: 'Onda Terracota',
-    size: '60 × 90 cm',
-    materials: 'Lana acrílica sobre tela monk’s cloth, base antideslizante',
-    price: 'Consultar',
-    status: 'disponible',
+    id: 'alfombra',
+    title: 'Alfombra',
+    desc: 'Piezas de piso tejidas a mano, del boceto a tu espacio.',
   },
   {
-    id: 'logo-comercio',
-    title: 'Logo para comercio',
-    size: 'A medida',
-    materials: 'Lana acrílica, colores según manual de marca',
-    status: 'encargo',
+    id: 'reposamunecas',
+    title: 'Reposamuñecas',
+    desc: 'Compañeros de escritorio: suaves, prácticos y con tu toque.',
   },
   {
-    id: 'retrato-mascota',
-    title: 'Retrato de mascota',
-    size: '50 × 50 cm',
-    materials: 'Lana acrílica, diseño a partir de foto',
-    status: 'encargo',
+    id: 'tapete',
+    title: 'Tapete',
+    desc: 'Piezas de pared y de acento, para darle calidez a cualquier rincón.',
   },
 ];

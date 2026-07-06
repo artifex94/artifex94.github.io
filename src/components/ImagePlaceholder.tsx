@@ -4,6 +4,10 @@ import { cn } from '../utils/cn';
 interface ImagePlaceholderProps {
   label?: string;
   className?: string;
+  /** Label en itálica font-display en vez del uppercase mono por defecto:
+   *  para contextos editoriales (ej. categorías de Tufting) donde el
+   *  placeholder necesita verse más elegante que un simple "sin foto". */
+  elegantLabel?: boolean;
 }
 
 // Placeholder para piezas que todavía no tienen foto: patrón de "trazos" de
@@ -11,6 +15,7 @@ interface ImagePlaceholderProps {
 export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
   label = 'Foto próximamente',
   className,
+  elegantLabel = false,
 }) => {
   // id único por instancia: varios placeholders conviven en la misma página
   const patternId = useId();
@@ -41,7 +46,12 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({
         </defs>
         <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
-      <span className="relative text-xs uppercase tracking-widest text-secondary">
+      <span
+        className={cn(
+          'relative text-xs uppercase tracking-widest text-secondary',
+          elegantLabel && 'font-display normal-case italic tracking-wide text-sm',
+        )}
+      >
         {label}
       </span>
     </div>
