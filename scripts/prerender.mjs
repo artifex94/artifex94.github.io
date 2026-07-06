@@ -84,7 +84,8 @@ async function main() {
   const server = await startServer();
   const origin = `http://localhost:${PORT}`;
 
-  const browser = await chromium.launch({ headless: true });
+  // --no-sandbox: required for headless Chromium on GitHub Actions runners.
+  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
   // reducedMotion trims framer transitions; we still assert opacity below.
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   // Seed the "returning visitor" flag BEFORE the bundle runs, so Typewriter
