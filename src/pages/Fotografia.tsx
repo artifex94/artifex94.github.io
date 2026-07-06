@@ -10,21 +10,20 @@ import { PackageCard } from '../components/PackageCard';
 import { ContactCTA } from '../components/ContactCTA';
 import { galleryPhotos, photoCategories, photoPackages } from '../data/photography';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { serviceSchemas, breadcrumb } from '../data/structuredData';
+import { breadcrumb } from '../data/structuredData';
 
 export const Fotografia: React.FC = () => {
   usePageMeta({
-    title: 'Fotografía — Eventos, Retratos y Producto | Artifex — Ramiro Escobar',
+    title: 'Fotografía en Victoria — Eventos, Retratos y Producto | Artifex',
     description:
       'Fotografía profesional: cobertura de eventos culturales, retratos y books, fotografía de producto para marcas y obra de paisaje en Victoria, Entre Ríos y la región.',
     canonicalPath: '/servicios/fotografia',
-    jsonLd: [
-      serviceSchemas.fotografia,
-      breadcrumb([
-        { name: 'Inicio', path: '/' },
-        { name: 'Fotografía', path: '/servicios/fotografia' },
-      ]),
-    ],
+    // El nodo Service vive en el grafo base (structuredData.ts); acá solo el
+    // breadcrumb propio de la página para no duplicar el @id #service-fotografia.
+    jsonLd: breadcrumb([
+      { name: 'Inicio', path: '/' },
+      { name: 'Fotografía', path: '/servicios/fotografia' },
+    ]),
   });
 
   return (
@@ -39,7 +38,7 @@ export const Fotografia: React.FC = () => {
         {/* Hero */}
         <section className="py-12 md:py-20 text-center max-w-3xl mx-auto">
           <span className="text-accent uppercase tracking-widest text-sm font-bold mb-4 block">
-            Fotografía
+            Fotografía · Victoria, Entre Ríos
           </span>
           <h1 className="font-display text-4xl md:text-6xl font-semibold mb-6 leading-tight">
             La luz cuenta la historia. <br />

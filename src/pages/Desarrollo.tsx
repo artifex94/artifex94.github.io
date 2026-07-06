@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { serviceSchemas, breadcrumb } from '../data/structuredData';
+import { breadcrumb } from '../data/structuredData';
 import { HeroBuild } from '../components/dev/HeroBuild';
 import { SegmentGrid } from '../components/dev/SegmentGrid';
 import { InvestmentSection } from '../components/dev/InvestmentSection';
@@ -14,17 +14,16 @@ import { MobileWhatsAppFab } from '../components/dev/MobileWhatsAppFab';
 // scroll and interact. The craft of the motion is the sales argument.
 export const Desarrollo: React.FC = () => {
   usePageMeta({
-    title: 'Desarrollo Web y Sistemas a Medida | Artifex — Ramiro Escobar',
+    title: 'Desarrollo Web y Sistemas a Medida | Artifex',
     description:
       'Construyo sitios y sistemas a medida para tu negocio: desde una web simple hasta un panel de gestión completo. Precios claros, proceso ordenado y acompañamiento continuo.',
     canonicalPath: '/servicios/desarrollo',
-    jsonLd: [
-      serviceSchemas.desarrollo,
-      breadcrumb([
-        { name: 'Inicio', path: '/' },
-        { name: 'Desarrollo Web', path: '/servicios/desarrollo' },
-      ]),
-    ],
+    // El nodo Service vive en el grafo base (structuredData.ts); acá solo el
+    // breadcrumb propio de la página para no duplicar el @id #service-desarrollo.
+    jsonLd: breadcrumb([
+      { name: 'Inicio', path: '/' },
+      { name: 'Desarrollo Web', path: '/servicios/desarrollo' },
+    ]),
   });
 
   return (
