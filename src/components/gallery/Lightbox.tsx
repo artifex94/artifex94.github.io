@@ -1,18 +1,31 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { GalleryPhoto } from '../../data/photography';
 
 interface LightboxProps {
   photos: GalleryPhoto[];
-  /** Índice de la foto abierta dentro de `photos`, o null si está cerrado. */
+  /** Index of the open photo within `photos`, or null when closed. */
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
 }
 
+// The subset of framer-motion's PanInfo we actually need: just the
+// horizontal drag offset.
+interface DragOffsetInfo {
+  offset: { x: number; y: number };
+}
+
+// Pixels of drag needed to trigger swipe navigation.
+const SWIPE_THRESHOLD = 80;
+
 export const Lightbox: React.FC<LightboxProps> = ({ photos, index, onClose, onNavigate }) => {
   const isOpen = index !== null && photos.length > 0;
+  const [loaded, setLoaded] = useState(false);
+  // Tracks the last index we reset `loaded` for, so the fade-in flag only
+  // resets once per photo change (see render-time state adjustment below).
+  const [loadedForIndex, setLoadedForIndex] = useState<number | null>(null);
 
   const goPrev = useCallback(() => {
     if (index === null) return;
@@ -34,7 +47,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, index, onClose, onNa
     };
 
     window.addEventListener('keydown', handleKey);
-    // Bloquea el scroll del fondo mientras el lightbox está abierto
+    // Locks background scroll while the lightbox is open.
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -44,7 +57,42 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, index, onClose, onNa
     };
   }, [isOpen, onClose, goPrev, goNext]);
 
-  const photo = isOpen ? photos[index] : null;
+  // Reset the fade-in flag synchronously during render whenever the active
+  // photo changes (React's supported "adjust state during render" pattern —
+  // avoids the extra render a `useEffect(() => setLoaded(false), [index])`
+  // would cause).
+  if (isOpen && index !== loadedForIndex) {
+    setLoadedForIndex(index);
+    setLoaded(false);
+  }
+
+  // Preload adjacent photos so arrow/swipe navigation doesn't show a blank
+  // gap while the next full-res image downloads. Pure side effect, no
+  // setState here — belongs in an effect.
+  useEffect(() => {
+    if (!isOpen || index === null) return;
+
+    const nextIndex = (index + 1) % photos.length;
+    const prevIndex = (index - 1 + photos.length) % photos.length;
+    for (const i of [nextIndex, prevIndex]) {
+      const preload = new Image();
+      preload.src = photos[i].fullSrc;
+    }
+  }, [isOpen, index, photos]);
+
+  const handleDragEnd = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: DragOffsetInfo
+  ) => {
+    const offsetX = info?.offset?.x ?? 0;
+    if (offsetX > SWIPE_THRESHOLD) {
+      goPrev();
+    } else if (offsetX < -SWIPE_THRESHOLD) {
+      goNext();
+    }
+  };
+
+  const photo = isOpen && index !== null ? photos[index] : null;
 
   return (
     <AnimatePresence>
@@ -96,18 +144,40 @@ export const Lightbox: React.FC<LightboxProps> = ({ photos, index, onClose, onNa
             </>
           )}
 
-          <motion.img
-            key={photo.src}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25 }}
-            src={photo.src}
-            alt={photo.alt}
-            onClick={(e) => e.stopPropagation()}
-            className="max-w-full max-h-[85vh] object-contain select-none"
-          />
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            {/* Anti-flash layer: the thumb is already browser-cached (it came
+                from the grid), so it fills the gap while the full image loads. */}
+            <img
+              src={photo.thumbSrc}
+              alt=""
+              aria-hidden="true"
+              data-testid="lightbox-thumb-layer"
+              className="absolute inset-0 w-full h-full object-contain"
+            />
+            <motion.img
+              key={photo.fullSrc}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.6}
+              onDragEnd={handleDragEnd}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: loaded ? 1 : 0, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              src={photo.fullSrc}
+              alt={photo.alt}
+              width={photo.width}
+              height={photo.height}
+              onLoad={() => setLoaded(true)}
+              className="relative max-w-full max-h-[85vh] object-contain select-none touch-none"
+            />
+          </div>
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center px-4">
+            {photo.collection && (
+              <p className="text-white/60 text-xs uppercase tracking-widest mb-1">
+                {photo.collection}
+              </p>
+            )}
             <p className="text-white/80 text-sm mb-1">{photo.alt}</p>
             <p className="text-white/50 text-xs font-mono">
               {(index ?? 0) + 1} / {photos.length}
