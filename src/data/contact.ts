@@ -22,9 +22,26 @@ export const whatsappMessages: Record<ServiceKey, string> = {
     'Hola Ramiro! Te escribo desde artifex.click, quiero hacerte una consulta.',
 };
 
-export const buildWhatsAppUrl = (service: ServiceKey): string | null => {
+// Tier-specific WhatsApp intros for the desarrollo pricing options. Passing a
+// variant to buildWhatsAppUrl swaps the generic message for one that names the
+// chosen plan, so the chat opens with the right context.
+export type TierVariant = 'presencia' | 'contenido' | 'negocio' | 'sistema';
+
+export const whatsappTierMessages: Record<TierVariant, string> = {
+  presencia:
+    'Hola Ramiro! Vi tu página y me interesa el plan Presencia ($200.000). Quiero contarte sobre mi negocio.',
+  contenido:
+    'Hola Ramiro! Vi tu página y me interesa el plan Contenido ($400.000). Quiero contarte sobre mi negocio.',
+  negocio:
+    'Hola Ramiro! Vi tu página y me interesa el plan Negocio ($600.000). Quiero contarte sobre mi negocio.',
+  sistema:
+    'Hola Ramiro! Vi tu página y me interesa un Sistema Web a Medida. Quiero contarte qué necesito.',
+};
+
+export const buildWhatsAppUrl = (service: ServiceKey, variant?: TierVariant): string | null => {
   if (!WHATSAPP_NUMBER) return null;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessages[service])}`;
+  const message = variant ? whatsappTierMessages[variant] : whatsappMessages[service];
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 };
 
 export const buildMailto = (subject: string): string =>
