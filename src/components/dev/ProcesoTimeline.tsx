@@ -1,9 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring, useTransform, useReducedMotion, type MotionValue } from 'framer-motion';
 import { procesoSteps, type ProcessStep } from '../../data/business';
 import { Reveal } from '../Reveal';
 
 const THRESHOLDS = [0.04, 0.37, 0.67, 0.96];
+// Radius of the h-12 (48px) circle: offsetTop + this lands on its vertical center.
+const NODE_CENTER_OFFSET = 24;
 
 interface StepNodeProps {
   step: ProcessStep;
@@ -11,17 +13,19 @@ interface StepNodeProps {
   progress: MotionValue<number>;
   threshold: number;
   reduce: boolean;
+  nodeRef: (el: HTMLDivElement | null) => void;
 }
 
 // One timeline step. Its lit state is derived from the shared scroll progress
 // via useTransform — no state is set on scroll, which keeps it test-safe.
-const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, reduce }) => {
+const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, reduce, nodeRef }) => {
   const fill = useTransform(progress, [threshold - 0.04, threshold + 0.02], [0, 1]);
   const dim = useTransform(progress, [threshold - 0.06, threshold], [0.7, 1]);
   const Icon = step.icon;
 
   return (
     <motion.div
+      ref={nodeRef}
       style={reduce ? undefined : { opacity: dim }}
       className="flex items-start gap-4 md:flex-col md:items-center md:gap-3 md:text-center"
     >
@@ -51,11 +55,56 @@ const StepNode: React.FC<StepNodeProps> = ({ step, index, progress, threshold, r
 export const ProcesoTimeline: React.FC = () => {
   const reduce = !!useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+  const nodeEls = useRef<Array<HTMLDivElement | null>>([]);
+  const [thresholds, setThresholds] = useState<number[]>(THRESHOLDS);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start 75%', 'end 55%'],
   });
-  const lineProgress = useSpring(scrollYProgress, { stiffness: 70, damping: 22, restDelta: 0.001 });
+  // Overdamped (no overshoot): the tip settles fast and doesn't lag behind
+  // quick touch flings on mobile.
+  const lineProgress = useSpring(scrollYProgress, { stiffness: 120, damping: 26, restDelta: 0.001 });
+
+  useLayoutEffect(() => {
+    // On mobile the 4 steps stack with variable heights, so the fixed
+    // fractions in THRESHOLDS drift from the line's real geometry. Desktop
+    // keeps the uniform grid (horizontal line), so fixed thresholds are
+    // exactly right there — only mobile needs measuring.
+    const measure = () => {
+      // jsdom (tests) has no matchMedia: bail out, THRESHOLDS stays as-is.
+      if (typeof window.matchMedia !== 'function') return;
+
+      const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+      if (isDesktop) {
+        setThresholds(THRESHOLDS);
+        return;
+      }
+
+      const nodes = nodeEls.current;
+      if (nodes.length === 0 || nodes.some((n) => n === null)) return;
+
+      const centers = nodes.map((n) => n!.offsetTop + NODE_CENTER_OFFSET);
+      const first = centers[0];
+      const last = centers[centers.length - 1];
+      const span = last - first;
+      if (!Number.isFinite(span) || span <= 0) return;
+
+      const next = centers.map((c) => 0.04 + ((c - first) / span) * 0.92);
+      if (next.some((v) => !Number.isFinite(v))) return;
+
+      setThresholds(next);
+    };
+
+    measure();
+
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    for (const node of nodeEls.current) {
+      if (node) observer.observe(node);
+    }
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section>
@@ -104,8 +153,11 @@ export const ProcesoTimeline: React.FC = () => {
               step={step}
               index={i}
               progress={lineProgress}
-              threshold={THRESHOLDS[i]}
+              threshold={thresholds[i]}
               reduce={reduce}
+              nodeRef={(el) => {
+                nodeEls.current[i] = el;
+              }}
             />
           ))}
         </div>
