@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail, MessageCircle } from 'lucide-react';
 import { data } from '../data/data';
 import { CONTACT_EMAIL, buildWhatsAppUrl } from '../data/contact';
 
@@ -88,6 +88,15 @@ export const Footer: React.FC = () => {
                 className="text-primary hover:text-accent transition-colors"
               >
                 <Linkedin size={18} />
+              </a>
+              <a
+                href={data.personal.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-primary hover:text-accent transition-colors"
+              >
+                <Instagram size={18} />
               </a>
             </li>
           </ul>

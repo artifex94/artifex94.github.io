@@ -43,7 +43,7 @@ export interface PortfolioData {
     aka: string;
     title: string;
     emails: { professional: string; personal: string };
-    social: { github: string; linkedin: string };
+    social: { github: string; linkedin: string; instagram: string };
     aboutMe: string;
   };
   experience: Experience[];
@@ -65,6 +65,7 @@ export const data: PortfolioData = {
     social: {
       github: "https://github.com/artifex94",
       linkedin: "https://www.linkedin.com/in/ramiroescobar",
+      instagram: "https://www.instagram.com/artifex_dev",
     },
     aboutMe: "Desarrollador orientado a soluciones con un fuerte background en administración de sistemas e integración de software. Combino mi experiencia técnica en redes y bases de datos con el desarrollo moderno frontend y backend para crear herramientas eficientes y escalables.",
   },
