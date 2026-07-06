@@ -1,5 +1,6 @@
 import { Star, MessageCircle, CheckCircle, Heart, Award, Sparkles, ArrowRight } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA      = "https://wa.me/5493436431987?text=Hola%2C%20me%20interesa%20hablar%20con%20Valentina%20sobre%20coaching.";
 const WA_FREE = "https://wa.me/5493436431987?text=Hola%2C%20quiero%20agendar%20mi%20sesi%C3%B3n%20de%20descubrimiento%20gratuita.";
@@ -41,6 +42,13 @@ const testimonios = [
 ];
 
 export const Emprendedor = () => {
+  usePageMeta({
+    title: 'Coaching — Demo Emprendedor | Artifex',
+    description:
+      'Landing demo para emprendedores y coaches: servicios, planes y agenda de una sesión por WhatsApp.',
+    canonicalPath: '/business/emprendedores',
+    noindex: true,
+  });
   return (
     <div className="min-h-screen bg-[#FAFAF8] font-sans text-[#1C2B2B]">
 

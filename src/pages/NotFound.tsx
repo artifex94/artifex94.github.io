@@ -1,7 +1,15 @@
 import { Link } from 'react-router-dom';
 import { BlueprintBox } from '../components/BlueprintBox';
+import { usePageMeta } from '../hooks/usePageMeta';
 
-export const NotFound = () => (
+export const NotFound = () => {
+  usePageMeta({
+    title: 'Página no encontrada — Artifex',
+    description: 'La página que buscás no existe. Volvé al inicio de Artifex.',
+    noindex: true,
+  });
+
+  return (
   <div className="min-h-screen flex items-center justify-center px-4">
     <BlueprintBox coords={{ x: 40, y: 40 }} className="max-w-md w-full">
       <p className="text-[9px] font-mono text-secondary/50 uppercase tracking-widest mb-2">// 404_NOT_FOUND</p>
@@ -18,4 +26,5 @@ export const NotFound = () => (
       </Link>
     </BlueprintBox>
   </div>
-);
+  );
+};

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Bed, Bath, Maximize2, MapPin, Phone, Search } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA = "https://wa.me/5493436431987?text=Hola%2C%20consulto%20por%20una%20propiedad.";
 
@@ -14,6 +15,13 @@ const propiedades = [
 ];
 
 export const Inmobiliaria: React.FC = () => {
+  usePageMeta({
+    title: 'Victoria Propiedades — Demo Inmobiliaria | Artifex',
+    description:
+      'Sitio demo para inmobiliarias: catálogo de propiedades con búsqueda, filtros y contacto directo por WhatsApp.',
+    canonicalPath: '/business/inmobiliarias',
+    noindex: true,
+  });
   const [filtro, setFiltro] = useState('Todos');
   const [busqueda, setBusqueda] = useState('');
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Clock, MapPin, Phone, Star, ChevronRight, CheckCircle } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20sacar%20un%20turno.";
 
@@ -20,6 +21,13 @@ const testimonios = [
 ];
 
 export const Profesional: React.FC = () => {
+  usePageMeta({
+    title: 'Consultorio — Demo Profesional | Artifex',
+    description:
+      'Sitio demo para profesionales independientes: turnos online, servicios, reseñas y contacto por WhatsApp.',
+    canonicalPath: '/business/profesionales',
+    noindex: true,
+  });
   const [turnoSel, setTurnoSel] = useState('');
   const [diaSel, setDiaSel] = useState('');
 

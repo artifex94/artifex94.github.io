@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ShoppingBag, MapPin, Clock, Search, Heart, Share2, Phone, Tag, Truck } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA_BASE = "https://wa.me/5493436431987?text=Hola%2C%20consulto%20por%20";
 
@@ -18,6 +19,13 @@ const productos = [
 ];
 
 export const Comercio: React.FC = () => {
+  usePageMeta({
+    title: 'Tienda — Demo Comercio | Artifex',
+    description:
+      'Sitio demo para comercios: catálogo de productos con filtros, búsqueda y pedidos por WhatsApp.',
+    canonicalPath: '/business/comercios',
+    noindex: true,
+  });
   const [cat, setCat] = useState('Todo');
   const [search, setSearch] = useState('');
   const [liked, setLiked] = useState<number[]>([]);
