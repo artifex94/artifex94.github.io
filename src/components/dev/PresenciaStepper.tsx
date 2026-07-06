@@ -22,7 +22,7 @@ export const PresenciaStepper: React.FC = () => {
       <div className="mb-1 font-mono text-xs uppercase tracking-widest text-accent">
         Presencia Digital
       </div>
-      <p className="mb-6 text-sm text-secondary">
+      <p className="mb-6 text-sm text-primary/70">
         Tu negocio online, en el nivel que necesites hoy.
       </p>
 
@@ -70,6 +70,7 @@ export const PresenciaStepper: React.FC = () => {
         />
         <span className="text-sm text-secondary">ARS</span>
       </div>
+      <p className="mt-1.5 font-mono text-xs text-primary/60">+ abono mensual opcional</p>
 
       {/* Pitch (crossfade) */}
       <div className="mt-3 min-h-[3.5rem]">
@@ -110,7 +111,7 @@ export const PresenciaStepper: React.FC = () => {
       <a
         href={waHref}
         {...(isWhatsApp ? { target: '_blank', rel: 'noreferrer' } : {})}
-        className="mt-8 inline-flex w-full items-center justify-center gap-2 border border-accent px-6 py-3.5 font-bold text-accent transition-colors hover:bg-accent hover:text-on-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="mt-8 inline-flex w-full items-center justify-center gap-2 bg-accent px-6 py-3.5 font-bold text-on-accent transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_20px_rgba(255,107,0,0.4)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         {isWhatsApp && <MessageCircle size={18} />}
         Quiero el plan {level.label}

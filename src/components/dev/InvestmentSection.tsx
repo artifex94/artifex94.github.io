@@ -9,9 +9,9 @@ import { SistemaCard } from './SistemaCard';
 export const InvestmentSection: React.FC = () => {
   return (
     <section>
-      <Reveal className="mb-10 text-center">
+      <Reveal className="mb-8 text-center md:mb-10">
         <h2 className="text-3xl font-bold text-white">Cuánto sale</h2>
-        <p className="mt-3 font-mono text-sm text-secondary">
+        <p className="mt-3 font-mono text-sm text-primary/70">
           // Elegí por dónde arrancar.
         </p>
       </Reveal>
@@ -20,8 +20,14 @@ export const InvestmentSection: React.FC = () => {
         <Reveal>
           <PresenciaStepper />
         </Reveal>
-        <Reveal delay={0.1}>
-          <SistemaCard />
+        <Reveal delay={0.1} className="flex h-full flex-col gap-3">
+          {/* Connector: are these alternatives or a ladder? This says ladder. */}
+          <p className="font-mono text-xs text-accent/90">
+            // ¿Tu operación necesita más que una web? →
+          </p>
+          <div className="flex-1">
+            <SistemaCard />
+          </div>
         </Reveal>
       </div>
 
@@ -32,7 +38,7 @@ export const InvestmentSection: React.FC = () => {
             <h3 className="text-xl font-bold text-white">
               Y después de la entrega, no te quedás solo.
             </h3>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-secondary">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-primary/70">
               Un abono mensual mantiene tu sitio al día, seguro y con soporte directo, con respuesta
               en el día. Para los planes de Presencia Digital es opcional; en el Sistema a Medida el
               primer año ya está incluido y después podés seguir con el mismo abono.

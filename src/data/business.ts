@@ -134,12 +134,12 @@ export const sistemaTier: SistemaTier = {
   price: '$1.000.000',
   badge: 'El más completo',
   features: [
-    'Sistema funcionando en 90 días, con soporte incluido el primer año',
-    'Panel de administración propio: todo el control desde una pantalla',
-    'Base de datos y lógica pensadas para crecer con tu negocio',
-    'Usuarios y permisos por rol',
-    'Entregas parciales en cada etapa: ves el avance en tiempo real',
-    'Acompañamiento mensual después de la entrega',
+    'Turnos, clientes o stock: el sistema se arma alrededor de tu operación',
+    'Historial y ficha de cada cliente',
+    'Reportes para decidir con números',
+    'Usuarios y permisos para tu equipo',
+    'Entregas parciales: ves el avance en tiempo real',
+    'Sistema funcionando en 90 días',
   ],
 };
 
@@ -171,8 +171,8 @@ export const procesoSteps: ProcessStep[] = [
   },
   {
     icon: Rocket,
-    title: 'Lo publico y te acompaño',
-    desc: 'Sale a producción, te lo entrego funcionando y me quedo cerca para lo que necesites después.',
+    title: 'Lo publico',
+    desc: 'Sale a producción y te lo entrego funcionando, con todo documentado y listo para usar.',
   },
 ];
 

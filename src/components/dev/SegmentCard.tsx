@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Plus } from 'lucide-react';
@@ -12,29 +12,47 @@ interface SegmentCardProps {
   onToggle: () => void;
 }
 
-// A rubro card. Collapsed it shows the icon, title and a one-line hook; the
-// full pain and the demo link are always in the DOM but clipped until expanded,
-// so the height animation runs only on click (never on scroll or mount).
+// A rubro card. Collapsed it lives in its grid cell; expanded it takes over the
+// whole row (col-span-full) and its siblings reflow underneath. The pain + demo
+// link, always in the DOM (clipped when collapsed, so links stay crawlable and
+// test-visible), lay out horizontally beside the header on desktop. framer's
+// layout drives the box morph; the grid reordering IS the structural argument.
 export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDimmed, onToggle }) => {
   const reduce = useReducedMotion();
   const Icon = segment.icon;
   const panelId = `segment-panel-${segment.slug}`;
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  // Escape collapses the open card and returns focus to its toggle.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && isOpen) {
+      onToggle();
+      btnRef.current?.focus();
+    }
+  };
 
   return (
     <motion.div
-      layout={reduce ? false : 'position'}
-      transition={{ layout: { duration: reduce ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] } }}
-      animate={{ opacity: isDimmed ? 0.75 : 1 }}
-      className={`flex flex-col border bg-surface transition-colors ${
-        isOpen ? 'border-accent' : 'border-line hover:border-accent/60'
+      layout={reduce ? false : true}
+      transition={{ layout: { duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] } }}
+      animate={{ opacity: isDimmed ? 0.7 : 1 }}
+      onKeyDown={handleKeyDown}
+      className={`flex overflow-hidden border bg-surface transition-[border-color,box-shadow] duration-300 ${
+        isOpen
+          ? 'col-span-full flex-col border-accent md:flex-row md:items-stretch'
+          : 'flex-col border-line hover:border-accent hover:shadow-[0_0_20px_rgba(255,107,0,0.2)]'
       }`}
     >
-      <button
+      <motion.button
+        ref={btnRef}
+        layout={reduce ? false : 'position'}
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="group relative flex flex-col gap-3 p-5 pr-12 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className={`group relative flex flex-col gap-3 p-5 pr-12 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+          isOpen ? 'md:w-[38%] md:shrink-0 md:justify-center md:border-r md:border-line/60' : ''
+        }`}
       >
         <span
           aria-hidden="true"
@@ -52,28 +70,27 @@ export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDim
           {segment.title}
         </h3>
         <p className="text-sm leading-relaxed text-primary/85">{segment.hook}</p>
-      </button>
+      </motion.button>
 
       <motion.div
         id={panelId}
-        initial={false}
-        animate={reduce ? undefined : { height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-        style={reduce ? { height: isOpen ? 'auto' : 0 } : undefined}
-        transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+        layout={reduce ? false : 'position'}
         aria-hidden={!isOpen}
-        className="overflow-hidden"
+        className={`overflow-hidden transition-opacity duration-300 ${
+          isOpen
+            ? 'border-t border-line/60 p-5 opacity-100 md:flex-1 md:border-t-0'
+            : 'max-h-0 opacity-0'
+        }`}
       >
-        <div className="border-t border-line/60 px-5 pb-5 pt-4">
-          <p className="text-sm leading-relaxed text-primary">{segment.pain}</p>
-          <Link
-            to={`/business/${segment.slug}`}
-            tabIndex={isOpen ? 0 : -1}
-            className="mt-4 inline-flex items-center gap-1.5 font-mono text-sm font-bold text-accent transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            Ver cómo lo resuelvo
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
+        <p className="text-sm leading-relaxed text-primary">{segment.pain}</p>
+        <Link
+          to={`/business/${segment.slug}`}
+          tabIndex={isOpen ? 0 : -1}
+          className="mt-4 inline-flex items-center gap-1.5 font-mono text-sm font-bold text-accent transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Ver cómo lo resuelvo
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
       </motion.div>
     </motion.div>
   );

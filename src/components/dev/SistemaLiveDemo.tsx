@@ -3,11 +3,12 @@ import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { LayoutDashboard, Users, Package, BarChart3 } from 'lucide-react';
 import { AnimatedPrice } from './AnimatedPrice';
 
-// Plausible business figures that tick over time — the demo should feel like a
-// real panel, not a mockup.
-const PEDIDOS = [38, 41, 43, 46, 44, 48];
-const CONSULTAS = [112, 118, 121, 127, 124, 131];
-const FACTURACION = ['812.400', '834.900', '847.500', '861.200', '855.000', '872.300'];
+// Plausible management figures that tick over time — a GESTIÓN panel (turnos,
+// clientes, cobranzas), not an e-commerce dashboard, so it reads distinct from
+// the Tienda tier.
+const TURNOS = [14, 12, 15, 13, 16, 14];
+const CLIENTES = [208, 210, 209, 212, 211, 214];
+const COBRANZAS = ['812.400', '834.900', '847.500', '861.200', '855.000', '872.300'];
 const CHART = [
   [40, 62, 48, 70, 55, 82, 64],
   [46, 58, 52, 66, 60, 78, 72],
@@ -30,9 +31,9 @@ export const SistemaLiveDemo: React.FC = () => {
     return () => clearInterval(id);
   }, [active]);
 
-  const pedidos = PEDIDOS[tick % PEDIDOS.length];
-  const consultas = CONSULTAS[tick % CONSULTAS.length];
-  const facturacion = FACTURACION[tick % FACTURACION.length];
+  const turnos = TURNOS[tick % TURNOS.length];
+  const clientes = CLIENTES[tick % CLIENTES.length];
+  const cobranzas = COBRANZAS[tick % COBRANZAS.length];
   const bars = CHART[tick % CHART.length];
 
   return (
@@ -68,24 +69,24 @@ export const SistemaLiveDemo: React.FC = () => {
           {/* Stat cards */}
           <div className="grid grid-cols-3 gap-2.5">
             <div className="border border-line bg-surface p-3">
-              <div className="mb-1 text-[11px] text-secondary">Pedidos hoy</div>
-              <AnimatedPrice value={String(pedidos)} className="text-xl font-bold text-white" />
+              <div className="mb-1 text-[11px] text-secondary">Turnos hoy</div>
+              <AnimatedPrice value={String(turnos)} className="text-xl font-bold text-white" />
             </div>
             <div className="border border-line bg-surface p-3">
-              <div className="mb-1 text-[11px] text-secondary">Consultas</div>
-              <AnimatedPrice value={String(consultas)} className="text-xl font-bold text-white" />
+              <div className="mb-1 text-[11px] text-secondary">Clientes activos</div>
+              <AnimatedPrice value={String(clientes)} className="text-xl font-bold text-white" />
             </div>
             <div className="border border-line bg-surface p-3">
-              <div className="mb-1 text-[11px] text-secondary">Facturación</div>
+              <div className="mb-1 text-[11px] text-secondary">Cobranzas</div>
               <div className="flex items-baseline gap-0.5 text-xl font-bold text-accent">
                 <span className="text-sm">$</span>
-                <AnimatedPrice value={facturacion} />
+                <AnimatedPrice value={cobranzas} />
               </div>
             </div>
           </div>
 
-          {/* Chart */}
-          <div className="mt-4 flex h-24 items-end gap-2 border-t border-line/60 pt-3">
+          {/* Chart — baseline ties the bars to the KPIs above */}
+          <div className="relative mt-4 flex h-24 items-end gap-2 border-b border-t border-line/60 pb-px pt-3">
             {bars.map((h, i) => (
               <motion.div
                 key={i}

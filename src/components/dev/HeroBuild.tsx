@@ -70,7 +70,7 @@ export const HeroBuild: React.FC = () => {
   const fromBottom = { transformBox: 'fill-box' as const, transformOrigin: '50% 100%' };
 
   return (
-    <section className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-10">
+    <section className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center lg:gap-10">
       {/* Copy column */}
       <div className="max-w-xl">
         <motion.span
@@ -186,8 +186,9 @@ export const HeroBuild: React.FC = () => {
               <motion.rect x="368" y="226" width="10" height="30" rx="2" fill={MUTED} style={{ ...fromBottom }} variants={grow} custom={3} />
             </g>
 
-            {/* Phase 4: blueprint annotations — construction guides, cotas, labels */}
-            <g>
+            {/* Phase 4: blueprint annotations — construction guides, cotas, labels.
+                Hidden under 480px, where they crowd the plan into noise. */}
+            <g className="hidden min-[480px]:block">
               {/* dashed construction guides that run past the sheet */}
               <g stroke={LINE} strokeWidth="1" strokeDasharray="3 4">
                 <motion.line x1="84" y1="24" x2="84" y2="300" variants={annotate} custom={0} />
