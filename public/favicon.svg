@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Artifex">
+  <rect width="64" height="64" rx="13" fill="#050505"/>
+  <g fill="none" stroke="#ff6b00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Chevron ">" del prompt "> Artifex" -->
+    <path d="M17 21 L29 32 L17 43"/>
+    <!-- Letra "A" -->
+    <path d="M37 44 L45 20 L53 44"/>
+    <path d="M40 35 L50 35"/>
+  </g>
+</svg>

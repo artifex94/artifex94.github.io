@@ -24,6 +24,9 @@ export const Footer: React.FC = () => {
           <p className="text-sm text-secondary leading-relaxed">
             {data.personal.name}. Desarrollo web, fotografía y tufting: tecnología y oficio en un mismo taller.
           </p>
+          <p className="mt-3 text-xs text-secondary font-mono">
+            Victoria, Entre Ríos · Argentina
+          </p>
         </div>
 
         {/* Servicios */}
