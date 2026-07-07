@@ -33,7 +33,7 @@ export const Comercio: React.FC = () => {
   });
   const [cat, setCat] = useState('Todo');
   const [search, setSearch] = useState('');
-  const [liked, setLiked] = useState<number[]>([]);
+  const [liked, setLiked] = useState<string[]>([]);
   const [tallaSel, setTallaSel] = useState<Record<string, string>>({});
   const [colorSel, setColorSel] = useState<Record<string, string>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -45,7 +45,7 @@ export const Comercio: React.FC = () => {
     return matchCat && matchSearch;
   });
 
-  const toggleLike = (i: number) => setLiked(prev => prev.includes(i) ? prev.filter(x=>x!==i) : [...prev, i]);
+  const toggleLike = (nombre: string) => setLiked(prev => prev.includes(nombre) ? prev.filter(x=>x!==nombre) : [...prev, nombre]);
 
   const addToCart = (p: Producto) => {
     const item: CartItem = { nombre: p.nombre, precio: p.precio, talla: tallaSel[p.nombre], color: colorSel[p.nombre] };
@@ -148,14 +148,14 @@ export const Comercio: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {lista.map((p, i) => (
-            <div key={i} className="bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+          {lista.map((p) => (
+            <div key={p.nombre} className="bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
               <div className="relative overflow-hidden h-48 cursor-pointer" onClick={() => setDetalleProducto(p)}>
                 <img src={p.img} alt={p.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 {p.badge && <span className="absolute top-2 left-2 bg-[#E91E8C] text-white text-xs font-bold px-2 py-0.5 rounded">{p.badge}</span>}
-                <button onClick={(e) => { e.stopPropagation(); toggleLike(i); }}
+                <button onClick={(e) => { e.stopPropagation(); toggleLike(p.nombre); }}
                   className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors">
-                  <Heart className={`w-4 h-4 ${liked.includes(i) ? 'fill-[#E91E8C] text-[#E91E8C]' : 'text-neutral-400'}`} />
+                  <Heart className={`w-4 h-4 ${liked.includes(p.nombre) ? 'fill-[#E91E8C] text-[#E91E8C]' : 'text-neutral-400'}`} />
                 </button>
               </div>
               <div className="p-3">
