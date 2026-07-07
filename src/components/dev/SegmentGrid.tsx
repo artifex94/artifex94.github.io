@@ -1,23 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LayoutGroup } from 'framer-motion';
 import { segments } from '../../data/business';
 import { Reveal } from '../Reveal';
 import { SegmentCard } from './SegmentCard';
 
+// True below the sm breakpoint (single-column grid). Guarded for jsdom/tests
+// and the prerender's first paint (defaults to desktop, which is inert since
+// nothing is open until the user interacts).
+const useIsMobile = (): boolean => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(max-width: 639px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return isMobile;
+};
+
 // "¿Con qué trabajás?" — the six rubros from the old site, each fused with a
 // link to its live demo. One card expands at a time; the rest dim.
 export const SegmentGrid: React.FC = () => {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
-  // The open card moves to the front so its full-width panel always sits first;
-  // the stable slug keys let framer's layout animation slide the rest into
-  // their new spots — that's the dynamic repositioning.
-  const ordered = openSlug
-    ? [
-        ...segments.filter((s) => s.slug === openSlug),
-        ...segments.filter((s) => s.slug !== openSlug),
-      ]
-    : segments;
+  // Desktop: the open card moves to the front so its full-width panel always
+  // sits first, and framer's layout animation slides the rest into place.
+  // Mobile (single column): keep the original order so the card just expands
+  // in place — no jarring jump to the top of the list.
+  const ordered =
+    openSlug && !isMobile
+      ? [
+          ...segments.filter((s) => s.slug === openSlug),
+          ...segments.filter((s) => s.slug !== openSlug),
+        ]
+      : segments;
 
   return (
     <section>
