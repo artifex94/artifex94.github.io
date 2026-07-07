@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ShoppingCart, MapPin, Clock, Star, Phone, Flame, Leaf, Award } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { showToast, DemoToaster } from './_shared/toast';
+import { DemoModal } from './_shared/DemoModal';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA_ORDER = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20hacer%20un%20pedido.";
@@ -8,18 +10,44 @@ const WA_RESERVA = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20hacer%
 
 const categorias = ['Todo', 'Entradas', 'Principales', 'Pastas', 'Postres', 'Bebidas'];
 
+const diasReserva = ['Jue 2', 'Vie 3', 'Sáb 4', 'Dom 5'];
+const horariosReserva = ['12:30', '13:00', '13:30', '20:30', '21:00', '21:30', '22:00'];
+
 const menu = [
-  { cat:'Entradas', nombre:'Tabla de fiambres', desc:'Selección de quesos, salamín y aceitunas artesanales.', precio:'$6.500', img:'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=400&q=80', badge:'🔥 Popular' },
-  { cat:'Entradas', nombre:'Empanadas (x6)', desc:'Carne cortada a cuchillo o caprese. Horno de barro.', precio:'$5.800', img:'https://images.unsplash.com/photo-1604467794349-0b74285de7e7?w=400&q=80', badge:'' },
-  { cat:'Principales', nombre:'Asado a la parrilla', desc:'Costillar de novillo con chimichurri casero y ensalada.', precio:'$18.500', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80', badge:'⭐ Estrella' },
-  { cat:'Principales', nombre:'Milanesa napolitana', desc:'Milanesa de ternera con salsa, jamón y mozzarella.', precio:'$12.000', img:'https://images.unsplash.com/photo-1585325701956-60dd9c8553bc?w=400&q=80', badge:'' },
-  { cat:'Pastas', nombre:'Ravioles de ricotta', desc:'Con salsa fileto o a la crema. Masa fresca casera.', precio:'$10.500', img:'https://images.unsplash.com/photo-1608756687911-aa1599ab3bd9?w=400&q=80', badge:'🌿 Casero' },
-  { cat:'Pastas', nombre:'Sorrentinos de jamón', desc:'Rellenos de jamón y queso con salsa rosa.', precio:'$11.000', img:'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&q=80', badge:'' },
-  { cat:'Postres', nombre:'Panqueques con dulce de leche', desc:'Con crema batida y nueces.', precio:'$4.500', img:'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&q=80', badge:'' },
-  { cat:'Postres', nombre:'Flan casero', desc:'Con crema y dulce de leche artesanal.', precio:'$3.800', img:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&q=80', badge:'💛 Clásico' },
-  { cat:'Bebidas', nombre:'Vino Malbec (copa)', desc:'Selección de bodegas de Mendoza.', precio:'$3.500', img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80', badge:'' },
-  { cat:'Bebidas', nombre:'Limonada natural', desc:'Con jengibre y menta. Sin conservantes.', precio:'$2.800', img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80', badge:'🌿' },
+  { cat:'Entradas', nombre:'Tabla de fiambres', desc:'Selección de quesos, salamín y aceitunas artesanales.', precio:'$6.500', img:'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=400&q=80', badge:'🔥 Popular',
+    detalle:'Una selección pensada para compartir: fiambres curados de la región, quesos madurados y aceitunas marinadas en casa, acompañados de grisines recién horneados.',
+    ingredientes:['Salamín artesanal', 'Queso cremoso', 'Queso provolone', 'Aceitunas negras', 'Grisines caseros'] },
+  { cat:'Entradas', nombre:'Empanadas (x6)', desc:'Carne cortada a cuchillo o caprese. Horno de barro.', precio:'$5.800', img:'https://images.unsplash.com/photo-1604467794349-0b74285de7e7?w=400&q=80', badge:'',
+    detalle:'Docena a elección entre carne cortada a cuchillo o caprese, horneadas en nuestro horno de barro para lograr esa masa crocante por fuera y jugosa por dentro.',
+    ingredientes:['Carne cortada a cuchillo', 'Cebolla caramelizada', 'Huevo', 'Aceitunas', 'Masa criolla horneada'] },
+  { cat:'Principales', nombre:'Asado a la parrilla', desc:'Costillar de novillo con chimichurri casero y ensalada.', precio:'$18.500', img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80', badge:'⭐ Estrella',
+    detalle:'Cortes seleccionados de novillo de la zona, cocción lenta a la parrilla de leña y chimichurri elaborado en casa. Se sirve con ensalada fresca de estación.',
+    ingredientes:['Costillar de novillo', 'Chimichurri casero', 'Sal parrillera', 'Ensalada mixta'] },
+  { cat:'Principales', nombre:'Milanesa napolitana', desc:'Milanesa de ternera con salsa, jamón y mozzarella.', precio:'$12.000', img:'https://images.unsplash.com/photo-1585325701956-60dd9c8553bc?w=400&q=80', badge:'',
+    detalle:'Milanesa de ternera empanada a mano, cubierta con salsa casera, jamón y mozzarella gratinada. Acompaña con papas fritas o puré a elección.',
+    ingredientes:['Milanesa de ternera', 'Salsa de tomate casera', 'Jamón cocido', 'Mozzarella', 'Papas fritas'] },
+  { cat:'Pastas', nombre:'Ravioles de ricotta', desc:'Con salsa fileto o a la crema. Masa fresca casera.', precio:'$10.500', img:'https://images.unsplash.com/photo-1608756687911-aa1599ab3bd9?w=400&q=80', badge:'🌿 Casero',
+    detalle:'Pasta fresca elaborada todos los días en nuestra cocina, rellena de ricotta y hierbas. A elección con salsa fileto o crema y un toque de parmesano.',
+    ingredientes:['Masa fresca casera', 'Ricotta', 'Salsa fileto o crema', 'Parmesano'] },
+  { cat:'Pastas', nombre:'Sorrentinos de jamón', desc:'Rellenos de jamón y queso con salsa rosa.', precio:'$11.000', img:'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400&q=80', badge:'',
+    detalle:'Sorrentinos rellenos de jamón y queso, bañados en una suave salsa rosa hecha con crema y tomate.',
+    ingredientes:['Masa fresca', 'Jamón cocido', 'Queso', 'Salsa rosa'] },
+  { cat:'Postres', nombre:'Panqueques con dulce de leche', desc:'Con crema batida y nueces.', precio:'$4.500', img:'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&q=80', badge:'',
+    detalle:'Clásicos panqueques finitos rellenos de dulce de leche artesanal, con crema batida y nueces tostadas.',
+    ingredientes:['Panqueques caseros', 'Dulce de leche artesanal', 'Crema batida', 'Nueces'] },
+  { cat:'Postres', nombre:'Flan casero', desc:'Con crema y dulce de leche artesanal.', precio:'$3.800', img:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&q=80', badge:'💛 Clásico',
+    detalle:'Receta de la casa, textura suave y caramelo a punto, servido con crema y dulce de leche artesanal.',
+    ingredientes:['Huevo', 'Leche entera', 'Caramelo casero', 'Crema', 'Dulce de leche'] },
+  { cat:'Bebidas', nombre:'Vino Malbec (copa)', desc:'Selección de bodegas de Mendoza.', precio:'$3.500', img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&q=80', badge:'',
+    detalle:'Copa de Malbec de bodegas mendocinas seleccionadas, ideal para acompañar carnes y pastas.',
+    ingredientes:['Malbec de Mendoza'] },
+  { cat:'Bebidas', nombre:'Limonada natural', desc:'Con jengibre y menta. Sin conservantes.', precio:'$2.800', img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&q=80', badge:'🌿',
+    detalle:'Limonada 100% natural con jengibre y menta fresca, sin conservantes ni azúcares agregados.',
+    ingredientes:['Limón exprimido', 'Jengibre', 'Menta fresca', 'Agua con gas'] },
 ];
+
+type MenuItem = typeof menu[number];
+type CartItem = { nombre: string; precio: string };
 
 export const Gastronomia: React.FC = () => {
   usePageMeta({
@@ -30,8 +58,22 @@ export const Gastronomia: React.FC = () => {
     noindex: true,
   });
   const [cat, setCat] = useState('Todo');
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [detalleItem, setDetalleItem] = useState<MenuItem | null>(null);
+  const [reservaOpen, setReservaOpen] = useState(false);
+  const [diaReserva, setDiaReserva] = useState('');
+  const [horaReserva, setHoraReserva] = useState('');
 
   const lista = cat === 'Todo' ? menu : menu.filter(m => m.cat === cat);
+
+  const addToCart = (item: CartItem) => {
+    setCart(prev => [...prev, { nombre: item.nombre, precio: item.precio }]);
+    showToast(`Agregado: ${item.nombre}`);
+  };
+
+  const pedidoHref = cart.length > 0
+    ? `https://wa.me/5493436431987?text=${encodeURIComponent(`Hola, quiero pedir: ${cart.map(c => c.nombre).join(', ')}.`)}`
+    : WA_ORDER;
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] font-sans">
@@ -50,7 +92,15 @@ export const Gastronomia: React.FC = () => {
         </div>
         <a href={WA_ORDER} target="_blank" rel="noreferrer"
           className="flex items-center gap-2 bg-[#D4A843] text-[#2C1810] px-4 py-2 text-sm font-bold rounded hover:bg-yellow-300 transition-colors">
-          <ShoppingCart className="w-4 h-4" /> Pedir ahora
+          <span className="relative">
+            <ShoppingCart className="w-4 h-4" />
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#2C1810] text-[9px] font-black text-white">
+                {cart.length}
+              </span>
+            )}
+          </span>
+          Pedir ahora
         </a>
       </nav>
 
@@ -93,7 +143,9 @@ export const Gastronomia: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {lista.map((item, i) => (
-            <div key={i} className="bg-white border border-neutral-200 rounded-xl overflow-hidden flex hover:shadow-md transition-shadow group">
+            <div key={i}
+              onClick={() => setDetalleItem(item)}
+              className="bg-white border border-neutral-200 rounded-xl overflow-hidden flex hover:shadow-md transition-shadow group cursor-pointer">
               <div className="w-28 flex-shrink-0 overflow-hidden">
                 <img src={item.img} alt={item.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
@@ -107,11 +159,11 @@ export const Gastronomia: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <span className="font-extrabold text-[#2C1810] text-lg">{item.precio}</span>
-                  <a href={`https://wa.me/5493436431987?text=Hola%2C%20quiero%20pedir%20${encodeURIComponent(item.nombre)}.`}
-                    target="_blank" rel="noreferrer"
+                  <button
+                    onClick={(e) => { e.stopPropagation(); addToCart(item); }}
                     className="text-xs bg-[#2C1810] text-white px-3 py-1.5 font-bold rounded hover:bg-[#D4A843] hover:text-[#2C1810] transition-colors">
                     Pedir
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -124,14 +176,14 @@ export const Gastronomia: React.FC = () => {
         <h3 className="text-2xl font-extrabold mb-3">¿Querés pedir o reservar mesa?</h3>
         <p className="text-white/60 mb-6">Pedidos para llevar, delivery zona centro de Victoria y reservas por WhatsApp.</p>
         <div className="flex flex-wrap justify-center gap-4">
-          <a href={WA_ORDER} target="_blank" rel="noreferrer"
+          <a href={pedidoHref} target="_blank" rel="noreferrer"
             className="flex items-center gap-2 bg-[#D4A843] text-[#2C1810] px-8 py-3 font-bold rounded hover:bg-yellow-300 transition-colors">
-            <ShoppingCart className="w-4 h-4" /> Hacer pedido
+            <ShoppingCart className="w-4 h-4" /> {cart.length > 0 ? `Finalizar pedido (${cart.length})` : 'Hacer pedido'}
           </a>
-          <a href={WA_RESERVA} target="_blank" rel="noreferrer"
+          <button onClick={() => setReservaOpen(true)}
             className="flex items-center gap-2 border border-[#D4A843] text-[#D4A843] px-8 py-3 font-bold rounded hover:bg-[#D4A843] hover:text-[#2C1810] transition-colors">
             <Phone className="w-4 h-4" /> Reservar mesa
-          </a>
+          </button>
         </div>
       </div>
 
@@ -142,7 +194,73 @@ export const Gastronomia: React.FC = () => {
         <div className="flex items-start gap-2"><Phone className="w-4 h-4 text-[#D4A843] mt-0.5 flex-shrink-0" /><div><p className="font-bold text-neutral-800">Contacto</p><a href={WA_ORDER} className="text-[#D4A843] hover:underline">WhatsApp / Pedidos</a></div></div>
       </div>
 
+      {/* Modal detalle de plato */}
+      <DemoModal open={!!detalleItem} onClose={() => setDetalleItem(null)} title={detalleItem?.nombre ?? ''}>
+        {detalleItem && (
+          <div className="space-y-4">
+            <img src={detalleItem.img} alt={detalleItem.nombre} className="w-full h-48 object-cover rounded-lg" />
+            <p className="text-sm text-neutral-300">{detalleItem.detalle}</p>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wide text-neutral-400 mb-2">Ingredientes</p>
+              <ul className="flex flex-wrap gap-2">
+                {detalleItem.ingredientes.map(ing => (
+                  <li key={ing} className="text-xs bg-white/10 text-neutral-200 px-2 py-1 rounded-full">{ing}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-white/10">
+              <span className="text-xl font-extrabold text-white">{detalleItem.precio}</span>
+              <button
+                onClick={() => { addToCart(detalleItem); setDetalleItem(null); }}
+                className="flex items-center gap-2 bg-[#D4A843] text-[#2C1810] px-4 py-2 text-sm font-bold rounded hover:bg-yellow-300 transition-colors">
+                <ShoppingCart className="w-4 h-4" /> Agregar al pedido
+              </button>
+            </div>
+          </div>
+        )}
+      </DemoModal>
+
+      {/* Modal reserva de mesa */}
+      <DemoModal open={reservaOpen} onClose={() => setReservaOpen(false)} title="Reservar mesa">
+        <div className="space-y-5">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-neutral-400 mb-2">Elegí el día</p>
+            <div className="flex flex-wrap gap-2">
+              {diasReserva.map(d => (
+                <button key={d} onClick={() => setDiaReserva(d)}
+                  className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all ${diaReserva===d ? 'bg-[#D4A843] text-[#2C1810] border-[#D4A843]' : 'border-white/20 text-neutral-300 hover:border-[#D4A843]'}`}>
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-neutral-400 mb-2">Elegí el horario</p>
+            <div className="flex flex-wrap gap-2">
+              {horariosReserva.map(h => (
+                <button key={h} onClick={() => setHoraReserva(h)}
+                  className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all ${horaReserva===h ? 'bg-[#D4A843] text-[#2C1810] border-[#D4A843]' : 'border-white/20 text-neutral-300 hover:border-[#D4A843]'}`}>
+                  {h}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setReservaOpen(false);
+              showToast('¡Mesa reservada! Te esperamos');
+              setDiaReserva('');
+              setHoraReserva('');
+            }}
+            disabled={!diaReserva || !horaReserva}
+            className="w-full flex items-center justify-center gap-2 bg-[#D4A843] text-[#2C1810] px-6 py-3 font-bold rounded hover:bg-yellow-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            Confirmar reserva
+          </button>
+        </div>
+      </DemoModal>
+
       <DemoBadge label="gastronomia" />
+      <DemoToaster />
     </div>
   );
 };

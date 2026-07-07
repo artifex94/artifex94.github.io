@@ -1,15 +1,49 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Calendar, Clock, MapPin, Phone, Star, ChevronRight, CheckCircle } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { DemoModal } from './_shared/DemoModal';
+import { showToast, DemoToaster } from './_shared/toast';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA = "https://wa.me/5493436431987?text=Hola%2C%20quisiera%20sacar%20un%20turno.";
 
-const servicios = [
-  { nombre: 'Consulta General', duracion: '30 min', precio: '$8.000', desc: 'Diagnóstico y evaluación clínica completa.' },
-  { nombre: 'Limpieza Dental', duracion: '45 min', precio: '$15.000', desc: 'Profilaxis y remoción de sarro profesional.' },
-  { nombre: 'Blanqueamiento', duracion: '60 min', precio: '$35.000', desc: 'Tratamiento estético de última generación.' },
-  { nombre: 'Ortodoncia', duracion: 'Consultar', precio: 'Desde $25.000', desc: 'Evaluación y plan de tratamiento personalizado.' },
+interface Servicio {
+  nombre: string;
+  duracion: string;
+  precio: string;
+  desc: string;
+  incluye: string[];
+}
+
+const servicios: Servicio[] = [
+  {
+    nombre: 'Consulta General',
+    duracion: '30 min',
+    precio: '$8.000',
+    desc: 'Diagnóstico y evaluación clínica completa.',
+    incluye: ['Revisión clínica completa', 'Diagnóstico y plan de tratamiento', 'Radiografía si es necesaria'],
+  },
+  {
+    nombre: 'Limpieza Dental',
+    duracion: '45 min',
+    precio: '$15.000',
+    desc: 'Profilaxis y remoción de sarro profesional.',
+    incluye: ['Remoción de sarro y placa', 'Pulido dental', 'Recomendaciones de cuidado'],
+  },
+  {
+    nombre: 'Blanqueamiento',
+    duracion: '60 min',
+    precio: '$35.000',
+    desc: 'Tratamiento estético de última generación.',
+    incluye: ['Evaluación de sensibilidad', 'Aplicación de gel blanqueador', 'Control post-tratamiento'],
+  },
+  {
+    nombre: 'Ortodoncia',
+    duracion: 'Consultar',
+    precio: 'Desde $25.000',
+    desc: 'Evaluación y plan de tratamiento personalizado.',
+    incluye: ['Evaluación con fotos y moldes', 'Plan de tratamiento a medida', 'Seguimiento mensual'],
+  },
 ];
 
 const turnos = ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00'];
@@ -30,6 +64,18 @@ export const Profesional: React.FC = () => {
   });
   const [turnoSel, setTurnoSel] = useState('');
   const [diaSel, setDiaSel] = useState('');
+  const [servicioSel, setServicioSel] = useState('');
+  const [servicioModal, setServicioModal] = useState<Servicio | null>(null);
+  const turnosRef = useRef<HTMLDivElement>(null);
+
+  const irATurnos = (servicio?: string) => {
+    if (servicio) {
+      setServicioSel(servicio);
+      showToast(`Turno para: ${servicio}`);
+    }
+    setServicioModal(null);
+    turnosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -65,10 +111,13 @@ export const Profesional: React.FC = () => {
               Más de 10 años de experiencia en Victoria. Atención personalizada, tecnología de última generación y turnos rápidos.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href={WA} target="_blank" rel="noreferrer"
-                className="flex items-center gap-2 bg-[#5ECDE3] text-[#1A3A4A] px-6 py-3 font-bold rounded-full hover:bg-white transition-colors">
+              <button
+                type="button"
+                onClick={() => irATurnos()}
+                className="flex items-center gap-2 bg-[#5ECDE3] text-[#1A3A4A] px-6 py-3 font-bold rounded-full hover:bg-white transition-colors"
+              >
                 <Calendar className="w-4 h-4" /> Sacar turno
-              </a>
+              </button>
               <a href="#servicios"
                 className="flex items-center gap-2 border border-white/30 text-white px-6 py-3 font-semibold rounded-full hover:bg-white/10 transition-colors">
                 Ver servicios <ChevronRight className="w-4 h-4" />
@@ -98,7 +147,16 @@ export const Profesional: React.FC = () => {
         <p className="text-neutral-500 mb-10">Tratamientos completos para toda la familia.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {servicios.map((s, i) => (
-            <div key={i} className="border border-neutral-200 rounded-xl p-6 hover:shadow-md hover:border-[#1A6B8A] transition-all group">
+            <div
+              key={i}
+              onClick={() => setServicioModal(s)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') setServicioModal(s);
+              }}
+              className="border border-neutral-200 rounded-xl p-6 hover:shadow-md hover:border-[#1A6B8A] transition-all group cursor-pointer"
+            >
               <div className="flex justify-between items-start mb-3">
                 <h3 className="font-bold text-[#1A3A4A] text-lg group-hover:text-[#1A6B8A] transition-colors">{s.nombre}</h3>
                 <span className="text-[#1A6B8A] font-extrabold text-sm bg-[#1A6B8A]/10 px-3 py-1 rounded-full">{s.precio}</span>
@@ -113,10 +171,15 @@ export const Profesional: React.FC = () => {
       </div>
 
       {/* Sacar turno */}
-      <div id="turnos" className="bg-[#F0F8FB] py-16 px-6">
+      <div id="turnos" ref={turnosRef} className="bg-[#F0F8FB] py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-[#1A3A4A] mb-2">Reservá tu turno</h2>
           <p className="text-neutral-500 mb-10">Seleccioná el día y horario que más te convenga. Te confirmamos por WhatsApp.</p>
+          {servicioSel && (
+            <p className="inline-block bg-[#1A6B8A]/10 text-[#1A6B8A] text-sm font-bold px-4 py-2 rounded-full mb-6">
+              Turno para: {servicioSel}
+            </p>
+          )}
           <div className="bg-white rounded-2xl shadow-md p-6 text-left mb-6">
             <label className="block text-sm font-bold text-[#1A3A4A] mb-2">Seleccioná el día</label>
             <div className="grid grid-cols-5 gap-2 mb-6">
@@ -137,7 +200,7 @@ export const Profesional: React.FC = () => {
               ))}
             </div>
           </div>
-          <a href={`https://wa.me/5493436431987?text=Hola%2C%20quiero%20reservar%20turno${diaSel ? '%20el%20' + encodeURIComponent(diaSel) : ''}${turnoSel ? '%20a%20las%20' + encodeURIComponent(turnoSel) : ''}.`}
+          <a href={`https://wa.me/5493436431987?text=Hola%2C%20quiero%20reservar%20turno${servicioSel ? '%20de%20' + encodeURIComponent(servicioSel) : ''}${diaSel ? '%20el%20' + encodeURIComponent(diaSel) : ''}${turnoSel ? '%20a%20las%20' + encodeURIComponent(turnoSel) : ''}.`}
             target="_blank" rel="noreferrer"
             className="inline-flex items-center gap-2 bg-[#1A6B8A] text-white px-10 py-4 font-bold rounded-full hover:bg-[#155a75] transition-colors text-lg">
             <Calendar className="w-5 h-5" />
@@ -180,6 +243,39 @@ export const Profesional: React.FC = () => {
         </div>
       </div>
 
+      <DemoModal open={!!servicioModal} onClose={() => setServicioModal(null)} title={servicioModal?.nombre ?? ''}>
+        {servicioModal && (
+          <div className="flex flex-col gap-4">
+            <p className="text-neutral-300 text-sm leading-relaxed">
+              {servicioModal.desc} Realizado por el Dr. Martín Sosa con equipamiento de última generación y
+              seguimiento personalizado en cada etapa del tratamiento.
+            </p>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-neutral-500">Duración: <span className="font-bold text-white">{servicioModal.duracion}</span></span>
+              <span className="text-neutral-500">Precio: <span className="font-bold text-white">{servicioModal.precio}</span></span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white mb-2">Qué incluye</p>
+              <ul className="flex flex-col gap-1.5 text-sm text-neutral-300">
+                {servicioModal.incluye.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-[#5ECDE3] mt-0.5 shrink-0" /> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={() => irATurnos(servicioModal.nombre)}
+              className="mt-2 bg-[#1A6B8A] text-white text-sm font-bold py-2.5 rounded-lg hover:bg-[#155a75] transition-colors"
+            >
+              Reservar este servicio
+            </button>
+          </div>
+        )}
+      </DemoModal>
+
+      <DemoToaster />
       <DemoBadge label="profesionales" />
     </div>
   );

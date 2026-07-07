@@ -1,9 +1,12 @@
+import { useRef } from 'react';
 import { Star, MessageCircle, CheckCircle, Heart, Award, Sparkles, ArrowRight } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { DemoToaster } from './_shared/toast';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA      = "https://wa.me/5493436431987?text=Hola%2C%20me%20interesa%20hablar%20con%20Valentina%20sobre%20coaching.";
 const WA_FREE = "https://wa.me/5493436431987?text=Hola%2C%20quiero%20agendar%20mi%20sesi%C3%B3n%20de%20descubrimiento%20gratuita.";
+const waFor = (mensaje: string) => `https://wa.me/5493436431987?text=${encodeURIComponent(mensaje)}`;
 
 const servicios = [
   {
@@ -49,6 +52,14 @@ export const Emprendedor = () => {
     canonicalPath: '/business/emprendedores',
     noindex: true,
   });
+  const serviciosRef = useRef<HTMLDivElement>(null);
+  const sobreMiRef = useRef<HTMLDivElement>(null);
+  const testimoniosRef = useRef<HTMLDivElement>(null);
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="min-h-screen bg-[#FAFAF8] font-sans text-[#1C2B2B]">
 
@@ -60,9 +71,9 @@ export const Emprendedor = () => {
           <span className="hidden sm:inline text-stone-400 text-sm">— Coaching de Bienestar</span>
         </div>
         <div className="hidden md:flex gap-6 text-sm text-stone-500 font-medium">
-          <button className="hover:text-[#1C2B2B] transition-colors">Servicios</button>
-          <button className="hover:text-[#1C2B2B] transition-colors">Sobre mí</button>
-          <button className="hover:text-[#1C2B2B] transition-colors">Testimonios</button>
+          <button onClick={() => scrollTo(serviciosRef)} className="hover:text-[#1C2B2B] transition-colors">Servicios</button>
+          <button onClick={() => scrollTo(sobreMiRef)} className="hover:text-[#1C2B2B] transition-colors">Sobre mí</button>
+          <button onClick={() => scrollTo(testimoniosRef)} className="hover:text-[#1C2B2B] transition-colors">Testimonios</button>
         </div>
         <div className="flex items-center gap-3">
           <a href={WA_FREE} target="_blank" rel="noreferrer"
@@ -92,10 +103,13 @@ export const Emprendedor = () => {
                 <Sparkles className="w-4 h-4" />
                 Primera sesión gratis
               </a>
-              <a href={WA} target="_blank" rel="noreferrer"
-                className="flex items-center justify-center gap-2 border border-[#1C2B2B]/20 font-semibold px-8 py-3 hover:border-[#7DA87B] hover:text-[#7DA87B] transition-colors text-sm">
+              <button
+                type="button"
+                onClick={() => scrollTo(serviciosRef)}
+                className="flex items-center justify-center gap-2 border border-[#1C2B2B]/20 font-semibold px-8 py-3 hover:border-[#7DA87B] hover:text-[#7DA87B] transition-colors text-sm"
+              >
                 Ver programas <ArrowRight className="w-4 h-4" />
-              </a>
+              </button>
             </div>
             <div className="flex items-center gap-4 mt-8 justify-center md:justify-start">
               <div className="flex -space-x-2">
@@ -119,7 +133,7 @@ export const Emprendedor = () => {
       </div>
 
       {/* Servicios */}
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      <div id="servicios" ref={serviciosRef} className="max-w-5xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-2">Formas de trabajar juntos</h2>
           <p className="text-stone-500">Elegí el formato que mejor se adapte a tu momento.</p>
@@ -154,7 +168,7 @@ export const Emprendedor = () => {
                 <p className="text-2xl font-extrabold">{s.precio}
                   <span className="text-sm text-stone-400 font-normal ml-1">{s.unit}</span>
                 </p>
-                <a href={WA} target="_blank" rel="noreferrer"
+                <a href={waFor(`Hola, me interesa el plan: ${s.titulo}`)} target="_blank" rel="noreferrer"
                   className={`mt-3 block text-center py-2.5 font-semibold text-sm transition-colors ${
                     s.popular
                       ? 'bg-[#7DA87B] text-white hover:bg-[#6B9869]'
@@ -168,8 +182,18 @@ export const Emprendedor = () => {
         </div>
       </div>
 
+      {/* Sobre mí */}
+      <div id="sobre-mi" ref={sobreMiRef} className="max-w-3xl mx-auto px-6 py-16 text-center">
+        <h2 className="text-3xl font-bold mb-4">Sobre mí</h2>
+        <p className="text-stone-500 leading-relaxed">
+          Soy Valentina Ríos, coach de bienestar certificada por la ICF con más de 8 años acompañando a personas
+          y equipos a atravesar cambios reales. Combino herramientas de coaching, hábitos y bienestar emocional
+          para ayudarte a pasar de la intención a la acción, con seguimiento cercano en cada etapa del proceso.
+        </p>
+      </div>
+
       {/* Testimonios */}
-      <div className="bg-[#EEF4EC] py-16 px-6">
+      <div id="testimonios" ref={testimoniosRef} className="bg-[#EEF4EC] py-16 px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold mb-8 text-center">Lo que dicen quienes ya trabajaron conmigo</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -209,6 +233,7 @@ export const Emprendedor = () => {
         <a href={WA} className="text-[#7DA87B] hover:underline">Contacto</a>
       </footer>
 
+      <DemoToaster />
       <DemoBadge label="emprendedora" />
     </div>
   );

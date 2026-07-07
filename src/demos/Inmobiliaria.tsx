@@ -1,18 +1,38 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Bed, Bath, Maximize2, MapPin, Phone, Search } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { DemoModal } from './_shared/DemoModal';
+import { showToast, DemoToaster } from './_shared/toast';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA = "https://wa.me/5493436431987?text=Hola%2C%20consulto%20por%20una%20propiedad.";
+const waFor = (mensaje: string) => `https://wa.me/5493436431987?text=${encodeURIComponent(mensaje)}`;
 
-const propiedades = [
-  { id:1, tipo:'Venta', titulo:'Casa familiar en Costanera', precio:'$85.000.000', zona:'Costanera, Victoria', hab:3, banos:2, m2:120, img:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=80', tag:'Destacada' },
-  { id:2, tipo:'Alquiler', titulo:'Departamento 2 ambientes centro', precio:'$180.000/mes', zona:'Centro, Victoria', hab:1, banos:1, m2:52, img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80', tag:'' },
-  { id:3, tipo:'Venta', titulo:'Lote en barrio residencial', precio:'$45.000.000', zona:'Villa Itati, Victoria', hab:0, banos:0, m2:600, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', tag:'Oportunidad' },
-  { id:4, tipo:'Alquiler', titulo:'PH amplio con jardín', precio:'$250.000/mes', zona:'Av. Sarmiento, Victoria', hab:3, banos:1, m2:90, img:'https://images.unsplash.com/photo-1762461838534-ca26dfa134a8?auto=format&fit=crop&w=400&q=80', tag:'' },
-  { id:5, tipo:'Venta', titulo:'Duplex a estrenar', precio:'$120.000.000', zona:'Barrio Nuevo, Victoria', hab:4, banos:2, m2:180, img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=80', tag:'Nuevo' },
-  { id:6, tipo:'Alquiler', titulo:'Local comercial sobre 25 de Mayo', precio:'$320.000/mes', zona:'Centro, Victoria', hab:0, banos:1, m2:75, img:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80', tag:'' },
+interface Propiedad {
+  id: number;
+  tipo: string;
+  categoria: string;
+  titulo: string;
+  precio: string;
+  zona: string;
+  hab: number;
+  banos: number;
+  m2: number;
+  img: string;
+  tag: string;
+}
+
+const propiedades: Propiedad[] = [
+  { id:1, tipo:'Venta', categoria:'Casa', titulo:'Casa familiar en Costanera', precio:'$85.000.000', zona:'Costanera, Victoria', hab:3, banos:2, m2:120, img:'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&q=80', tag:'Destacada' },
+  { id:2, tipo:'Alquiler', categoria:'Departamento', titulo:'Departamento 2 ambientes centro', precio:'$180.000/mes', zona:'Centro, Victoria', hab:1, banos:1, m2:52, img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80', tag:'' },
+  { id:3, tipo:'Venta', categoria:'Lote', titulo:'Lote en barrio residencial', precio:'$45.000.000', zona:'Villa Itati, Victoria', hab:0, banos:0, m2:600, img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80', tag:'Oportunidad' },
+  { id:4, tipo:'Alquiler', categoria:'Casa', titulo:'PH amplio con jardín', precio:'$250.000/mes', zona:'Av. Sarmiento, Victoria', hab:3, banos:1, m2:90, img:'https://images.unsplash.com/photo-1762461838534-ca26dfa134a8?auto=format&fit=crop&w=400&q=80', tag:'' },
+  { id:5, tipo:'Venta', categoria:'Casa', titulo:'Duplex a estrenar', precio:'$120.000.000', zona:'Barrio Nuevo, Victoria', hab:4, banos:2, m2:180, img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=80', tag:'Nuevo' },
+  { id:6, tipo:'Alquiler', categoria:'Local', titulo:'Local comercial sobre 25 de Mayo', precio:'$320.000/mes', zona:'Centro, Victoria', hab:0, banos:1, m2:75, img:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80', tag:'' },
 ];
+
+const descripcionExtendida = (p: Propiedad) =>
+  `${p.titulo}, ubicada en ${p.zona}. Propiedad en excelente estado de conservación, muy luminosa y de fácil acceso a comercios y transporte público. Ideal para quienes buscan calidad de vida en un entorno tranquilo de Victoria.`;
 
 export const Inmobiliaria: React.FC = () => {
   usePageMeta({
@@ -24,12 +44,16 @@ export const Inmobiliaria: React.FC = () => {
   });
   const [filtro, setFiltro] = useState('Todos');
   const [busqueda, setBusqueda] = useState('');
+  const [tipoProp, setTipoProp] = useState('Cualquier tipo');
+  const [propSel, setPropSel] = useState<Propiedad | null>(null);
+  const resultadosRef = useRef<HTMLDivElement>(null);
 
   const lista = propiedades.filter(p => {
     const matchTipo = filtro === 'Todos' || p.tipo === filtro;
+    const matchCategoria = tipoProp === 'Cualquier tipo' || p.categoria === tipoProp;
     const q = busqueda.toLowerCase();
     const matchBusqueda = !q || p.titulo.toLowerCase().includes(q) || p.zona.toLowerCase().includes(q);
-    return matchTipo && matchBusqueda;
+    return matchTipo && matchCategoria && matchBusqueda;
   });
 
   return (
@@ -75,16 +99,32 @@ export const Inmobiliaria: React.FC = () => {
               <option value="Venta">Venta</option>
               <option value="Alquiler">Alquiler</option>
             </select>
-            <select className="text-neutral-700 text-sm outline-none px-2">
-              <option>Cualquier tipo</option><option>Casa</option><option>Departamento</option><option>Lote</option><option>Local</option>
+            <select
+              className="text-neutral-700 text-sm outline-none px-2"
+              value={tipoProp}
+              onChange={e => setTipoProp(e.target.value)}
+            >
+              <option value="Cualquier tipo">Cualquier tipo</option>
+              <option value="Casa">Casa</option>
+              <option value="Departamento">Departamento</option>
+              <option value="Lote">Lote</option>
+              <option value="Local">Local</option>
             </select>
-            <button className="bg-[#C9A84C] text-[#1B2A4A] font-bold px-6 py-2 hover:bg-yellow-400 transition-colors text-sm">Buscar</button>
+            <button
+              onClick={() => {
+                resultadosRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                showToast(`${lista.length} propiedad${lista.length === 1 ? '' : 'es'} encontrada${lista.length === 1 ? '' : 's'}`);
+              }}
+              className="bg-[#C9A84C] text-[#1B2A4A] font-bold px-6 py-2 hover:bg-yellow-400 transition-colors text-sm"
+            >
+              Buscar
+            </button>
           </div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div ref={resultadosRef} className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <h2 className="text-2xl font-bold text-[#1B2A4A]">Propiedades disponibles</h2>
           <div className="flex gap-2">
@@ -99,7 +139,16 @@ export const Inmobiliaria: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {lista.map(p => (
-            <div key={p.id} className="border border-neutral-200 hover:shadow-lg transition-shadow group cursor-pointer">
+            <div
+              key={p.id}
+              onClick={() => setPropSel(p)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') setPropSel(p);
+              }}
+              className="border border-neutral-200 hover:shadow-lg transition-shadow group cursor-pointer"
+            >
               <div className="relative overflow-hidden h-48">
                 <img src={p.img} alt={p.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <span className="absolute top-3 left-3 bg-[#1B2A4A] text-white text-xs px-2 py-1 font-bold">{p.tipo}</span>
@@ -118,7 +167,8 @@ export const Inmobiliaria: React.FC = () => {
                     <span className="flex items-center gap-1"><Maximize2 className="w-3 h-3"/>{p.m2} m²</span>
                   </div>
                 )}
-                <a href={WA} target="_blank" rel="noreferrer"
+                <a href={waFor(`Hola, consulto por: ${p.titulo}`)} target="_blank" rel="noreferrer"
+                  onClick={e => e.stopPropagation()}
                   className="mt-4 block text-center bg-[#1B2A4A] text-white text-sm py-2 font-semibold hover:bg-[#C9A84C] hover:text-[#1B2A4A] transition-colors">
                   Consultar
                 </a>
@@ -133,6 +183,43 @@ export const Inmobiliaria: React.FC = () => {
         Victoria Propiedades — Victoria, Entre Ríos · <a href={WA} className="text-[#C9A84C] hover:underline">Contacto WhatsApp</a>
       </footer>
 
+      <DemoModal open={!!propSel} onClose={() => setPropSel(null)} title={propSel?.titulo ?? ''}>
+        {propSel && (
+          <div className="flex flex-col gap-4">
+            <img src={propSel.img} alt={propSel.titulo} className="w-full h-56 object-cover rounded-lg" />
+            <p className="text-neutral-300 text-sm leading-relaxed">{descripcionExtendida(propSel)}</p>
+            <div className="grid grid-cols-2 gap-3 text-sm border-t border-white/10 pt-4">
+              <div><span className="text-neutral-500">Precio</span><p className="font-bold text-white">{propSel.precio}</p></div>
+              <div><span className="text-neutral-500">Zona</span><p className="font-bold text-white">{propSel.zona}</p></div>
+              {propSel.hab > 0 && <div><span className="text-neutral-500">Ambientes</span><p className="font-bold text-white">{propSel.hab}</p></div>}
+              {propSel.banos > 0 && <div><span className="text-neutral-500">Baños</span><p className="font-bold text-white">{propSel.banos}</p></div>}
+              <div><span className="text-neutral-500">Superficie</span><p className="font-bold text-white">{propSel.m2} m²</p></div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  showToast('Visita solicitada, te contactamos');
+                  setPropSel(null);
+                }}
+                className="flex-1 bg-white/10 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                Agendar visita
+              </button>
+              <a
+                href={waFor(`Hola, consulto por: ${propSel.titulo}`)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 text-center bg-[#C9A84C] text-[#1B2A4A] text-sm font-bold py-2.5 rounded-lg hover:bg-yellow-400 transition-colors"
+              >
+                Consultar por WhatsApp
+              </a>
+            </div>
+          </div>
+        )}
+      </DemoModal>
+
+      <DemoToaster />
       <DemoBadge label="inmobiliaria" />
     </div>
   );
