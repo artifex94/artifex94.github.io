@@ -9,6 +9,8 @@ interface SegmentCardProps {
   isOpen: boolean;
   /** Another card is open, so this one steps back. */
   isDimmed: boolean;
+  /** On mobile the toggle opens a modal (dialog) instead of expanding inline. */
+  asDialog?: boolean;
   onToggle: () => void;
 }
 
@@ -17,7 +19,7 @@ interface SegmentCardProps {
 // link, always in the DOM (clipped when collapsed, so links stay crawlable and
 // test-visible), lay out horizontally beside the header on desktop. framer's
 // layout drives the box morph; the grid reordering IS the structural argument.
-export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDimmed, onToggle }) => {
+export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDimmed, asDialog, onToggle }) => {
   const reduce = useReducedMotion();
   const Icon = segment.icon;
   const panelId = `segment-panel-${segment.slug}`;
@@ -48,8 +50,9 @@ export const SegmentCard: React.FC<SegmentCardProps> = ({ segment, isOpen, isDim
         layout={reduce ? false : 'position'}
         type="button"
         onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={panelId}
+        aria-expanded={asDialog ? undefined : isOpen}
+        aria-controls={asDialog ? undefined : panelId}
+        aria-haspopup={asDialog ? 'dialog' : undefined}
         className={`group relative flex min-h-[44px] w-full flex-col gap-3 p-5 pr-12 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
           isOpen ? 'md:w-[38%] md:shrink-0 md:justify-center md:border-r md:border-line/60' : ''
         }`}

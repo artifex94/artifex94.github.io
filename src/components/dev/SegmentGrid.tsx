@@ -3,6 +3,7 @@ import { LayoutGroup } from 'framer-motion';
 import { segments } from '../../data/business';
 import { Reveal } from '../Reveal';
 import { SegmentCard } from './SegmentCard';
+import { SegmentModal } from './SegmentModal';
 
 // True below the sm breakpoint (single-column grid). Guarded for jsdom/tests
 // and the prerender's first paint (defaults to desktop, which is inert since
@@ -26,10 +27,12 @@ export const SegmentGrid: React.FC = () => {
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
-  // Desktop: the open card moves to the front so its full-width panel always
-  // sits first, and framer's layout animation slides the rest into place.
-  // Mobile (single column): keep the original order so the card just expands
-  // in place — no jarring jump to the top of the list.
+  const openSegment = openSlug ? segments.find((s) => s.slug === openSlug) ?? null : null;
+
+  // Desktop: the open card moves to the front and expands inline, framer's
+  // layout animation slides the rest into place. Mobile keeps the original
+  // order and never expands inline — the description shows in a centered modal
+  // (SegmentModal) so the grid never moves.
   const ordered =
     openSlug && !isMobile
       ? [
@@ -50,19 +53,24 @@ export const SegmentGrid: React.FC = () => {
       <LayoutGroup>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {ordered.map((segment) => {
-            const isOpen = openSlug === segment.slug;
+            const isActive = openSlug === segment.slug;
             return (
               <SegmentCard
                 key={segment.slug}
                 segment={segment}
-                isOpen={isOpen}
-                isDimmed={openSlug !== null && !isOpen}
-                onToggle={() => setOpenSlug(isOpen ? null : segment.slug)}
+                // On mobile the card never expands inline — the modal handles it.
+                isOpen={!isMobile && isActive}
+                isDimmed={!isMobile && openSlug !== null && !isActive}
+                asDialog={isMobile}
+                onToggle={() => setOpenSlug(isActive ? null : segment.slug)}
               />
             );
           })}
         </div>
       </LayoutGroup>
+
+      {/* Mobile: description as a centered modal, grid frozen behind. */}
+      <SegmentModal segment={isMobile ? openSegment : null} onClose={() => setOpenSlug(null)} />
     </section>
   );
 };
