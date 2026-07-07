@@ -1,7 +1,8 @@
 import React from 'react';
 import { BlueprintBox } from './BlueprintBox';
 import { data } from '../data/data';
-import { Typewriter } from './Typewriter'; // <-- Importar
+import { Typewriter } from './Typewriter';
+import { PlatziCarousel } from './PlatziCarousel';
 
 export const Education: React.FC = () => {
   return (
@@ -32,6 +33,8 @@ export const Education: React.FC = () => {
           </div>
         ))}
       </div>
+
+      <PlatziCarousel />
     </BlueprintBox>
   );
 };
