@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ShoppingBag, MapPin, Clock, Search, Heart, Share2, Phone, Tag, Truck } from 'lucide-react';
 import { DemoBadge } from './DemoBadge';
+import { showToast, DemoToaster } from './_shared/toast';
+import { DemoModal } from './_shared/DemoModal';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 const WA_BASE = "https://wa.me/5493436431987?text=Hola%2C%20consulto%20por%20";
@@ -18,6 +20,9 @@ const productos = [
   { cat:'Ofertas', nombre:'Short deportivo', precio:'$12.000', precioOld:'$16.500', img:'https://images.unsplash.com/photo-1591195853828-11db59a44f43?w=400&q=80', tallas:['S','M','L','XL'], colores:['Negro','Azul'], badge:'-27%', oferta:true },
 ];
 
+type Producto = typeof productos[number];
+type CartItem = { nombre: string; precio: string; talla?: string; color?: string };
+
 export const Comercio: React.FC = () => {
   usePageMeta({
     title: 'Tienda — Demo Comercio | Artifex',
@@ -29,6 +34,10 @@ export const Comercio: React.FC = () => {
   const [cat, setCat] = useState('Todo');
   const [search, setSearch] = useState('');
   const [liked, setLiked] = useState<number[]>([]);
+  const [tallaSel, setTallaSel] = useState<Record<string, string>>({});
+  const [colorSel, setColorSel] = useState<Record<string, string>>({});
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [detalleProducto, setDetalleProducto] = useState<Producto | null>(null);
 
   const lista = productos.filter(p => {
     const matchCat = cat === 'Todo' || p.cat === cat || (cat === 'Ofertas' && p.oferta);
@@ -38,12 +47,51 @@ export const Comercio: React.FC = () => {
 
   const toggleLike = (i: number) => setLiked(prev => prev.includes(i) ? prev.filter(x=>x!==i) : [...prev, i]);
 
+  const addToCart = (p: Producto) => {
+    const item: CartItem = { nombre: p.nombre, precio: p.precio, talla: tallaSel[p.nombre], color: colorSel[p.nombre] };
+    setCart(prev => [...prev, item]);
+    showToast(`${p.nombre} agregado al carrito`);
+  };
+
+  const compartir = async (p: Producto) => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: p.nombre, url });
+      } catch {
+        // usuario canceló el share nativo, no hacemos nada
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Enlace copiado');
+    } catch {
+      // Sin permiso de portapapeles (o contexto no seguro): igual damos feedback.
+      showToast('Enlace listo para compartir');
+    }
+  };
+
+  const finalizarCompraHref = cart.length > 0
+    ? `${WA_BASE}${encodeURIComponent(`mi compra: ${cart.map(c => c.talla || c.color ? `${c.nombre} (${[c.talla, c.color].filter(Boolean).join(' / ')})` : c.nombre).join(', ')}`)}.`
+    : `${WA_BASE}un%20producto.`;
+
   return (
     <div className="min-h-screen bg-[#F9F9F9] font-sans">
       {/* Navbar */}
       <nav className="bg-white border-b border-neutral-100 px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-2">
-          <ShoppingBag className="w-6 h-6 text-[#E91E8C]" />
+          <button
+            onClick={() => window.open(finalizarCompraHref, '_blank', 'noopener,noreferrer')}
+            aria-label="Finalizar compra"
+            className="relative">
+            <ShoppingBag className="w-6 h-6 text-[#E91E8C]" />
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#E91E8C] text-[9px] font-bold text-white">
+                {cart.length}
+              </span>
+            )}
+          </button>
           <span className="font-extrabold text-xl tracking-tight text-neutral-900">moda<span className="text-[#E91E8C]">VIC</span></span>
         </div>
         <div className="hidden md:flex flex-1 max-w-sm mx-8 relative">
@@ -102,19 +150,34 @@ export const Comercio: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {lista.map((p, i) => (
             <div key={i} className="bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
-              <div className="relative overflow-hidden h-48">
+              <div className="relative overflow-hidden h-48 cursor-pointer" onClick={() => setDetalleProducto(p)}>
                 <img src={p.img} alt={p.nombre} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 {p.badge && <span className="absolute top-2 left-2 bg-[#E91E8C] text-white text-xs font-bold px-2 py-0.5 rounded">{p.badge}</span>}
-                <button onClick={() => toggleLike(i)}
+                <button onClick={(e) => { e.stopPropagation(); toggleLike(i); }}
                   className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors">
                   <Heart className={`w-4 h-4 ${liked.includes(i) ? 'fill-[#E91E8C] text-[#E91E8C]' : 'text-neutral-400'}`} />
                 </button>
               </div>
               <div className="p-3">
-                <h3 className="font-bold text-neutral-900 text-sm mb-1 leading-tight">{p.nombre}</h3>
+                <h3 className="font-bold text-neutral-900 text-sm mb-1 leading-tight cursor-pointer" onClick={() => setDetalleProducto(p)}>{p.nombre}</h3>
                 {p.tallas.length > 0 && (
                   <div className="flex gap-1 flex-wrap mb-2">
-                    {p.tallas.map(t => <span key={t} className="text-xs border border-neutral-200 px-1.5 py-0.5 rounded text-neutral-500">{t}</span>)}
+                    {p.tallas.map(t => (
+                      <button key={t} onClick={() => setTallaSel(prev => ({ ...prev, [p.nombre]: t }))}
+                        className={`text-xs px-1.5 py-0.5 rounded border transition-colors ${tallaSel[p.nombre]===t ? 'bg-[#E91E8C] text-white border-[#E91E8C]' : 'border-neutral-200 text-neutral-500 hover:border-[#E91E8C]'}`}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {p.colores.length > 0 && (
+                  <div className="flex gap-1 flex-wrap mb-2">
+                    {p.colores.map(c => (
+                      <button key={c} onClick={() => setColorSel(prev => ({ ...prev, [p.nombre]: c }))}
+                        className={`text-xs px-1.5 py-0.5 rounded-full border transition-colors ${colorSel[p.nombre]===c ? 'bg-neutral-900 text-white border-neutral-900' : 'border-neutral-200 text-neutral-500 hover:border-neutral-900'}`}>
+                        {c}
+                      </button>
+                    ))}
                   </div>
                 )}
                 <div className="flex items-center gap-2 mb-3">
@@ -122,14 +185,15 @@ export const Comercio: React.FC = () => {
                   {p.precioOld && <span className="text-xs text-neutral-400 line-through">{p.precioOld}</span>}
                 </div>
                 <div className="flex gap-2">
-                  <a href={`${WA_BASE}${encodeURIComponent(p.nombre)}.`} target="_blank" rel="noreferrer"
+                  <button onClick={() => addToCart(p)}
                     className="flex-1 text-center text-xs bg-[#E91E8C] text-white py-2 font-bold rounded hover:bg-pink-600 transition-colors">
                     Comprar
-                  </a>
-                  <a href={`${WA_BASE}${encodeURIComponent(p.nombre)}.`} target="_blank" rel="noreferrer"
+                  </button>
+                  <button onClick={() => compartir(p)}
+                    aria-label="Compartir"
                     className="w-8 flex items-center justify-center border border-neutral-200 rounded hover:border-[#E91E8C] transition-colors">
                     <Share2 className="w-3 h-3 text-neutral-400" />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -154,7 +218,52 @@ export const Comercio: React.FC = () => {
         </a>
       </div>
 
+      {/* Modal detalle de producto */}
+      <DemoModal open={!!detalleProducto} onClose={() => setDetalleProducto(null)} title={detalleProducto?.nombre ?? ''}>
+        {detalleProducto && (
+          <div className="space-y-4">
+            <img src={detalleProducto.img} alt={detalleProducto.nombre} className="w-full h-56 object-cover rounded-lg" />
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-extrabold text-white">{detalleProducto.precio}</span>
+              {detalleProducto.precioOld && <span className="text-sm text-neutral-400 line-through">{detalleProducto.precioOld}</span>}
+            </div>
+            {detalleProducto.tallas.length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-neutral-400 mb-2">Talla</p>
+                <div className="flex flex-wrap gap-2">
+                  {detalleProducto.tallas.map(t => (
+                    <button key={t} onClick={() => setTallaSel(prev => ({ ...prev, [detalleProducto.nombre]: t }))}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${tallaSel[detalleProducto.nombre]===t ? 'bg-[#E91E8C] text-white border-[#E91E8C]' : 'border-white/20 text-neutral-300 hover:border-[#E91E8C]'}`}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {detalleProducto.colores.length > 0 && (
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-neutral-400 mb-2">Color</p>
+                <div className="flex flex-wrap gap-2">
+                  {detalleProducto.colores.map(c => (
+                    <button key={c} onClick={() => setColorSel(prev => ({ ...prev, [detalleProducto.nombre]: c }))}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${colorSel[detalleProducto.nombre]===c ? 'bg-white text-neutral-900 border-white' : 'border-white/20 text-neutral-300 hover:border-white'}`}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => { addToCart(detalleProducto); setDetalleProducto(null); }}
+              className="w-full flex items-center justify-center gap-2 bg-[#E91E8C] text-white px-4 py-3 text-sm font-bold rounded hover:bg-pink-600 transition-colors">
+              <ShoppingBag className="w-4 h-4" /> Agregar al carrito
+            </button>
+          </div>
+        )}
+      </DemoModal>
+
       <DemoBadge label="comercios" />
+      <DemoToaster />
     </div>
   );
 };
