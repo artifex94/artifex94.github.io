@@ -123,7 +123,7 @@ export const Blog = () => {
             <div>
               <p className="text-secondary text-xs font-mono tracking-widest uppercase mb-1">// Knowledge_Base</p>
               <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3 tracking-tight">Blog & Notas</h1>
-              <p className="text-[#c8c8c8] text-sm md:text-base leading-relaxed max-w-2xl">
+              <p className="text-[#c8c8c8] text-sm md:text-[1rem] leading-relaxed max-w-2xl">
                 Apuntes de estudio, exploraciones técnicas e implementaciones que vale la pena documentar.
                 Sin pretensiones -- esto es un registro de lo que aprendo mientras lo aprendo.
               </p>

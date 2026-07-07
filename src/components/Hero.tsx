@@ -30,7 +30,7 @@ export const Hero: React.FC = () => {
             &gt; <Typewriter text={personal.title} delay={2.5} speed="fast" />
           </h2>
           
-          <p className="text-primary/80 leading-relaxed text-sm md:text-base max-w-2xl min-h-[80px]">
+          <p className="text-primary/80 leading-relaxed text-sm md:text-[1rem] max-w-2xl min-h-[80px]">
             {/* Párrafo largo escrito rápidamente al final */}
             <Typewriter text={personal.aboutMe} delay={3.2} speed="fast" />
           </p>
