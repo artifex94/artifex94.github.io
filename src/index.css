@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  /* OJO: 'base' colisiona con la escala de tamaños de Tailwind: definir
+     --color-base hace que `text-base` sea COLOR (= fondo, invisible), no un
+     tamaño de fuente. Para tamaño usar `text-[1rem]`, nunca `text-base`. */
   --color-base: var(--bg-base);
   --color-surface: var(--bg-surface);
   --color-line: var(--border-line);
