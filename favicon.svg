@@ -1,10 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Artifex">
-  <rect width="64" height="64" rx="13" fill="#050505"/>
-  <g fill="none" stroke="#ff6b00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Chevron ">" del prompt "> Artifex" -->
-    <path d="M17 21 L29 32 L17 43"/>
-    <!-- Letra "A" -->
-    <path d="M37 44 L45 20 L53 44"/>
-    <path d="M40 35 L50 35"/>
+<svg width="36" height="36" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="recorte-concavo">
+      <rect width="1024" height="1024" fill="white" />
+      <circle cx="748" cy="600" r="105" fill="black" />
+    </mask>
+
+    <clipPath id="corte-superior">
+      <rect x="0" y="70" width="1024" height="1000" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#corte-superior)">
+    <g transform="translate(480, 50) rotate(24)">
+      <rect x="-15" y="0" width="30" height="750" fill="#6C7A86" />
+      
+      <polygon points="-50,735 50,735 0,830" fill="#6C7A86" />
+      
+      <circle cx="0" cy="890" r="40" stroke="#6C7A86" stroke-width="25" fill="none" />
+    </g>
+  </g>
+
+  <g clip-path="url(#corte-superior)">
+    <g mask="url(#recorte-concavo)">
+      <g transform="translate(480, 50) rotate(-26)">
+        <rect x="-35" y="0" width="70" height="950" fill="#E67E32" />
+        
+        <polygon points="-35,950 35,950 35,984.1" fill="#E67E32" />
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(748, 600)">
+    <circle cx="0" cy="0" r="75" fill="#E67E32" />
+    
+    <g>
+      <rect x="-380" y="-12" width="380" height="24" fill="#E67E32" />
+      <polygon points="-370,-45 -370,45 -450,0" fill="#E67E32" />
+    </g>
   </g>
 </svg>
