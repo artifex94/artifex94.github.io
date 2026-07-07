@@ -141,18 +141,12 @@ export const data: PortfolioData = {
       technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"]
     },
     {
-      title: "Demo - Presencia Digital para Profesionales",
+      title: "Carina Viviana - Agenda Estética",
       description:
-        "Landing page para profesionales independientes que necesitan captar clientes online. " +
-        "Sección de servicios, formulario de contacto, integración WhatsApp y diseño mobile-first orientado a conversión.",
-      technologies: ["Next.js", "TypeScript", "TailwindCSS", "Vercel"]
-    },
-    {
-      title: "Demo - Catálogo Digital para Comercios",
-      description:
-        "Sitio para tiendas y restaurantes que venden por WhatsApp sin catálogo ordenado. " +
-        "Productos o menú en formato visual, pedidos por WhatsApp y ubicación en Google Maps. Optimizado para mobile.",
-      technologies: ["React", "TypeScript", "TailwindCSS", "Vercel"]
+        "Cosmetóloga que gestionaba sus turnos a mano y por WhatsApp. " +
+        "Desarrollé una agenda estética online: sus clientas reservan turnos solas, y ella lleva el seguimiento de rutinas y tratamientos de cada una.",
+      technologies: ["React", "TypeScript", "Vite", "TailwindCSS", "Supabase"],
+      liveUrl: "https://carinaviviana.com"
     }
   ]
 };
