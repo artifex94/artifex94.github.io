@@ -145,7 +145,7 @@ export const Inmobiliaria: React.FC = () => {
               role="button"
               tabIndex={0}
               onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') setPropSel(p);
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPropSel(p); }
               }}
               className="border border-neutral-200 hover:shadow-lg transition-shadow group cursor-pointer"
             >

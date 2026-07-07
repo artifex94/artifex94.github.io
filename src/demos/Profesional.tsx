@@ -153,7 +153,7 @@ export const Profesional: React.FC = () => {
               role="button"
               tabIndex={0}
               onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') setServicioModal(s);
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setServicioModal(s); }
               }}
               className="border border-neutral-200 rounded-xl p-6 hover:shadow-md hover:border-[#1A6B8A] transition-all group cursor-pointer"
             >
