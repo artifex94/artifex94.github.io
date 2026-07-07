@@ -277,8 +277,8 @@ async function main() {
       // Auto-generated alt text; a manual-override hook (e.g. reading a
       // per-photo descriptions file) can replace this generation later.
       const alt = collection.label
-        ? `${collection.label} — obra ${obraIndex}`
-        : `Fotografía — obra ${obraIndex}`;
+        ? `${collection.label} — fotografía de Ramiro Escobar (Artifex), obra ${obraIndex}`
+        : `Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra ${obraIndex}`;
 
       const cached = cache[hash];
       const canReuse =

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { differentiators } from '../../data/business';
 import { BlueprintBox } from '../BlueprintBox';
 import { Reveal } from '../Reveal';
@@ -27,6 +28,15 @@ export const WhyMe: React.FC = () => {
           );
         })}
       </div>
+
+      <p className="mt-6 text-center font-mono text-xs text-primary/60">
+        <Link
+          to="/blog/ingenieria/adrs-documentar-decisiones-arquitectura"
+          className="underline underline-offset-2 transition-colors hover:text-accent"
+        >
+          // Cómo documento mis decisiones de arquitectura
+        </Link>
+      </p>
     </section>
   );
 };

@@ -28,7 +28,7 @@ interface SitemapUrl {
   priority: string;
   lastmod?: string;
   /** URLs de imagen (image sitemap) asociadas a esta página. */
-  images?: string[];
+  images?: { loc: string; caption: string }[];
 }
 
 function buildSitemapXml(): string {
@@ -39,7 +39,7 @@ function buildSitemapXml(): string {
   // Fotos de la galería como image sitemap bajo /servicios/fotografia:
   // ayuda a que las fotos de Ramiro aparezcan en Google Images.
   const galleryImages = galleryManifest
-    .map((photo) => photo.fullSrc)
+    .map((photo) => ({ loc: photo.fullSrc, caption: photo.alt }))
     .slice(0, MAX_SITEMAP_IMAGES);
 
   const staticUrls: SitemapUrl[] = [
@@ -68,10 +68,13 @@ function buildSitemapXml(): string {
 
   const allUrls: SitemapUrl[] = [...staticUrls, ...categoryUrls, ...postUrls];
 
-  const renderImages = (images?: string[]): string =>
+  const renderImages = (images?: { loc: string; caption: string }[]): string =>
     images && images.length
       ? '\n' + images
-          .map((loc) => `    <image:image><image:loc>${escapeXml(loc)}</image:loc></image:image>`)
+          .map(
+            (img) =>
+              `    <image:image><image:loc>${escapeXml(img.loc)}</image:loc><image:caption>${escapeXml(img.caption)}</image:caption></image:image>`,
+          )
           .join('\n')
       : '';
 

@@ -111,6 +111,12 @@ export const Fotografia: React.FC = () => {
           >
             Conocer el servicio de desarrollo <ArrowRight size={16} />
           </Link>
+          <p className="text-secondary text-sm mt-4">
+            ¿Tenés piezas de tufting u otro producto artesanal? También las fotografío.{' '}
+            <Link to="/servicios/tufting" className="text-accent hover:underline">
+              Ver tufting
+            </Link>
+          </p>
         </section>
 
         {/* CTA de cierre */}

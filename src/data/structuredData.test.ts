@@ -7,6 +7,7 @@ import {
   serviceSchemas,
   withContext,
   breadcrumb,
+  profilePageSchema,
   WEBSITE_ID,
   PERSON_ID,
   ORG_ID,
@@ -48,10 +49,27 @@ describe('structuredData graph', () => {
     expect(org.founder).toEqual({ '@id': PERSON_ID });
   });
 
-  it('gives Person the three brand alternateName variants', () => {
+  it('gives Person the brand and per-craft alternateName variants', () => {
     expect(person.alternateName).toEqual(
-      expect.arrayContaining(['Ramiro Escobar', 'Ramiro Dev', 'Artifex']),
+      expect.arrayContaining([
+        'Ramiro Escobar',
+        'Ramiro Dev',
+        'Artifex',
+        'Artifex Dev',
+        'Ramiro Fotografía',
+        'Ramiro Tufting',
+      ]),
     );
+  });
+
+  it('org logo points to a raster asset (Google does not accept SVG logos)', () => {
+    expect(org.logo).toBe('https://artifex.click/apple-touch-icon.png');
+  });
+
+  it('profilePageSchema anchors /portfolio to the Person entity', () => {
+    expect(profilePageSchema['@context']).toBe('https://schema.org');
+    expect(profilePageSchema['@type']).toBe('ProfilePage');
+    expect(profilePageSchema.mainEntity).toEqual({ '@id': PERSON_ID });
   });
 
   it('models the org as a local business with geo signals', () => {

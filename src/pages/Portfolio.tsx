@@ -7,13 +7,23 @@ import { data } from '../data/data';
 import { motion } from 'framer-motion';
 import { Typewriter } from '../components/Typewriter';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { profilePageSchema, breadcrumb } from '../data/structuredData';
 
 export const Portfolio = () => {
   usePageMeta({
-    title: 'Portfolio | Artifex — Ramiro Escobar',
+    title: 'Ramiro Escobar — Desarrollador Web y Portfolio | Artifex',
     description:
       'Portfolio profesional de Ramiro Aníbal Escobar (Artifex): experiencia, formación, skills y proyectos de desarrollo web y sistemas.',
     canonicalPath: '/portfolio',
+    // /portfolio es la URL canónica de Person (#person): sin esto era la única
+    // ruta sin page-jsonld propio.
+    jsonLd: [
+      profilePageSchema,
+      breadcrumb([
+        { name: 'Inicio', path: '/' },
+        { name: 'Portfolio', path: '/portfolio' },
+      ]),
+    ],
   });
 
   return (

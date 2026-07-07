@@ -24,14 +24,29 @@ const DEFAULT_OG_IMAGE = `${CANONICAL_ORIGIN}/og-image.png`;
 const JSONLD_ATTR = 'data-page-jsonld';
 const META_DESCRIPTION_MAX = 160;
 
-// Google truncates snippets around 160 chars. Trim at a word boundary and add
-// an ellipsis so long post summaries don't get cut mid-word in results. The
+// Chars antes del límite en los que buscamos un fin de oración para cortar
+// ahí en vez de a media frase.
+const SENTENCE_LOOKBACK = 40;
+
+// Google truncates snippets around 160 chars. If a sentence ends within the
+// last ~40 chars before the limit, cut there: a complete thought, no ellipsis
+// needed. Otherwise fall back to trimming at a word boundary with an
+// ellipsis, so long post summaries don't get cut mid-word in results. The
 // full text still lives in the visible page and the JSON-LD description.
 const truncateForMeta = (text: string): string => {
   // Spread por code points para no partir un par surrogate (emoji) al cortar.
   const chars = [...text];
   if (chars.length <= META_DESCRIPTION_MAX) return text;
-  const slice = chars.slice(0, META_DESCRIPTION_MAX - 1).join('');
+
+  const limit = META_DESCRIPTION_MAX - 1;
+  const windowStart = Math.max(0, limit - SENTENCE_LOOKBACK);
+  for (let i = limit - 1; i >= windowStart; i--) {
+    if (chars[i] === '.' || chars[i] === '!' || chars[i] === '?') {
+      return chars.slice(0, i + 1).join('');
+    }
+  }
+
+  const slice = chars.slice(0, limit).join('');
   const lastSpace = slice.lastIndexOf(' ');
   return `${slice.slice(0, lastSpace > 0 ? lastSpace : slice.length).trimEnd()}…`;
 };

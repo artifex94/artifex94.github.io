@@ -5,6 +5,9 @@ import { BookOpen, ArrowRight, Clock, Tag, Heart, ExternalLink, Search, X } from
 import { BlueprintBox } from '../../components/BlueprintBox';
 import { categories, getAllPublished, getRecentPosts, countByCategory, getCategoryBySlug } from '../../data/blog';
 import { usePageMeta } from '../../hooks/usePageMeta';
+import { PERSON_ID, breadcrumb } from '../../data/structuredData';
+
+const BASE = 'https://artifex.click';
 
 const CAFECITO_URL = "https://cafecito.app/artifex";
 const MATECITO_URL = "https://matecito.app/artifex"; // actualizar cuando esté validado
@@ -86,15 +89,37 @@ const DonationsSection = () => (
 );
 
 export const Blog = () => {
+  const [query, setQuery] = useState('');
+  const allPublished = useMemo(() => getAllPublished(), []);
+
   usePageMeta({
     title: 'Blog & Notas — Artifex Dev',
     description:
       'Apuntes de estudio, exploraciones técnicas e implementaciones sobre React, TypeScript, desarrollo web y más. Blog de Ramiro Escobar.',
     canonicalPath: '/blog',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        '@id': `${BASE}/blog#blog`,
+        name: 'Blog & Notas — Artifex',
+        url: `${BASE}/blog`,
+        inLanguage: 'es-AR',
+        author: { '@id': PERSON_ID },
+        blogPost: allPublished.map((post) => ({
+          '@type': 'BlogPosting',
+          url: `${BASE}/blog/${post.category}/${post.slug}`,
+          headline: post.title,
+          // Fecha-sola a ISO 8601 con huso de Argentina (-03:00), igual que BlogPost.
+          datePublished: `${post.date}T00:00:00-03:00`,
+        })),
+      },
+      breadcrumb([
+        { name: 'Inicio', path: '/' },
+        { name: 'Blog', path: '/blog' },
+      ]),
+    ],
   });
-
-  const [query, setQuery] = useState('');
-  const allPublished = useMemo(() => getAllPublished(), []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
