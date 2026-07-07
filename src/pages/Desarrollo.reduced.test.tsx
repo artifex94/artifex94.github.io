@@ -76,10 +76,13 @@ describe('Desarrollo page with reduced motion', () => {
     expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/Construyo la máquina/i);
   });
 
-  it('keeps every segment, its title and demo link present', () => {
+  it('keeps every segment and reveals its demo link when opened', () => {
     const { container } = renderWithProviders(<Desarrollo />);
     for (const segment of segments) {
-      expect(screen.getByText(segment.title)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: new RegExp(segment.title, 'i') })).toBeInTheDocument();
+    }
+    for (const segment of segments) {
+      fireEvent.click(screen.getByRole('button', { name: new RegExp(segment.title, 'i') }));
       expect(container.querySelector(`a[href="/business/${segment.slug}"]`)).not.toBeNull();
     }
   });
