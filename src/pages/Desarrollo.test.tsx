@@ -16,10 +16,9 @@ describe('Desarrollo page', () => {
     expect(h1.textContent).toMatch(/Construyo la máquina/i);
   });
 
-  it('reveals each segment demo link at /business/<slug> when opened', () => {
+  it('links every segment to its live demo at /business/<slug>', () => {
     const { container } = renderWithProviders(<Desarrollo />);
     for (const segment of segments) {
-      fireEvent.click(screen.getByRole('button', { name: new RegExp(segment.title, 'i') }));
       expect(container.querySelector(`a[href="/business/${segment.slug}"]`)).not.toBeNull();
     }
   });
