@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
 // emite solo en este chunk (no pesa en home/desarrollo/portfolio).
 import '@fontsource-variable/fraunces/index.css';
@@ -149,6 +150,12 @@ export const Tufting: React.FC = () => {
             Escribime con tu idea y te respondo con propuesta y presupuesto.
           </p>
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded />
+          <p className="text-sm text-secondary mt-6">
+            ¿Querés fotos profesionales de tus piezas?{' '}
+            <Link to="/servicios/fotografia" className="text-accent hover:underline">
+              Conocé el servicio de fotografía
+            </Link>
+          </p>
         </section>
       </div>
     </motion.div>

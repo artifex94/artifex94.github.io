@@ -46,8 +46,17 @@ export const person: JsonLdNode = {
   '@type': 'Person',
   '@id': PERSON_ID,
   name: data.personal.name,
-  // Cubre las variantes de búsqueda de marca personal (Ramiro Escobar / Dev / Artifex).
-  alternateName: ['Ramiro Escobar', 'Ramiro Dev', 'Artifex'],
+  // Cubre las variantes de búsqueda de marca personal (Ramiro Escobar / Dev / Artifex)
+  // y los alias por oficio (dev / fotografía / tufting), que son cómo la gente
+  // busca cada faceta de la misma persona.
+  alternateName: [
+    'Ramiro Escobar',
+    'Ramiro Dev',
+    'Artifex',
+    'Artifex Dev',
+    'Ramiro Fotografía',
+    'Ramiro Tufting',
+  ],
   // Los tres oficios como títulos de la persona: ancla "Ramiro Fotografía" y
   // "Ramiro Tufting" a la entidad personal, no solo a la organización.
   jobTitle: [data.personal.title, 'Fotógrafo', 'Artista textil (tufting)'],
@@ -84,7 +93,8 @@ export const org: JsonLdNode = {
     closes: '18:00',
   },
   sameAs,
-  logo: `${BASE}/favicon.svg`,
+  // Raster ≥112px: Google no valida logo de Organization como SVG.
+  logo: `${BASE}/apple-touch-icon.png`,
   image: OG_IMAGE,
   makesOffer: services.map((s) => ({
     '@type': 'Offer',
@@ -135,6 +145,15 @@ export const withContext = (nodes: JsonLdNode[]): JsonLdNode => ({
   '@context': 'https://schema.org',
   '@graph': nodes,
 });
+
+// ProfilePage ancla /portfolio (la URL canónica de Person) a la entidad #person:
+// hoy es la única ruta sin page-jsonld propio y es donde Google espera
+// encontrar el perfil detrás del knowledge graph.
+export const profilePageSchema: JsonLdNode = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: { '@id': PERSON_ID },
+};
 
 export interface BreadcrumbItem {
   name: string;

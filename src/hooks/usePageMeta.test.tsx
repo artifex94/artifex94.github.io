@@ -54,6 +54,18 @@ describe('usePageMeta', () => {
     expect(desc).not.toContain('bbbbbb');
   });
 
+  it('cuts at the end of a full sentence near the limit instead of using an ellipsis', () => {
+    document.head.innerHTML = '<meta name="description" content="old" />';
+    // Punto final a ~10 chars antes del límite (dentro de la ventana de 40).
+    const firstSentence = 'a'.repeat(148) + '.';
+    const long = `${firstSentence} ${'b'.repeat(60)}`;
+    render(<Probe title="t" description={long} canonicalPath="/" />);
+    const desc = content('meta[name="description"]');
+    expect(desc).toBe(firstSentence);
+    expect(desc!.endsWith('.')).toBe(true);
+    expect(desc!.endsWith('…')).toBe(false);
+  });
+
   it('emits article:published_time and article:modified_time for ogType article', () => {
     render(
       <Probe

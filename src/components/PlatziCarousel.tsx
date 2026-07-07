@@ -86,6 +86,8 @@ function DiplomaCard({ cert, 'aria-hidden': ariaHidden }: DiplomaCardProps) {
             <img
               src={cert.imageUrl}
               alt={`Logo ${cert.name}`}
+              width={56}
+              height={56}
               loading="lazy"
               draggable={false}
               className="w-14 h-14 object-contain opacity-75 group-hover/card:opacity-100 group-hover/card:scale-105 transition-all duration-300"

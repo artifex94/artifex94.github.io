@@ -7,7 +7,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/1-dsc0007.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/1-dsc0007.webp',
-    alt: '40 años de democracia — obra 1',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 1',
     width: 1920,
     height: 1270,
     collection: '40 años de democracia',
@@ -16,7 +16,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/8-dsc0038.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/8-dsc0038.webp',
-    alt: '40 años de democracia — obra 2',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 2',
     width: 1920,
     height: 1530,
     collection: '40 años de democracia',
@@ -25,7 +25,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/12-dsc0054.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/12-dsc0054.webp',
-    alt: '40 años de democracia — obra 3',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 3',
     width: 1348,
     height: 1920,
     collection: '40 años de democracia',
@@ -34,7 +34,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/21-dsc0066.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/21-dsc0066.webp',
-    alt: '40 años de democracia — obra 4',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 4',
     width: 1920,
     height: 866,
     collection: '40 años de democracia',
@@ -43,7 +43,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/24-dsc0076.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/24-dsc0076.webp',
-    alt: '40 años de democracia — obra 5',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 5',
     width: 1920,
     height: 1047,
     collection: '40 años de democracia',
@@ -52,7 +52,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/25-dsc0078.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/25-dsc0078.webp',
-    alt: '40 años de democracia — obra 6',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 6',
     width: 1920,
     height: 1246,
     collection: '40 años de democracia',
@@ -61,7 +61,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/26-dsc0084.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/26-dsc0084.webp',
-    alt: '40 años de democracia — obra 7',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 7',
     width: 1920,
     height: 1324,
     collection: '40 años de democracia',
@@ -70,7 +70,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/28-dsc0094.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/28-dsc0094.webp',
-    alt: '40 años de democracia — obra 8',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 8',
     width: 1462,
     height: 1920,
     collection: '40 años de democracia',
@@ -79,7 +79,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/thumbs/30-dsc0104.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/40-anos-de-democracia/30-dsc0104.webp',
-    alt: '40 años de democracia — obra 9',
+    alt: '40 años de democracia — fotografía de Ramiro Escobar (Artifex), obra 9',
     width: 1920,
     height: 1298,
     collection: '40 años de democracia',
@@ -88,7 +88,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/7-dsc0043.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/7-dsc0043.webp',
-    alt: 'Aikido — obra 1',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 1',
     width: 1920,
     height: 1346,
     collection: 'Aikido',
@@ -97,7 +97,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/8-dsc0045.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/8-dsc0045.webp',
-    alt: 'Aikido — obra 2',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 2',
     width: 1920,
     height: 1283,
     collection: 'Aikido',
@@ -106,7 +106,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/10-dsc0050.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/10-dsc0050.webp',
-    alt: 'Aikido — obra 3',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 3',
     width: 1920,
     height: 1285,
     collection: 'Aikido',
@@ -115,7 +115,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/13-dsc0062.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/13-dsc0062.webp',
-    alt: 'Aikido — obra 4',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 4',
     width: 1920,
     height: 1262,
     collection: 'Aikido',
@@ -124,7 +124,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/14-dsc0092.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/14-dsc0092.webp',
-    alt: 'Aikido — obra 5',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 5',
     width: 1920,
     height: 1676,
     collection: 'Aikido',
@@ -133,7 +133,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/15-dsc0107.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/15-dsc0107.webp',
-    alt: 'Aikido — obra 6',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 6',
     width: 1920,
     height: 1610,
     collection: 'Aikido',
@@ -142,7 +142,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/thumbs/16-dsc0129.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/aikido/16-dsc0129.webp',
-    alt: 'Aikido — obra 7',
+    alt: 'Aikido — fotografía de Ramiro Escobar (Artifex), obra 7',
     width: 1920,
     height: 721,
     collection: 'Aikido',
@@ -151,7 +151,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/2-dsc0014-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/2-dsc0014-enhanced-nr.webp',
-    alt: 'JazzArt — obra 1',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 1',
     width: 1040,
     height: 1920,
     collection: 'JazzArt',
@@ -160,7 +160,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/6-dsc0046-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/6-dsc0046-enhanced-nr.webp',
-    alt: 'JazzArt — obra 2',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 2',
     width: 1920,
     height: 988,
     collection: 'JazzArt',
@@ -169,7 +169,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/8-dsc0060-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/8-dsc0060-enhanced-nr.webp',
-    alt: 'JazzArt — obra 3',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 3',
     width: 822,
     height: 1920,
     collection: 'JazzArt',
@@ -178,7 +178,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/29-dsc0563-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/29-dsc0563-enhanced-nr.webp',
-    alt: 'JazzArt — obra 4',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 4',
     width: 1920,
     height: 912,
     collection: 'JazzArt',
@@ -187,7 +187,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/33-dsc0579-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/33-dsc0579-enhanced-nr.webp',
-    alt: 'JazzArt — obra 5',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 5',
     width: 1026,
     height: 1920,
     collection: 'JazzArt',
@@ -196,7 +196,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/198-dsc0309-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/198-dsc0309-enhanced-nr.webp',
-    alt: 'JazzArt — obra 6',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 6',
     width: 1326,
     height: 1920,
     collection: 'JazzArt',
@@ -205,7 +205,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/204-dsc0318-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/204-dsc0318-enhanced-nr.webp',
-    alt: 'JazzArt — obra 7',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 7',
     width: 1920,
     height: 1763,
     collection: 'JazzArt',
@@ -214,7 +214,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/234-dsc0358-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/234-dsc0358-enhanced-nr.webp',
-    alt: 'JazzArt — obra 8',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 8',
     width: 1920,
     height: 606,
     collection: 'JazzArt',
@@ -223,7 +223,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/236-dsc0364-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/236-dsc0364-enhanced-nr.webp',
-    alt: 'JazzArt — obra 9',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 9',
     width: 1920,
     height: 1750,
     collection: 'JazzArt',
@@ -232,7 +232,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/250-dsc0390-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/250-dsc0390-enhanced-nr.webp',
-    alt: 'JazzArt — obra 10',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 10',
     width: 1920,
     height: 1690,
     collection: 'JazzArt',
@@ -241,7 +241,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/324-dsc0501-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/324-dsc0501-enhanced-nr.webp',
-    alt: 'JazzArt — obra 11',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 11',
     width: 1920,
     height: 1631,
     collection: 'JazzArt',
@@ -250,7 +250,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/326-dsc0502-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/326-dsc0502-enhanced-nr.webp',
-    alt: 'JazzArt — obra 12',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 12',
     width: 1316,
     height: 1920,
     collection: 'JazzArt',
@@ -259,7 +259,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/358-dsc0556-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/358-dsc0556-enhanced-nr.webp',
-    alt: 'JazzArt — obra 13',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 13',
     width: 1241,
     height: 1920,
     collection: 'JazzArt',
@@ -268,7 +268,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/thumbs/361-dsc0568-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/jazzart/361-dsc0568-enhanced-nr.webp',
-    alt: 'JazzArt — obra 14',
+    alt: 'JazzArt — fotografía de Ramiro Escobar (Artifex), obra 14',
     width: 1198,
     height: 1920,
     collection: 'JazzArt',
@@ -277,7 +277,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/3-dsc0116.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/3-dsc0116.webp',
-    alt: 'La Maga en el faro — obra 1',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 1',
     width: 1920,
     height: 1368,
     collection: 'La Maga en el faro',
@@ -286,7 +286,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/9-dsc0162.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/9-dsc0162.webp',
-    alt: 'La Maga en el faro — obra 2',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 2',
     width: 1920,
     height: 1829,
     collection: 'La Maga en el faro',
@@ -295,7 +295,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/11-dsc0169.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/11-dsc0169.webp',
-    alt: 'La Maga en el faro — obra 3',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 3',
     width: 1175,
     height: 1920,
     collection: 'La Maga en el faro',
@@ -304,7 +304,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/15-dsc0191.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/15-dsc0191.webp',
-    alt: 'La Maga en el faro — obra 4',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 4',
     width: 1410,
     height: 1920,
     collection: 'La Maga en el faro',
@@ -313,7 +313,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/24-dsc0300.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/24-dsc0300.webp',
-    alt: 'La Maga en el faro — obra 5',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 5',
     width: 1372,
     height: 1920,
     collection: 'La Maga en el faro',
@@ -322,7 +322,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/26-dsc0338.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/26-dsc0338.webp',
-    alt: 'La Maga en el faro — obra 6',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 6',
     width: 1736,
     height: 1920,
     collection: 'La Maga en el faro',
@@ -331,7 +331,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/thumbs/38-dsc0609.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/la-maga-en-el-faro/38-dsc0609.webp',
-    alt: 'La Maga en el faro — obra 7',
+    alt: 'La Maga en el faro — fotografía de Ramiro Escobar (Artifex), obra 7',
     width: 1920,
     height: 1565,
     collection: 'La Maga en el faro',
@@ -340,7 +340,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/dsc0021.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/dsc0021.webp',
-    alt: 'Fotografía — obra 1',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 1',
     width: 1920,
     height: 1100,
     collection: null,
@@ -349,7 +349,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/dsc0029.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/dsc0029.webp',
-    alt: 'Fotografía — obra 2',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 2',
     width: 1280,
     height: 1920,
     collection: null,
@@ -358,7 +358,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/dsc0191-enhanced-nr.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/dsc0191-enhanced-nr.webp',
-    alt: 'Fotografía — obra 3',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 3',
     width: 629,
     height: 1920,
     collection: null,
@@ -367,7 +367,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/1-dsc0072.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/1-dsc0072.webp',
-    alt: 'Fotografía — obra 4',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 4',
     width: 1660,
     height: 1660,
     collection: null,
@@ -376,7 +376,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/2-dsc0073.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/2-dsc0073.webp',
-    alt: 'Fotografía — obra 5',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 5',
     width: 1372,
     height: 1920,
     collection: null,
@@ -385,7 +385,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/3-dsc0078.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/3-dsc0078.webp',
-    alt: 'Fotografía — obra 6',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 6',
     width: 1080,
     height: 1920,
     collection: null,
@@ -394,7 +394,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/4-dsc0086.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/4-dsc0086.webp',
-    alt: 'Fotografía — obra 7',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 7',
     width: 1920,
     height: 1280,
     collection: null,
@@ -403,7 +403,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/20240906-072350.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/20240906-072350.webp',
-    alt: 'Fotografía — obra 8',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 8',
     width: 1920,
     height: 1080,
     collection: null,
@@ -412,7 +412,7 @@ export const galleryManifest: GalleryPhoto[] = [
   {
     thumbSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/thumbs/img-20240111-224330-664.webp',
     fullSrc: 'https://erjyzhefwndkumadlpzr.supabase.co/storage/v1/object/public/fotografias/varias/img-20240111-224330-664.webp',
-    alt: 'Fotografía — obra 9',
+    alt: 'Fotografía de Ramiro Escobar (Artifex) en Victoria, Entre Ríos — obra 9',
     width: 1920,
     height: 1919,
     collection: null,
