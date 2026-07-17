@@ -1,0 +1,162 @@
+/* Qhali Design System — merged tokens for the static commercial demo.
+   Source: Qhali Design System (tokens/fonts.css + colors.css + typography.css
+   + spacing.css + effects.css). Do not invent colors — always use these tokens. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,500;6..12,600;6..12,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---- Brand green scale (sage / leaf) ---- */
+  --green-50:  #f1f5ee;
+  --green-100: #dde8d5;
+  --green-200: #bcd0ac;
+  --green-300: #97b782;
+  --green-400: #779c60;
+  --green-500: #5b824b; /* PRIMARY — brand leaf green */
+  --green-600: #4d6f3f;
+  --green-700: #3d5a32; /* deep green — text on light, pressed states */
+  --green-800: #2f4527;
+  --green-900: #22331c;
+
+  /* Vivid CTA green (PWA manifest theme_color) — high-emphasis actions */
+  --green-cta: #2e7d32;
+  --green-cta-hover: #276b2a;
+
+  /* ---- Kraft / tan scale (natural packaging, warm secondary) ---- */
+  --kraft-50:  #faf4ec;
+  --kraft-100: #f2e6d6;
+  --kraft-200: #e7d2b8;
+  --kraft-300: #d8b892;
+  --kraft-400: #c9a077;
+  --kraft-500: #bf946c; /* SECONDARY — kraft tan */
+  --kraft-600: #a67a52;
+  --kraft-700: #85603f;
+
+  /* ---- Warm neutrals ---- */
+  --neutral-0:   #ffffff;
+  --neutral-50:  #faf9f6; /* cream page background */
+  --neutral-100: #f4f2ec;
+  --neutral-200: #e7e4db;
+  --neutral-300: #d4d0c4;
+  --neutral-400: #a8a394;
+  --neutral-500: #7c7869;
+  --neutral-600: #5c584c;
+  --neutral-700: #403d34;
+  --neutral-800: #2a2822;
+  --neutral-900: #1a1915;
+
+  /* ---- Semantic status ---- */
+  --success-500: #3f8f3f;
+  --success-50:  #e9f4e6;
+  --warning-500: #d99425;
+  --warning-50:  #fbf1de;
+  --danger-500:  #c1462f;
+  --danger-50:   #f9e7e2;
+  --info-500:    #3f7c8f;
+  --info-50:     #e6f1f4;
+
+  /* ---- Semantic aliases ---- */
+  --color-primary: var(--green-500);
+  --color-primary-hover: var(--green-600);
+  --color-primary-active: var(--green-700);
+  --color-on-primary: var(--neutral-0);
+  --color-accent: var(--green-cta);
+  --color-accent-hover: var(--green-cta-hover);
+  --color-secondary: var(--kraft-500);
+  --color-secondary-hover: var(--kraft-600);
+
+  --surface-page:   var(--neutral-50);
+  --surface-card:   var(--neutral-0);
+  --surface-sunken: var(--neutral-100);
+  --surface-inverse: var(--green-700);
+  --surface-brand:  var(--green-500);
+  --surface-kraft:  var(--kraft-100);
+
+  --text-strong:  var(--neutral-900);
+  --text-body:    var(--neutral-700);
+  --text-muted:   var(--neutral-500);
+  --text-on-brand: var(--neutral-0);
+  --text-brand:   var(--green-700);
+  --text-price:   var(--green-700);
+
+  --border-subtle: var(--neutral-200);
+  --border-default: var(--neutral-300);
+  --border-strong: var(--neutral-400);
+  --border-brand:  var(--green-300);
+  --focus-ring: var(--green-400);
+
+  /* ---- Typography ---- */
+  --font-display: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-heading: var(--font-display);
+  --font-eyebrow: var(--font-display);
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --text-2xs: 0.6875rem;
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-base: 1rem;
+  --text-md:  1.125rem;
+  --text-lg:  1.375rem;
+  --text-xl:  1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3rem;
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+
+  --ls-tighter: -0.02em;
+  --ls-tight: -0.01em;
+  --ls-normal: 0;
+  --ls-wide: 0.04em;
+  --ls-wider: 0.14em;
+
+  /* ---- Spacing (4px base grid) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  --container-app: 480px;
+  --container-content: 720px;
+  --container-wide: 1120px;
+  --touch-min: 44px;
+  --appbar-h: 56px;
+  --tabbar-h: 60px;
+
+  /* ---- Radius / borders / shadows / motion ---- */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  --border-w: 1px;
+  --border-w-strong: 1.5px;
+
+  --shadow-xs: 0 1px 2px rgba(34, 51, 28, 0.06);
+  --shadow-sm: 0 2px 6px rgba(34, 51, 28, 0.08);
+  --shadow-md: 0 6px 16px rgba(34, 51, 28, 0.10);
+  --shadow-lg: 0 14px 32px rgba(34, 51, 28, 0.14);
+  --shadow-focus: 0 0 0 3px rgba(119, 156, 96, 0.45);
+
+  --ease-standard: cubic-bezier(0.2, 0, 0.1, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+}
