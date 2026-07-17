@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qhali · Tienda Saludable — Demo del proyecto</title>
+<meta name="description" content="Recorré la futura tienda online de Qhali: demo navegable de la app para clientes y de la consola de administración.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="./assets/logo-badge-circle.png">
+<link rel="stylesheet" href="./css/qhali-tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--lh-normal);
+    color: var(--text-body);
+    background: var(--surface-page);
+  }
+  img { max-width: 100%; }
+  .wrap { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--space-5); }
+
+  /* ---- Hero ---- */
+  .hero {
+    position: relative;
+    background: var(--surface-brand);
+    color: var(--text-on-brand);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url('./assets/pattern-leaves-green.png') center / cover;
+    opacity: 0.30;
+  }
+  .hero-inner {
+    position: relative;
+    max-width: var(--container-content);
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-5) var(--space-12);
+    text-align: center;
+  }
+  .hero-logo { height: 120px; object-fit: contain; }
+  .hero-eyebrow {
+    font-family: var(--font-eyebrow);
+    font-weight: var(--fw-semibold);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-wider);
+    margin: var(--space-6) 0 var(--space-2);
+    opacity: 0.9;
+  }
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-weight: var(--fw-semibold);
+    font-size: clamp(var(--text-xl), 4.5vw, var(--text-2xl));
+    line-height: var(--lh-tight);
+    letter-spacing: var(--ls-tight);
+    margin: 0 0 var(--space-4);
+  }
+  .hero p {
+    font-size: var(--text-md);
+    line-height: var(--lh-relaxed);
+    max-width: 560px;
+    margin: 0 auto;
+    opacity: 0.96;
+  }
+
+  /* ---- Sections ---- */
+  section { padding: var(--space-12) 0; }
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: var(--fw-semibold);
+    font-size: var(--text-xl);
+    color: var(--text-strong);
+    text-align: center;
+    margin: 0 0 var(--space-2);
+  }
+  .section-sub {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--text-md);
+    max-width: 560px;
+    margin: 0 auto var(--space-10);
+    line-height: var(--lh-relaxed);
+  }
+
+  /* ---- Demo cards ---- */
+  .demos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-8);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .demo-card {
+    background: var(--surface-card);
+    border: var(--border-w) solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-8) var(--space-6) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-4);
+    transition: box-shadow var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard);
+  }
+  .demo-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+  /* Phone frame (client store) */
+  .frame-phone {
+    width: 150px; height: 300px;
+    border-radius: 28px;
+    border: 6px solid var(--neutral-800);
+    background: var(--surface-brand) url('./assets/pattern-leaves-green.png') center / cover;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .frame-phone::before {
+    content: '';
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 48px; height: 6px; border-radius: var(--radius-pill);
+    background: var(--neutral-800);
+  }
+  .frame-phone img { width: 76%; object-fit: contain; }
+
+  /* Desktop frame (admin console) */
+  .frame-desktop {
+    width: 260px; height: 170px;
+    border-radius: var(--radius-md);
+    border: 6px solid var(--neutral-800);
+    background: var(--surface-page);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+  .frame-desktop .side {
+    width: 34%; height: 100%;
+    background: var(--green-700);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 12px;
+  }
+  .frame-desktop .side img { width: 26px; height: 26px; border-radius: 50%; }
+  .frame-desktop .main { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .frame-desktop .bar { height: 12px; border-radius: var(--radius-xs); background: var(--neutral-200); }
+  .frame-desktop .bar.green { background: var(--green-200); width: 60%; }
+  .frame-desktop .bar.kraft { background: var(--kraft-200); width: 80%; }
+
+  .demo-card h3 {
+    font-family: var(--font-heading);
+    font-weight: var(--fw-semibold);
+    font-size: var(--text-lg);
+    color: var(--text-strong);
+    margin: var(--space-2) 0 0;
+  }
+  .demo-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--text-base);
+    line-height: var(--lh-relaxed);
+    max-width: 320px;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    padding: var(--space-3) var(--space-6);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-weight: var(--fw-semibold);
+    font-size: var(--text-md);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-standard);
+  }
+  .btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-primary:hover { background: var(--color-primary-hover); }
+  .btn-primary:active { background: var(--color-primary-active); }
+  .btn-secondary { background: var(--color-secondary); color: var(--neutral-0); }
+  .btn-secondary:hover { background: var(--color-secondary-hover); }
+  .btn svg { width: 20px; height: 20px; }
+
+  /* ---- Modules ("Qué incluye el proyecto") ---- */
+  .modules-section { background: var(--surface-kraft); }
+  .modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-5);
+  }
+  .module {
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    padding: var(--space-5);
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .module .icon {
+    width: 48px; height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--green-50);
+    color: var(--color-primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .module .icon svg { width: 24px; height: 24px; }
+  .module h4 {
+    font-family: var(--font-heading);
+    font-weight: var(--fw-semibold);
+    font-size: var(--text-base);
+    color: var(--text-strong);
+    margin: 0 0 var(--space-1);
+    line-height: var(--lh-snug);
+  }
+  .module p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+
+  /* ---- Footer ---- */
+  footer {
+    background: var(--surface-inverse);
+    color: var(--text-on-brand);
+    text-align: center;
+    padding: var(--space-8) var(--space-5);
+  }
+  footer img { height: 44px; opacity: 0.95; }
+  footer p { margin: var(--space-3) 0 0; font-size: var(--text-sm); opacity: 0.85; line-height: var(--lh-relaxed); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .demo-card, .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <img class="hero-logo" src="./assets/logo-full-white.png" alt="Qhali · Tienda Saludable">
+    <div class="hero-eyebrow">Demo del proyecto</div>
+    <h1>Así va a ser tu tienda online</h1>
+    <p>
+      Esta es una maqueta navegable de la futura plataforma de Qhali:
+      la app que van a usar tus clientes para comprar, y la consola
+      con la que vos vas a manejar el negocio. Recorrela, tocá los botones
+      y mirá cómo funciona cada parte.
+    </p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">Elegí qué querés recorrer</h2>
+      <p class="section-sub">Las dos demos son interactivas: podés navegar el catálogo, armar un carrito, avanzar pedidos y cerrar la caja del día.</p>
+      <div class="demos">
+        <a class="demo-card" href="./tienda/" style="text-decoration:none">
+          <div class="frame-phone">
+            <img src="./assets/logo-full-white.png" alt="">
+          </div>
+          <h3>La tienda de tus clientes</h3>
+          <p>La app del celular: catálogo con granel fraccionado a 100 g, carrito, retiro en el local o envío a domicilio, y seguimiento de pedidos.</p>
+          <span class="btn btn-primary">
+            Entrar a la tienda
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </span>
+        </a>
+        <a class="demo-card" href="./consola/" style="text-decoration:none">
+          <div class="frame-desktop">
+            <div class="side"><img src="./assets/logo-badge-circle.png" alt=""></div>
+            <div class="main">
+              <div class="bar green"></div>
+              <div class="bar"></div>
+              <div class="bar kraft"></div>
+              <div class="bar"></div>
+              <div class="bar green" style="width:45%"></div>
+            </div>
+          </div>
+          <h3>Tu consola de administración</h3>
+          <p>El panel del negocio: stock en tiempo real, costos y márgenes, gestión de pedidos, distribuidores con reposición y caja diaria con informe.</p>
+          <span class="btn btn-secondary">
+            Entrar a la consola
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="modules-section">
+    <div class="wrap">
+      <h2 class="section-title">Qué incluye el proyecto</h2>
+      <p class="section-sub">Todos estos módulos forman parte del presupuesto de la plataforma.</p>
+      <div class="modules">
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></span>
+          <div>
+            <h4>App instalable con modo offline</h4>
+            <p>Se instala en el celular con un toque y el catálogo sigue disponible aun sin conexión.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg></span>
+          <div>
+            <h4>Catálogo y carrito</h4>
+            <p>Productos por categoría, granel fraccionado a 100 g y carrito persistente entre visitas.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></span>
+          <div>
+            <h4>Checkout con retiro o envío</h4>
+            <p>El cliente elige retiro en el local (Llambi Campbell) o envío a domicilio nacional.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>
+          <div>
+            <h4>Cuenta y seguimiento de pedidos</h4>
+            <p>Cada cliente ve el estado de sus compras: pendiente, pagado, preparado, despachado, entregado.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+          <div>
+            <h4>Panel admin con stock en tiempo real</h4>
+            <p>El inventario se actualiza al instante con cada venta y avisa cuando hay que reponer.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <div>
+            <h4>Costos y márgenes automáticos</h4>
+            <p>Cargás el costo de lista y el margen; el precio de venta al público se calcula solo.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+          <div>
+            <h4>Distribuidores con reposición en PDF</h4>
+            <p>Pedidos de reposición armados solos a partir del stock bajo, listos para imprimir o mandar.</p>
+          </div>
+        </div>
+        <div class="module">
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></span>
+          <div>
+            <h4>Caja diaria con informes</h4>
+            <p>Apertura, movimientos y cierre de caja con diferencia calculada e informe imprimible.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <img src="./assets/logo-full-white.png" alt="Qhali">
+  <p>Demo comercial · Los productos son reales (proveedores Natier y Merci) y los precios, ilustrativos.</p>
+</footer>
+
+</body>
+</html>

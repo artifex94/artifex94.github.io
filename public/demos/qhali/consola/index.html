@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1024, initial-scale=1">
+<title>Qhali · Consola de administración — Demo</title>
+<meta name="description" content="Demo navegable de la consola de administración de Qhali: stock en tiempo real, pedidos, distribuidores y caja.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/logo-badge-circle.png">
+<link rel="stylesheet" href="../css/qhali-tokens.css">
+<link rel="stylesheet" href="./app.css">
+<style>
+  @media print {
+    body * { visibility: hidden !important; }
+    .informe-print, .informe-print * { visibility: visible !important; }
+    .informe-print { position: fixed; inset: 0; background: #fff; padding: 32px; overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<div id="app" class="qhali-app"></div>
+<div id="drawer-root"></div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="./data-tienda.js"></script>
+<script src="./data.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
