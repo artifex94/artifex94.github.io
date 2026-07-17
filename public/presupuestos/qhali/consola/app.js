@@ -293,7 +293,6 @@
     userWrap.appendChild(el('div', { class: 'sidebar-user-role' }, ['Empleada']));
     footer.appendChild(userWrap);
     sidebar.appendChild(footer);
-    sidebar.appendChild(el('a', { class: 'sidebar-back', attrs: { href: '../index.html' } }, ['← Volver a la presentación']));
 
     var contentCol = el('div', { class: 'content-col' });
     var topbar = el('header', { class: 'topbar' });
