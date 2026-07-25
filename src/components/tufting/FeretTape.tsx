@@ -25,15 +25,23 @@ export const FeretTape: React.FC<FeretTapeProps> = ({ line, width, height, cm })
 
   const midX = (ax + bx) / 2;
   const midY = (ay + by) / 2;
-  // La etiqueta se corre perpendicular a la línea para no taparla.
+  // Vector unitario perpendicular a la línea: para correr la etiqueta y para
+  // dibujar los topes de los extremos.
   const length = Math.hypot(bx - ax, by - ay) || 1;
-  const offsetX = (-(by - ay) / length) * (height * 0.06);
-  const offsetY = ((bx - ax) / length) * (height * 0.06);
+  const perpX = -(by - ay) / length;
+  const perpY = (bx - ax) / length;
+  const offsetX = perpX * (height * 0.075);
+  const offsetY = perpY * (height * 0.075);
 
   // Tamaños relativos al viewBox: se ven igual sin importar la resolución.
   const stroke = Math.max(2, width * 0.004);
-  const dotRadius = stroke * 2;
+  // Topes perpendiculares en las puntas, como una cinta métrica de verdad.
+  const tick = stroke * 4;
   const fontSize = Math.max(12, width * 0.035);
+  const label = `${cm} cm`;
+  // El chip de la etiqueta: mono a ~0.62em por carácter alcanza para centrarlo.
+  const chipWidth = label.length * fontSize * 0.62 + fontSize;
+  const chipHeight = fontSize * 1.55;
 
   return (
     <svg
@@ -55,40 +63,56 @@ export const FeretTape: React.FC<FeretTapeProps> = ({ line, width, height, cm })
         transition={{ duration: 0.8, ease: 'easeOut' }}
       />
 
+      {/* Los topes: rayitas perpendiculares en las puntas, no puntos. Es lo que
+          distingue una cota de medición de una línea cualquiera. */}
       {[
         [ax, ay],
         [bx, by],
       ].map(([x, y], index) => (
-        <motion.circle
+        <motion.line
           key={index}
-          cx={x}
-          cy={y}
-          r={dotRadius}
-          fill="var(--color-accent)"
-          initial={reduce ? undefined : { scale: 0 }}
-          animate={reduce ? undefined : { scale: 1 }}
-          transition={{ delay: reduce ? 0 : 0.15 + index * 0.55, duration: 0.25 }}
+          x1={x - perpX * tick}
+          y1={y - perpY * tick}
+          x2={x + perpX * tick}
+          y2={y + perpY * tick}
+          stroke="var(--color-accent)"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          initial={reduce ? undefined : { opacity: 0 }}
+          animate={reduce ? undefined : { opacity: 1 }}
+          transition={{ delay: reduce ? 0 : 0.15 + index * 0.55, duration: 0.2 }}
         />
       ))}
 
-      <motion.text
-        x={midX + offsetX}
-        y={midY + offsetY}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={fontSize}
-        className="font-mono"
-        style={{ fontVariantNumeric: 'tabular-nums' }}
-        fill="var(--color-primary)"
-        stroke="var(--color-surface)"
-        strokeWidth={fontSize * 0.25}
-        paintOrder="stroke"
+      {/* La etiqueta va en un chip, como el tab metálico de la cinta. */}
+      <motion.g
         initial={reduce ? undefined : { opacity: 0 }}
         animate={reduce ? undefined : { opacity: 1 }}
         transition={{ delay: reduce ? 0 : 0.7 }}
       >
-        {`${cm} cm`}
-      </motion.text>
+        <rect
+          x={midX + offsetX - chipWidth / 2}
+          y={midY + offsetY - chipHeight / 2}
+          width={chipWidth}
+          height={chipHeight}
+          rx={chipHeight / 2}
+          fill="var(--color-surface)"
+          stroke="var(--color-accent)"
+          strokeWidth={stroke * 0.5}
+        />
+        <text
+          x={midX + offsetX}
+          y={midY + offsetY}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize={fontSize}
+          className="font-mono"
+          style={{ fontVariantNumeric: 'tabular-nums' }}
+          fill="var(--color-primary)"
+        >
+          {label}
+        </text>
+      </motion.g>
     </svg>
   );
 };

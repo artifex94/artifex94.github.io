@@ -128,7 +128,14 @@ export const CalculatorStepper: React.FC = () => {
           threadWoolId={state.woolIds[0]}
         />
 
-        <div className="bg-surface/50 border border-line rounded-2xl p-6 md:p-8 overflow-hidden">
+        <div className="bg-surface/60 border border-line rounded-2xl p-6 md:p-8 overflow-hidden shadow-sm">
+          {/* La etapa es una secuencia real: numerarla orienta sin volverse checkout. */}
+          <p
+            className="font-mono text-[11px] uppercase tracking-[0.2em] text-secondary mb-5"
+            style={{ fontVariantNumeric: 'tabular-nums' }}
+          >
+            Etapa {currentIndex + 1} de {STEPS.length}
+          </p>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
