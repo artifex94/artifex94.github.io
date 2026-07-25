@@ -12,7 +12,7 @@ import type { DetectedColor } from '../../../utils/tuftingPipeline';
  * símbolo y el número. getByText normaliza espacios comunes pero no U+00A0.
  */
 const buscarMonto = (monto: string) => {
-  const normalizar = (texto: string) => texto.replace(/ /g, ' ').trim();
+  const normalizar = (texto: string) => texto.replace(/\u00A0/g, ' ').trim();
   // getAllByText porque AnimatedPrice envuelve el monto en dos spans anidados:
   // ambos tienen el mismo textContent y alcanza con que exista alguno.
   return screen.getAllByText(
