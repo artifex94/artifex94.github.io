@@ -63,7 +63,11 @@ export interface SubscriptionResponse extends CheckoutResponse {
   instalments: number;
 }
 
-const post = async <T>(endpoint: string, body: unknown): Promise<T> => {
+const post = async <T>(
+  endpoint: string,
+  body: unknown,
+  fallbackError = 'No pude iniciar el pago. Probá de nuevo en un rato.',
+): Promise<T> => {
   const response = await fetch(`${FUNCTIONS_URL}/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -76,7 +80,7 @@ const post = async <T>(endpoint: string, body: unknown): Promise<T> => {
     const message =
       payload && typeof payload === 'object' && 'error' in payload
         ? String((payload as { error: unknown }).error)
-        : 'No pude iniciar el pago. Probá de nuevo en un rato.';
+        : fallbackError;
     throw new Error(message);
   }
 
@@ -92,3 +96,67 @@ export const createSubscription = (
   request: SubscriptionRequest,
 ): Promise<SubscriptionResponse> =>
   post<SubscriptionResponse>('tufting-create-subscription', request);
+
+// ---- Encargo (todas las formas, con o sin pago online) --------------------
+//
+// Un encargo captura el diseño, las medidas y el contacto y los deja en el panel
+// admin (+ aviso por email). Sirve para las tres formas — sobre todo la
+// contorneada, que no se paga online. El precio SIEMPRE lo recalcula el servidor.
+
+/** Tipos de imagen que el bucket de diseños acepta. */
+export type DesignImageType = 'image/png' | 'image/jpeg' | 'image/webp';
+
+interface UploadUrlResponse {
+  /** Path del archivo dentro del bucket privado. Es lo que se manda al encargo. */
+  path: string;
+  token: string;
+  /** URL firmada de subida (un solo uso). */
+  signedUrl: string;
+}
+
+export interface OrderRequest {
+  shape: Shape;
+  diameterCm?: number;
+  widthCm?: number;
+  heightCm?: number;
+  /** Solo para contorneada: área declarada por el cliente (el server la usa de estimación). */
+  areaM2?: number;
+  colors?: readonly string[];
+  designImagePath?: string;
+  customerNote?: string;
+  contact: { name: string; email: string; phone?: string };
+  payByTransfer?: boolean;
+  discountCode?: string;
+}
+
+export interface OrderResponse {
+  orderId: string;
+}
+
+/** Pide una URL firmada para subir el diseño al bucket privado. */
+export const getDesignUploadUrl = (contentType: DesignImageType): Promise<UploadUrlResponse> =>
+  post<UploadUrlResponse>(
+    'tufting-design-upload-url',
+    { contentType },
+    'No pude preparar la subida del diseño. Probá de nuevo.',
+  );
+
+/** Sube el diseño directo a Storage con la URL firmada (no pasa por la function). */
+export const uploadDesign = async (signedUrl: string, file: Blob): Promise<void> => {
+  const response = await fetch(signedUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+    body: file,
+  });
+  if (!response.ok) {
+    throw new Error('No pude subir la imagen del diseño. Probá de nuevo.');
+  }
+};
+
+/** Crea el encargo: guarda todo en el panel y dispara el aviso por email. */
+export const createOrder = (request: OrderRequest): Promise<OrderResponse> =>
+  post<OrderResponse>(
+    'tufting-create-order',
+    request,
+    'No pude enviar el encargo. Probá de nuevo en un rato.',
+  );

@@ -16,6 +16,7 @@ import { woolById } from '../../../data/wools';
 import type { DetectedColor } from '../../../utils/tuftingPipeline';
 import { resolveAreaM2, type CalculatorAction, type CalculatorState } from '../../../hooks/useCalculatorState';
 import { PaymentActions } from './PaymentActions';
+import { OrderForm } from './OrderForm';
 
 interface QuoteStepProps {
   state: CalculatorState;
@@ -169,15 +170,33 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
         Los descuentos no se acumulan: se aplica el que más te conviene.
       </p>
 
-      <PaymentActions
-        shape={shape}
-        dimensions={dimensions}
-        colors={colorNames}
-        payByTransfer={discounts.includes('transferencia')}
-        discountCode={discountCode}
-        total={price.total}
-        whatsappUrl={whatsappUrl}
-      />
+      <div className="border-t border-line pt-6">
+        <OrderForm
+          shape={shape}
+          dimensions={dimensions}
+          areaM2={areaM2}
+          colors={colorNames}
+          borderName={borderName}
+          designObjectUrl={state.upload?.objectUrl}
+          payByTransfer={discounts.includes('transferencia')}
+          discountCode={discountCode}
+        />
+      </div>
+
+      <div className="border-t border-line pt-6">
+        <p className="text-center text-xs text-secondary uppercase tracking-widest mb-4">
+          o cerralo directo
+        </p>
+        <PaymentActions
+          shape={shape}
+          dimensions={dimensions}
+          colors={colorNames}
+          payByTransfer={discounts.includes('transferencia')}
+          discountCode={discountCode}
+          total={price.total}
+          whatsappUrl={whatsappUrl}
+        />
+      </div>
     </div>
   );
 };
