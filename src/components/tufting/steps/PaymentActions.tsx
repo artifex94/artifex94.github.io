@@ -12,7 +12,8 @@ import type { Dimensions, Shape } from '../../../data/tuftingCalculator';
 interface PaymentActionsProps {
   shape: Shape;
   dimensions: Dimensions;
-  woolIds: readonly string[];
+  /** Colores detectados en el diseño, por nombre. */
+  colors: readonly string[];
   payByTransfer: boolean;
   discountCode: string;
   total: number;
@@ -27,7 +28,7 @@ const INSTALMENT_OPTIONS = [3, 6, 12];
 export const PaymentActions: React.FC<PaymentActionsProps> = ({
   shape,
   dimensions,
-  woolIds,
+  colors,
   payByTransfer,
   discountCode,
   total,
@@ -41,13 +42,14 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
   const online = canPayOnline(shape);
   const deposit = Math.ceil((total * INSTALLMENT_DEPOSIT_RATE) / 1000) * 1000;
 
-  // Solo viajan las medidas crudas: el servidor reprecia todo por su cuenta.
+  // Solo viajan las medidas crudas: el servidor reprecia todo por su cuenta. Los
+  // colores van solo como referencia (el precio no depende de ellos).
   const basePayload = {
     shape: shape as 'circular' | 'rectangular',
     diameterCm: dimensions.diameterCm,
     widthCm: dimensions.widthCm,
     heightCm: dimensions.heightCm,
-    woolIds,
+    woolIds: colors,
   };
 
   const go = async (kind: 'checkout' | 'subscription') => {

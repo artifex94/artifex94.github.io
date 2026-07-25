@@ -1,71 +1,104 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '../../../utils/cn';
-import { availableWools, MAX_WOOLS_PER_PIECE } from '../../../data/wools';
+import { rgbToHex } from '../../../utils/color';
+import { wools, woolById } from '../../../data/wools';
+import type { DetectedColor } from '../../../utils/tuftingPipeline';
 import type { CalculatorAction, CalculatorState } from '../../../hooks/useCalculatorState';
 
 interface ColorsStepProps {
   state: CalculatorState;
   dispatch: React.Dispatch<CalculatorAction>;
+  /** Colores del diseño ya llevados a lana. Vacío hasta que el pipeline corre. */
+  detectedColors: readonly DetectedColor[];
 }
 
-// La previsualización con las lanas vive en el bastidor (panel izquierdo),
-// visible mientras se elige: acá solo queda la paleta.
-export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch }) => {
-  const wools = availableWools();
-  const { woolIds } = state;
-  const full = woolIds.length >= MAX_WOOLS_PER_PIECE;
+// La previsualización en lana vive en el bastidor (panel izquierdo). Este paso no
+// es un formulario para elegir de un inventario: REVELA los colores que la lana
+// logra con el diseño y deja elegir el único color que sí es una decisión — el
+// del borde.
+export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detectedColors }) => {
+  const { borderWoolId } = state;
+  const hasColors = detectedColors.length > 0;
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="font-display text-2xl font-semibold mb-2">Elegí los colores</h2>
+        <h2 className="font-display text-2xl font-semibold mb-2">Tu diseño en lana</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Estas son las lanas que tengo. Podés elegir hasta {MAX_WOOLS_PER_PIECE}: cada color es un
-          cono distinto que hay que cargar en la pistola.
+          La alfombra se teje en <strong className="text-primary">colores planos</strong>: la lana no
+          hace degradés ni detalle fino, así que tu diseño se lleva a las regiones sólidas que se ven
+          en el bastidor.
         </p>
       </div>
 
-      <p className="text-sm" aria-live="polite">
-        <span className="font-semibold">{woolIds.length}</span> de {MAX_WOOLS_PER_PIECE} elegidos
-      </p>
-
-      <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 list-none p-0">
-        {wools.map((wool) => {
-          const selected = woolIds.includes(wool.id);
-          const blocked = full && !selected;
-
-          return (
-            <li key={wool.id}>
-              <button
-                type="button"
-                disabled={blocked}
-                aria-pressed={selected}
-                onClick={() => dispatch({ type: 'wool-toggled', woolId: wool.id })}
-                className={cn(
-                  'w-full flex items-center gap-3 p-3 rounded-xl border transition-colors text-left min-h-11',
-                  selected ? 'border-accent bg-accent/5' : 'border-line bg-surface',
-                  blocked ? 'opacity-40 cursor-not-allowed' : 'hover:border-accent',
-                )}
-              >
-                <span
-                  className="w-8 h-8 rounded-full border border-line shrink-0"
-                  style={{ backgroundColor: wool.hex }}
-                  aria-hidden="true"
-                />
-                <span className="text-sm font-medium min-w-0 truncate">{wool.name}</span>
-                {selected && <Check size={16} className="text-accent ml-auto shrink-0" aria-hidden="true" />}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-
-      {full && (
-        <p className="text-xs text-secondary">
-          Llegaste al máximo. Sacá uno para elegir otro.
+      {hasColors ? (
+        <div className="flex flex-col gap-3">
+          <p className="text-sm font-semibold">Los colores que salen de tu diseño</p>
+          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 list-none p-0">
+            {detectedColors.map((color, index) => {
+              const hex = rgbToHex(color.rgb);
+              return (
+                <li
+                  key={`${hex}-${index}`}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-line bg-surface"
+                >
+                  <span
+                    className="w-8 h-8 rounded-full border border-line shrink-0"
+                    style={{ backgroundColor: hex }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-medium min-w-0 truncate">{color.name}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="text-xs text-secondary">
+            Son aproximados: cada color es el tono de lana más cercano al de tu diseño.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-secondary leading-relaxed">
+          Los colores salen de tu propio diseño. La previsualización en lana se arma para la forma
+          contorneada; en circular o rectangular se teje tu diseño tal cual, en colores planos.
         </p>
       )}
+
+      <fieldset className="flex flex-col gap-3">
+        <legend className="text-sm font-semibold mb-1">
+          Color del borde
+          <span className="text-secondary font-normal"> · {woolById(borderWoolId)?.name}</span>
+        </legend>
+        <ul className="grid grid-cols-4 sm:grid-cols-6 gap-2 list-none p-0">
+          {wools.map((wool) => {
+            const selected = wool.id === borderWoolId;
+            return (
+              <li key={wool.id}>
+                <button
+                  type="button"
+                  aria-pressed={selected}
+                  aria-label={`Borde ${wool.name}`}
+                  title={wool.name}
+                  onClick={() => dispatch({ type: 'border-selected', woolId: wool.id })}
+                  className={cn(
+                    'relative w-full aspect-square rounded-lg border-2 transition-transform min-h-11',
+                    selected ? 'border-accent scale-105' : 'border-line hover:border-accent',
+                  )}
+                  style={{ backgroundColor: wool.hex }}
+                >
+                  {selected && (
+                    <Check
+                      size={16}
+                      className="absolute inset-0 m-auto text-white drop-shadow"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </fieldset>
     </div>
   );
 };

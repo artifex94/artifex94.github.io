@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../utils/cn';
-import { woolById } from '../../data/wools';
 import { STEPS, type Step } from '../../hooks/useCalculatorState';
 
 interface ThreadProgressProps {
@@ -9,8 +8,8 @@ interface ThreadProgressProps {
   /** ¿Se puede saltar a este paso? La regla vive en el reducer; esto es solo UI. */
   canVisit: (step: Step) => boolean;
   onVisit: (step: Step) => void;
-  /** Primera lana elegida: el hilo se tiñe de ese color. */
-  threadWoolId?: string;
+  /** Primer color detectado en el diseño (hex): el hilo se tiñe de ese color. */
+  threadColor?: string;
 }
 
 const STEP_LABELS: Record<Step, string> = {
@@ -41,12 +40,12 @@ export const ThreadProgress: React.FC<ThreadProgressProps> = ({
   current,
   canVisit,
   onVisit,
-  threadWoolId,
+  threadColor,
 }) => {
   const reduce = useReducedMotion();
   const currentIndex = STEPS.indexOf(current);
   const progress = currentIndex / (STEPS.length - 1);
-  const threadColor = (threadWoolId && woolById(threadWoolId)?.hex) || 'var(--color-accent)';
+  const color = threadColor || 'var(--color-accent)';
 
   return (
     <nav aria-label="Etapas de tu pieza" className="relative">
@@ -68,7 +67,7 @@ export const ThreadProgress: React.FC<ThreadProgressProps> = ({
         <motion.path
           d={THREAD_PATH}
           fill="none"
-          stroke={threadColor}
+          stroke={color}
           strokeWidth="3.5"
           strokeLinecap="round"
           initial={false}
@@ -121,8 +120,8 @@ export const ThreadProgress: React.FC<ThreadProgressProps> = ({
                   style={
                     done || active
                       ? {
-                          background: `radial-gradient(circle at 35% 30%, color-mix(in srgb, ${threadColor} 55%, #fdf9f3), ${threadColor} 70%)`,
-                          borderColor: threadColor,
+                          background: `radial-gradient(circle at 35% 30%, color-mix(in srgb, ${color} 55%, #fdf9f3), ${color} 70%)`,
+                          borderColor: color,
                         }
                       : undefined
                   }

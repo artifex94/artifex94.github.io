@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
@@ -10,7 +10,8 @@ import {
   type Step,
 } from '../../hooks/useCalculatorState';
 import { useTuftingPipeline } from '../../hooks/useTuftingPipeline';
-import { availableWools, woolById, DEFAULT_BORDER_WOOL_ID, MAX_WOOLS_PER_PIECE } from '../../data/wools';
+import { woolById, MAX_WOOLS_PER_PIECE } from '../../data/wools';
+import { rgbToHex } from '../../utils/color';
 import { BORDER_WIDTH_CM } from '../../data/tuftingPricing';
 import { validateDimensions } from '../../data/tuftingCalculator';
 import { Bastidor } from './Bastidor';
@@ -33,7 +34,7 @@ export const CalculatorStepper: React.FC = () => {
   const [state, dispatch] = useCalculatorState();
   const pipeline = useTuftingPipeline();
   const reduce = useReducedMotion();
-  const { step, upload, shape, dimensions } = state;
+  const { step, upload, shape, dimensions, borderWoolId } = state;
   const objectUrl = upload?.objectUrl;
 
   // Las object URLs sostienen el archivo en memoria hasta que se revocan.
@@ -41,16 +42,6 @@ export const CalculatorStepper: React.FC = () => {
     if (!objectUrl) return;
     return () => URL.revokeObjectURL(objectUrl);
   }, [objectUrl]);
-
-  const palette = useMemo(() => {
-    const wools = availableWools();
-    return {
-      wools,
-      lab: wools.map((wool) => wool.lab),
-      rgb: wools.map((wool) => wool.rgb),
-      border: woolById(DEFAULT_BORDER_WOOL_ID)?.rgb ?? ([26, 26, 26] as const),
-    };
-  }, []);
 
   const { run: runPipeline, reset: resetPipeline } = pipeline;
   const feretCm = dimensions.feretCm;
@@ -69,19 +60,20 @@ export const CalculatorStepper: React.FC = () => {
       return;
     }
 
-    const key = `${objectUrl}|${feretCm}`;
+    // El color del borde también entra en la clave: si el cliente lo cambia, hay
+    // que volver a dibujar el preview con el borde nuevo.
+    const key = `${objectUrl}|${feretCm}|${borderWoolId}`;
     if (lastRunKey.current === key) return;
 
     const timer = setTimeout(async () => {
       lastRunKey.current = key;
       const blob = await fetch(objectUrl).then((response) => response.blob());
+      const borderRgb = woolById(borderWoolId)?.rgb ?? ([26, 26, 26] as const);
       const result = await runPipeline({
         blob,
         feretCm,
         borderCm: BORDER_WIDTH_CM,
-        paletteLab: palette.lab,
-        paletteRgb: palette.rgb,
-        borderRgb: palette.border,
+        borderRgb,
         maxColors: MAX_WOOLS_PER_PIECE,
       });
 
@@ -89,7 +81,7 @@ export const CalculatorStepper: React.FC = () => {
     }, MEASURE_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [measurementReady, objectUrl, feretCm, palette, runPipeline, dispatch]);
+  }, [measurementReady, objectUrl, feretCm, borderWoolId, runPipeline, dispatch]);
 
   // Cambiar de archivo invalida cualquier medición anterior.
   useEffect(() => {
@@ -99,6 +91,11 @@ export const CalculatorStepper: React.FC = () => {
 
   const currentIndex = STEPS.indexOf(step);
   const isLast = step === 'quote';
+
+  // Los colores del diseño ya llevados a lana. Alimentan la revelación, el hilo
+  // de progreso y el mensaje de WhatsApp.
+  const detectedColors = pipeline.result?.detectedColors ?? [];
+  const threadColor = detectedColors[0] ? rgbToHex(detectedColors[0].rgb) : undefined;
 
   const canVisit = (candidate: Step): boolean => {
     const target = STEPS.indexOf(candidate);
@@ -125,7 +122,7 @@ export const CalculatorStepper: React.FC = () => {
           current={step}
           canVisit={canVisit}
           onVisit={(target) => dispatch({ type: 'go-to-step', step: target })}
-          threadWoolId={state.woolIds[0]}
+          threadColor={threadColor}
         />
 
         <div className="bg-surface/60 border border-line rounded-2xl p-6 md:p-8 overflow-hidden shadow-sm">
@@ -150,8 +147,12 @@ export const CalculatorStepper: React.FC = () => {
               {step === 'shape' && (
                 <ShapeStep state={state} dispatch={dispatch} pipeline={pipeline} />
               )}
-              {step === 'colors' && <ColorsStep state={state} dispatch={dispatch} />}
-              {step === 'quote' && <QuoteStep state={state} dispatch={dispatch} />}
+              {step === 'colors' && (
+                <ColorsStep state={state} dispatch={dispatch} detectedColors={detectedColors} />
+              )}
+              {step === 'quote' && (
+                <QuoteStep state={state} dispatch={dispatch} detectedColors={detectedColors} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

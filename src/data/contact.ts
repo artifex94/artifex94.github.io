@@ -66,8 +66,10 @@ export interface TuftingQuoteMessage {
   listTotal?: string;
   /** Nombre del descuento aplicado, si hubo. */
   discountLabel?: string;
-  /** Lanas elegidas, por nombre. */
+  /** Colores detectados en el diseño, por nombre. */
   wools?: readonly string[];
+  /** Color del borde perimetral, por nombre. */
+  border?: string;
 }
 
 /**
@@ -90,6 +92,10 @@ export const buildQuoteWhatsAppUrl = (quote: TuftingQuoteMessage): string | null
 
   if (quote.wools?.length) {
     lines.push(`Colores: ${quote.wools.join(', ')}`);
+  }
+
+  if (quote.border) {
+    lines.push(`Borde: ${quote.border}`);
   }
 
   lines.push('');

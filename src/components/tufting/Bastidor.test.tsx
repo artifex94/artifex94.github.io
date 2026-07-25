@@ -18,6 +18,10 @@ const RESULT: PipelineOutput = {
   finalFeretCm: 86,
   warnings: [],
   usedPaletteIndices: [0, 2],
+  detectedColors: [
+    { rgb: [194, 94, 76], lab: [50, 40, 30], name: 'Terracota' },
+    { rgb: [232, 220, 196], lab: [88, 2, 14], name: 'Crema' },
+  ],
   preview: { rgba: new Uint8ClampedArray(4 * 100), width: 10, height: 10 },
   feretLine: { ax: 1, ay: 5, bx: 9, by: 5 },
 };

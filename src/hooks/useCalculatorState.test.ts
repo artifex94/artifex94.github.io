@@ -7,7 +7,7 @@ import {
   type CalculatorState,
 } from './useCalculatorState';
 import type { ImageHeaderInfo } from '../utils/imageFormat';
-import { MAX_WOOLS_PER_PIECE, wools } from '../data/wools';
+import { DEFAULT_BORDER_WOOL_ID, wools } from '../data/wools';
 
 const PNG_CON_ALFA: ImageHeaderInfo = {
   format: 'png',
@@ -123,38 +123,27 @@ describe('medidas y área', () => {
   });
 });
 
-describe('lanas', () => {
-  const conFormaLista = (): CalculatorState => {
+describe('color del borde', () => {
+  it('arranca con el borde por defecto', () => {
+    expect(initialCalculatorState.borderWoolId).toBe(DEFAULT_BORDER_WOOL_ID);
+  });
+
+  it('elige el color del borde', () => {
+    const otro = wools.find((wool) => wool.id !== DEFAULT_BORDER_WOOL_ID)!;
+    const state = calculatorReducer(initialCalculatorState, {
+      type: 'border-selected',
+      woolId: otro.id,
+    });
+    expect(state.borderWoolId).toBe(otro.id);
+  });
+
+  it('el paso de colores nunca queda incompleto (los colores salen del diseño)', () => {
     let state = subirArchivo(JPEG);
     state = calculatorReducer(state, { type: 'shape-selected', shape: 'circular' });
     state = calculatorReducer(state, { type: 'dimension-changed', field: 'diameterCm', value: 80 });
-    return calculatorReducer(state, { type: 'next' });
-  };
-
-  it('agrega y saca lanas con la misma acción', () => {
-    let state = conFormaLista();
-    state = calculatorReducer(state, { type: 'wool-toggled', woolId: wools[0].id });
-    expect(state.woolIds).toEqual([wools[0].id]);
-
-    state = calculatorReducer(state, { type: 'wool-toggled', woolId: wools[0].id });
-    expect(state.woolIds).toEqual([]);
-  });
-
-  it('no deja pasar del tope de lanas por pieza', () => {
-    let state = conFormaLista();
-    for (const wool of wools.slice(0, MAX_WOOLS_PER_PIECE + 3)) {
-      state = calculatorReducer(state, { type: 'wool-toggled', woolId: wool.id });
-    }
-    expect(state.woolIds).toHaveLength(MAX_WOOLS_PER_PIECE);
-  });
-
-  it('con el tope lleno, sigue dejando sacar una lana ya elegida', () => {
-    let state = conFormaLista();
-    for (const wool of wools.slice(0, MAX_WOOLS_PER_PIECE)) {
-      state = calculatorReducer(state, { type: 'wool-toggled', woolId: wool.id });
-    }
-    state = calculatorReducer(state, { type: 'wool-toggled', woolId: wools[0].id });
-    expect(state.woolIds).toHaveLength(MAX_WOOLS_PER_PIECE - 1);
+    state = calculatorReducer(state, { type: 'next' });
+    expect(state.step).toBe('colors');
+    expect(canAdvance(state)).toBe(true);
   });
 });
 

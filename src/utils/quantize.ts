@@ -85,14 +85,14 @@ export interface ColorReduction {
 }
 
 /**
- * Deja como mucho `maxColors` lanas distintas.
+ * Deja como mucho `maxColors` colores distintos.
  *
- * El límite no es técnico sino de taller: cada color extra es recargar la
- * pistola y un cono más que comprar y que después sobra.
+ * El límite es de nitidez: la lana no resuelve detalle fino, así que por encima
+ * de un puñado de colores la pieza se empasta en vez de leerse.
  *
  * Quedarse con los K más grandes a secas se come regiones chicas pero
  * cromáticamente únicas: los ojos de un personaje desaparecen porque ocupan
- * poca superficie. Por eso primero se protege toda lana que cubra al menos
+ * poca superficie. Por eso primero se protege todo color que cubra al menos
  * `protectedFraction` de la pieza, y recién después se llenan los cupos por área.
  */
 export const reduceColors = (

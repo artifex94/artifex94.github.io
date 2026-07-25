@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Lab, Rgb } from '../utils/color';
+import type { Rgb } from '../utils/color';
+import type { DetectedColor } from '../utils/tuftingPipeline';
 import type { WorkerRequest, WorkerResponse } from '../workers/tufting.worker';
 
 // Corre el pipeline de tufting fuera del hilo principal cuando se puede.
@@ -14,6 +15,7 @@ export interface PipelineOutput {
   finalFeretCm: number;
   warnings: readonly string[];
   usedPaletteIndices: readonly number[];
+  detectedColors: readonly DetectedColor[];
   preview: { rgba: Uint8ClampedArray; width: number; height: number };
   /** Extremos del Feret en coordenadas del preview, para la cinta de referencia. */
   feretLine: { ax: number; ay: number; bx: number; by: number };
@@ -23,8 +25,6 @@ export interface PipelineRunInput {
   blob: Blob;
   feretCm: number;
   borderCm: number;
-  paletteLab: readonly Lab[];
-  paletteRgb: readonly Rgb[];
   borderRgb: Rgb;
   maxColors: number;
 }
@@ -47,10 +47,9 @@ const IDLE: PipelineState = { status: 'idle', result: null, error: null };
  * dónde se ejecutan.
  */
 const runInline = async (input: PipelineRunInput): Promise<PipelineOutput | null> => {
-  const [{ decodeToWorkingSize }, { runTuftingPipeline }, { buildPaletteLut }] = await Promise.all([
+  const [{ decodeToWorkingSize }, { runTuftingPipeline }] = await Promise.all([
     import('../utils/imageDecode'),
     import('../utils/tuftingPipeline'),
-    import('../utils/color'),
   ]);
 
   const decoded = await decodeToWorkingSize(input.blob);
@@ -58,9 +57,6 @@ const runInline = async (input: PipelineRunInput): Promise<PipelineOutput | null
     decoded,
     feretCm: input.feretCm,
     borderCm: input.borderCm,
-    paletteLab: input.paletteLab,
-    paletteRgb: input.paletteRgb,
-    lut: buildPaletteLut(input.paletteLab),
     borderRgb: input.borderRgb,
     maxColors: input.maxColors,
   });
@@ -73,6 +69,7 @@ const runInline = async (input: PipelineRunInput): Promise<PipelineOutput | null
     finalFeretCm: result.measure.finalFeretCm,
     warnings: result.measure.warnings,
     usedPaletteIndices: result.usedPaletteIndices,
+    detectedColors: result.detectedColors,
     preview: result.preview,
     feretLine: result.feretLine,
   };
@@ -119,6 +116,7 @@ export const useTuftingPipeline = () => {
           finalFeretCm: message.finalFeretCm,
           warnings: message.warnings,
           usedPaletteIndices: message.usedPaletteIndices,
+          detectedColors: message.detectedColors,
           preview: message.preview,
           feretLine: message.feretLine,
         });
@@ -162,8 +160,6 @@ export const useTuftingPipeline = () => {
           blob: input.blob,
           feretCm: input.feretCm,
           borderCm: input.borderCm,
-          paletteLab: input.paletteLab as Lab[],
-          paletteRgb: input.paletteRgb as Rgb[],
           borderRgb: input.borderRgb,
           maxColors: input.maxColors,
         };

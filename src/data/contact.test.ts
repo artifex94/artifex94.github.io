@@ -72,6 +72,11 @@ describe('buildQuoteWhatsAppUrl', () => {
     expect(decodeText(buildQuoteWhatsAppUrl({ ...base, wools: [] }))).not.toContain('Colores:');
   });
 
+  it('includes the border colour, and omits the line when there is none', () => {
+    expect(decodeText(buildQuoteWhatsAppUrl({ ...base, border: 'Negro' }))).toContain('Borde: Negro');
+    expect(decodeText(buildQuoteWhatsAppUrl(base))).not.toContain('Borde:');
+  });
+
   it('percent-encodes the payload so the link stays valid', () => {
     const payload = buildQuoteWhatsAppUrl(base)?.split('?text=')[1] ?? '';
     expect(payload).not.toContain(' ');

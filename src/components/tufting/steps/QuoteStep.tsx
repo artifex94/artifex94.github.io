@@ -13,19 +13,22 @@ import {
 import { describeDimensions, describeShape } from '../../../data/tuftingCalculator';
 import { buildQuoteWhatsAppUrl } from '../../../data/contact';
 import { woolById } from '../../../data/wools';
+import type { DetectedColor } from '../../../utils/tuftingPipeline';
 import { resolveAreaM2, type CalculatorAction, type CalculatorState } from '../../../hooks/useCalculatorState';
 import { PaymentActions } from './PaymentActions';
 
 interface QuoteStepProps {
   state: CalculatorState;
   dispatch: React.Dispatch<CalculatorAction>;
+  /** Colores del diseño ya llevados a lana. */
+  detectedColors: readonly DetectedColor[];
 }
 
 // Muestra el presupuesto. A propósito NO desglosa materiales, horas ni ganancia:
 // el cliente ve un total y las formas de pago, nada más. Hay un test que lo
 // verifica para que nadie lo agregue sin querer.
-export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
-  const { shape, dimensions, discounts, woolIds } = state;
+export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedColors }) => {
+  const { shape, dimensions, discounts, borderWoolId } = state;
   const [discountCode, setDiscountCode] = useState('');
   const areaM2 = resolveAreaM2(state);
 
@@ -38,7 +41,8 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
   }
 
   const price = computePrice({ areaM2, discounts });
-  const woolNames = woolIds.map((id) => woolById(id)?.name).filter((name): name is string => !!name);
+  const colorNames = detectedColors.map((color) => color.name);
+  const borderName = woolById(borderWoolId)?.name;
 
   const whatsappUrl = buildQuoteWhatsAppUrl({
     shape: describeShape(shape),
@@ -47,7 +51,8 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
     total: formatARS(price.total),
     listTotal: price.appliedDiscount ? formatARS(price.listTotal) : undefined,
     discountLabel: price.appliedDiscount ? DISCOUNT_LABELS[price.appliedDiscount] : undefined,
-    wools: woolNames,
+    wools: colorNames,
+    border: borderName,
   });
 
   const deposit = Math.ceil((price.total * INSTALLMENT_DEPOSIT_RATE) / 1000) * 1000;
@@ -71,10 +76,17 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
         <dt className="text-secondary">Superficie</dt>
         <dd className="text-right font-medium">{price.billableAreaM2.toFixed(2)} m²</dd>
 
-        {woolNames.length > 0 && (
+        {colorNames.length > 0 && (
           <>
             <dt className="text-secondary">Colores</dt>
-            <dd className="text-right font-medium">{woolNames.join(', ')}</dd>
+            <dd className="text-right font-medium">{colorNames.join(', ')}</dd>
+          </>
+        )}
+
+        {borderName && (
+          <>
+            <dt className="text-secondary">Borde</dt>
+            <dd className="text-right font-medium">{borderName}</dd>
           </>
         )}
       </dl>
@@ -160,7 +172,7 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
       <PaymentActions
         shape={shape}
         dimensions={dimensions}
-        woolIds={woolIds}
+        colors={colorNames}
         payByTransfer={discounts.includes('transferencia')}
         discountCode={discountCode}
         total={price.total}

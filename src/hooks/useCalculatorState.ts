@@ -4,7 +4,7 @@ import { canBeContoured } from '../utils/imageFormat';
 import type { Dimensions, Shape } from '../data/tuftingCalculator';
 import { areaM2ForShape, validateDimensions } from '../data/tuftingCalculator';
 import type { DiscountId } from '../data/tuftingPricing';
-import { MAX_WOOLS_PER_PIECE } from '../data/wools';
+import { DEFAULT_BORDER_WOOL_ID } from '../data/wools';
 
 // Estado de la calculadora, como reducer puro.
 //
@@ -34,7 +34,8 @@ export interface CalculatorState {
   dimensions: Dimensions;
   /** Área medida sobre la imagen. Solo la usa la forma contorneada. */
   measuredAreaM2: number | null;
-  woolIds: readonly string[];
+  /** Tono de referencia elegido para el borde perimetral. */
+  borderWoolId: string;
   discounts: readonly DiscountId[];
 }
 
@@ -45,7 +46,7 @@ export const initialCalculatorState: CalculatorState = {
   shape: null,
   dimensions: {},
   measuredAreaM2: null,
-  woolIds: [],
+  borderWoolId: DEFAULT_BORDER_WOOL_ID,
   discounts: [],
 };
 
@@ -55,7 +56,7 @@ export type CalculatorAction =
   | { type: 'shape-selected'; shape: Shape }
   | { type: 'dimension-changed'; field: keyof Dimensions; value: number | undefined }
   | { type: 'measured'; areaM2: number }
-  | { type: 'wool-toggled'; woolId: string }
+  | { type: 'border-selected'; woolId: string }
   | { type: 'discount-toggled'; discount: DiscountId }
   | { type: 'go-to-step'; step: Step }
   | { type: 'next' }
@@ -107,15 +108,10 @@ export const calculatorReducer = (
     case 'measured':
       return { ...state, measuredAreaM2: action.areaM2 };
 
-    case 'wool-toggled': {
-      const alreadyPicked = state.woolIds.includes(action.woolId);
-      if (alreadyPicked) {
-        return { ...state, woolIds: state.woolIds.filter((id) => id !== action.woolId) };
-      }
-      // El tope no es técnico sino de taller: cada color extra es una recarga.
-      if (state.woolIds.length >= MAX_WOOLS_PER_PIECE) return state;
-      return { ...state, woolIds: [...state.woolIds, action.woolId] };
-    }
+    case 'border-selected':
+      // Los colores del diseño los detecta el pipeline; lo único que elige el
+      // cliente es el color del borde perimetral.
+      return { ...state, borderWoolId: action.woolId };
 
     case 'discount-toggled': {
       const alreadyPicked = state.discounts.includes(action.discount);
@@ -171,7 +167,9 @@ export const canAdvance = (state: CalculatorState): boolean => {
     }
 
     case 'colors':
-      return state.woolIds.length > 0;
+      // Los colores salen del propio diseño y el borde tiene un default: el paso
+      // es una revelación, no un formulario que pueda quedar incompleto.
+      return true;
 
     case 'quote':
       return false;

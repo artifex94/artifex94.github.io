@@ -1,27 +1,37 @@
-import { measurePiece, type MeasureResult } from './imageMask';
+import { maskFromAlpha, measurePiece, type MeasureResult } from './imageMask';
+import { extractDominantColors } from './paletteExtract';
 import { modeFilter, quantizeToPalette, reduceColors, renderPreview } from './quantize';
+import { buildPaletteLut, labToSrgb, type Lab, type Rgb } from './color';
+import { nameForTone, woolToneLab } from '../data/wools';
 import type { DecodedImage } from './imageDecode';
-import type { Lab, Rgb } from './color';
 
 // Orquesta el pipeline completo: medir la pieza y dibujar cómo quedaría en lana.
 //
 // Es una función pura sobre typed arrays, sin canvas ni DOM. Eso es lo que
 // permite correrla dentro de un worker o en el hilo principal con el mismo
 // código, y testearla sin navegador.
+//
+// La paleta NO es fija: se extrae del propio diseño (extractDominantColors) y
+// cada color dominante se lleva al tono que la lana puede dar (woolToneLab). Así
+// el preview muestra "tu diseño en lana" — sus colores, apagados y en regiones
+// planas — en vez de forzarlo contra un inventario de conos.
 
 export interface PipelineInput {
   decoded: DecodedImage;
   /** Cuánto mide en la realidad el punto más largo del diseño. */
   feretCm: number;
   borderCm: number;
-  /** Paleta de lanas en CIELAB, para el remapeo perceptual. */
-  paletteLab: readonly Lab[];
-  /** Los mismos colores en RGB, para dibujar. */
-  paletteRgb: readonly Rgb[];
-  /** Tabla precomputada de color a índice de lana. */
-  lut: Uint8Array;
+  /** Color del borde perimetral, en RGB. */
   borderRgb: Rgb;
   maxColors: number;
+}
+
+/** Un color que efectivamente quedó en la pieza, ya llevado a tono de lana. */
+export interface DetectedColor {
+  rgb: Rgb;
+  lab: Lab;
+  /** Nombre humano aproximado (tono de referencia más cercano). */
+  name: string;
 }
 
 export interface PipelineResult {
@@ -39,8 +49,10 @@ export interface PipelineResult {
    * por el pad para que dibujar la línea sobre el preview sea directo.
    */
   feretLine: { ax: number; ay: number; bx: number; by: number };
-  /** Índices de la paleta que efectivamente quedaron en la pieza. */
+  /** Índices (dentro de la paleta derivada) que quedaron en la pieza. */
   usedPaletteIndices: readonly number[];
+  /** Los colores que quedaron, ordenados por superficie, con nombre. */
+  detectedColors: readonly DetectedColor[];
 }
 
 /**
@@ -72,9 +84,6 @@ export const runTuftingPipeline = ({
   decoded,
   feretCm,
   borderCm,
-  paletteLab,
-  paletteRgb,
-  lut,
   borderRgb,
   maxColors,
 }: PipelineInput): PipelineResult | null => {
@@ -90,12 +99,24 @@ export const runTuftingPipeline = ({
 
   const { masks } = measure;
 
+  // 1. Extraer los colores dominantes del propio diseño (sin margen) y llevarlos
+  //    al tono que la lana realmente puede dar. Esta es la paleta de la pieza.
+  const designMask = maskFromAlpha(decoded.alpha);
+  const dominant = extractDominantColors(decoded.rgba, designMask, maxColors);
+  if (dominant.length === 0) return null;
+
+  const paletteLab: Lab[] = dominant.map((color) => woolToneLab(color.lab));
+  const paletteRgb: Rgb[] = paletteLab.map(labToSrgb);
+
+  // 2. Asignar cada píxel a su color de lana. La tabla se arma por imagen porque
+  //    la paleta cambia con cada diseño; con ≤ maxColors colores es barata.
+  const lut = buildPaletteLut(paletteLab);
   const rawIndices = quantizeToPalette(decoded.rgba, lut);
   const aligned = padIndices(rawIndices, decoded.width, decoded.height, masks.width, masks.height);
 
   // El filtro de moda va ANTES de reducir: si se hiciera al revés, el ruido
   // moteado inflaría el histograma de colores minoritarios y se conservarían
-  // lanas que en realidad no son regiones del diseño.
+  // colores que en realidad no son regiones del diseño.
   const smoothed = modeFilter(aligned, masks.width, masks.height, masks.silhouette, paletteLab.length);
   const { indices, usedPaletteIndices } = reduceColors(
     smoothed,
@@ -114,6 +135,12 @@ export const runTuftingPipeline = ({
     height: masks.height,
   });
 
+  const detectedColors: DetectedColor[] = usedPaletteIndices.map((index) => ({
+    rgb: paletteRgb[index],
+    lab: paletteLab[index],
+    name: nameForTone(paletteLab[index]),
+  }));
+
   return {
     measure,
     preview: { rgba, width: masks.width, height: masks.height },
@@ -124,5 +151,6 @@ export const runTuftingPipeline = ({
       by: measure.feretLine.by + masks.pad,
     },
     usedPaletteIndices,
+    detectedColors,
   };
 };

@@ -1,6 +1,6 @@
 import { decodeToWorkingSize } from '../utils/imageDecode';
-import { runTuftingPipeline } from '../utils/tuftingPipeline';
-import { buildPaletteLut, type Lab, type Rgb } from '../utils/color';
+import { runTuftingPipeline, type DetectedColor } from '../utils/tuftingPipeline';
+import type { Rgb } from '../utils/color';
 
 // Worker del pipeline de tufting.
 //
@@ -19,8 +19,6 @@ export interface WorkerRequest {
   blob: Blob;
   feretCm: number;
   borderCm: number;
-  paletteLab: Lab[];
-  paletteRgb: Rgb[];
   borderRgb: Rgb;
   maxColors: number;
 }
@@ -36,6 +34,7 @@ export type WorkerResponse =
       cmPerPx: number;
       warnings: readonly string[];
       usedPaletteIndices: readonly number[];
+      detectedColors: readonly DetectedColor[];
       preview: { rgba: Uint8ClampedArray; width: number; height: number };
       /** Extremos del Feret en coordenadas del preview, para la línea de referencia. */
       feretLine: { ax: number; ay: number; bx: number; by: number };
@@ -50,23 +49,8 @@ const workerScope = self as unknown as {
   postMessage: (message: WorkerResponse, transfer?: Transferable[]) => void;
 };
 
-// La tabla de color depende solo de la paleta, que casi nunca cambia: se cachea
-// para no pagar los 32.768 cálculos de ΔE2000 en cada corrida.
-let cachedKey = '';
-let cachedLut: Uint8Array | null = null;
-
-const lutFor = (paletteLab: Lab[]): Uint8Array => {
-  const key = JSON.stringify(paletteLab);
-  if (key !== cachedKey || !cachedLut) {
-    cachedLut = buildPaletteLut(paletteLab);
-    cachedKey = key;
-  }
-  return cachedLut;
-};
-
 workerScope.onmessage = async (event: MessageEvent<WorkerRequest>) => {
-  const { runId, blob, feretCm, borderCm, paletteLab, paletteRgb, borderRgb, maxColors } =
-    event.data;
+  const { runId, blob, feretCm, borderCm, borderRgb, maxColors } = event.data;
 
   try {
     const decoded = await decodeToWorkingSize(blob);
@@ -74,9 +58,6 @@ workerScope.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       decoded,
       feretCm,
       borderCm,
-      paletteLab,
-      paletteRgb,
-      lut: lutFor(paletteLab),
       borderRgb,
       maxColors,
     });
@@ -101,6 +82,7 @@ workerScope.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       cmPerPx: result.measure.cmPerPx,
       warnings: result.measure.warnings,
       usedPaletteIndices: result.usedPaletteIndices,
+      detectedColors: result.detectedColors,
       preview: result.preview,
       feretLine: result.feretLine,
     };
