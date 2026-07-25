@@ -46,3 +46,60 @@ export const buildWhatsAppUrl = (service: ServiceKey, variant?: TierVariant): st
 
 export const buildMailto = (subject: string): string =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+
+/**
+ * Resumen de un presupuesto de tufting, ya formateado para leer.
+ *
+ * Los montos llegan como string porque el formateo de moneda vive en
+ * tuftingPricing: acá solo se arma el texto del mensaje.
+ */
+export interface TuftingQuoteMessage {
+  /** Forma elegida, en palabras: "Contorneada", "Circular", "Rectangular". */
+  shape: string;
+  /** Medidas en palabras: "80 cm de diámetro". */
+  dimensions: string;
+  /** Área de la pieza en m², con dos decimales. */
+  areaM2: string;
+  /** Total a pagar, ya formateado en pesos. */
+  total: string;
+  /** Precio sin descuento, si se aplicó alguno. */
+  listTotal?: string;
+  /** Nombre del descuento aplicado, si hubo. */
+  discountLabel?: string;
+  /** Lanas elegidas, por nombre. */
+  wools?: readonly string[];
+}
+
+/**
+ * Arma el link de WhatsApp con el presupuesto ya calculado adentro.
+ *
+ * Es la única función de este módulo que interpola datos: el resto usa mensajes
+ * fijos por servicio. Se mantienen separadas a propósito, así los CTAs de
+ * siempre no dependen de que alguien arme un objeto.
+ */
+export const buildQuoteWhatsAppUrl = (quote: TuftingQuoteMessage): string | null => {
+  if (!WHATSAPP_NUMBER) return null;
+
+  const lines = [
+    'Hola Ramiro! Armé un presupuesto en artifex.click y quiero encargarlo:',
+    '',
+    `Pieza: ${quote.shape}`,
+    `Medidas: ${quote.dimensions}`,
+    `Superficie: ${quote.areaM2} m2`,
+  ];
+
+  if (quote.wools?.length) {
+    lines.push(`Colores: ${quote.wools.join(', ')}`);
+  }
+
+  lines.push('');
+
+  if (quote.discountLabel && quote.listTotal) {
+    lines.push(`Precio de lista: ${quote.listTotal}`);
+    lines.push(`Con ${quote.discountLabel}: ${quote.total}`);
+  } else {
+    lines.push(`Total: ${quote.total}`);
+  }
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
+};

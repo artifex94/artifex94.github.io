@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { Calculator } from 'lucide-react';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
 // emite solo en este chunk (no pesa en home/desarrollo/portfolio).
 import '@fontsource-variable/fraunces/index.css';
@@ -112,6 +113,24 @@ export const Tufting: React.FC = () => {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        {/* Calculadora: atajo al presupuesto sin pasar por una consulta */}
+        <section className="bg-surface border border-line rounded-2xl p-8 md:p-12 text-center">
+          <h2 className="font-display text-2xl md:text-3xl font-semibold mb-3">
+            ¿Querés saber cuánto sale ahora mismo?
+          </h2>
+          <p className="text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
+            Subí tu diseño, elegí la forma y el tamaño, y te digo el precio al toque. Sin esperar
+            respuesta, sin compromiso.
+          </p>
+          <Link
+            to="/servicios/tufting/calculadora"
+            className="inline-flex items-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-all duration-300 hover:opacity-90 hover:shadow-lg"
+          >
+            <Calculator size={18} aria-hidden="true" />
+            Calcular mi alfombra
+          </Link>
         </section>
 
         {/* Proceso breve */}

@@ -36,6 +36,11 @@ const Fotografia = lazy(() =>
 const Tufting = lazy(() =>
   import('./pages/Tufting').then((m) => ({ default: m.Tufting }))
 );
+// La calculadora arrastra el pipeline de imagen y la tabla de color: va en su
+// propio chunk para no engordar la página de tufting, que es la que más se lee.
+const TuftingCalculadora = lazy(() =>
+  import('./pages/TuftingCalculadora').then((m) => ({ default: m.TuftingCalculadora }))
+);
 const Portfolio = lazy(() =>
   import('./pages/Portfolio').then((m) => ({ default: m.Portfolio }))
 );
@@ -94,6 +99,7 @@ function App() {
           <Route path="/servicios/desarrollo" element={<Desarrollo />} />
           <Route path="/servicios/fotografia" element={<Fotografia />} />
           <Route path="/servicios/tufting" element={<Tufting />} />
+          <Route path="/servicios/tufting/calculadora" element={<TuftingCalculadora />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:categorySlug" element={<BlogCategory />} />
