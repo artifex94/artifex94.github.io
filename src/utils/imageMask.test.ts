@@ -241,6 +241,46 @@ describe('measurePiece', () => {
     expect(result).toBeNull();
   });
 
+  it('devuelve los extremos del Feret y su distancia coincide con feretPx', () => {
+    // Los extremos son los que se dibujan sobre la imagen como referencia: si
+    // no producen exactamente la distancia medida, la cinta métrica mentiría.
+    const size = 400;
+    const result = measurePiece({
+      alpha: diskAlpha(size, 0.4),
+      width: size,
+      height: size,
+      feretCm: 80,
+      borderCm: 3,
+    });
+
+    const { ax, ay, bx, by } = result!.feretLine;
+    expect(Math.hypot(bx - ax, by - ay)).toBeCloseTo(result!.feretPx, 6);
+  });
+
+  it('los extremos corridos por el pad caen dentro del preview', () => {
+    // La medición trabaja sin margen pero el preview lo tiene: la conversión
+    // (sumar masks.pad) tiene que dejar los puntos dentro de los límites.
+    const size = 300;
+    const result = measurePiece({
+      alpha: diskAlpha(size, 0.4),
+      width: size,
+      height: size,
+      feretCm: 80,
+      borderCm: 3,
+    });
+
+    const { masks, feretLine } = result!;
+    for (const [x, y] of [
+      [feretLine.ax + masks.pad, feretLine.ay + masks.pad],
+      [feretLine.bx + masks.pad, feretLine.by + masks.pad],
+    ]) {
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(x).toBeLessThan(masks.width);
+      expect(y).toBeLessThan(masks.height);
+    }
+  });
+
   it('la escala resultante es coherente con la medida declarada', () => {
     const size = 400;
     const result = measurePiece({

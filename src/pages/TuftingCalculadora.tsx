@@ -30,7 +30,7 @@ export const TuftingCalculadora: React.FC = () => {
       data-theme="tufting"
       className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
-      <div className="max-w-4xl mx-auto flex flex-col gap-10">
+      <div className="max-w-6xl mx-auto flex flex-col gap-10">
         <header className="text-center">
           <Link
             to="/servicios/tufting"
@@ -39,12 +39,15 @@ export const TuftingCalculadora: React.FC = () => {
             <ArrowLeft size={14} aria-hidden="true" />
             Volver a Tufting
           </Link>
+          <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
+            El taller
+          </span>
           <h1 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-            ¿Cuánto sale <span className="text-accent italic">tu alfombra</span>?
+            Armá <span className="text-accent italic">tu alfombra</span> en el bastidor
           </h1>
           <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-            Subí tu diseño, decime de qué tamaño la querés y te digo el precio al toque. Sin
-            esperar, sin compromiso.
+            Prendé tu diseño, dale forma, elegí las lanas y mirá cómo queda — el precio sale
+            solo. Sin esperar, sin compromiso.
           </p>
         </header>
 

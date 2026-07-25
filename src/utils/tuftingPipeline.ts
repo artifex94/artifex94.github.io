@@ -32,6 +32,13 @@ export interface PipelineResult {
     width: number;
     height: number;
   };
+  /**
+   * Extremos del diámetro de Feret EN COORDENADAS DEL PREVIEW (con margen).
+   *
+   * La medición los produce en el espacio sin margen; acá ya vienen corridos
+   * por el pad para que dibujar la línea sobre el preview sea directo.
+   */
+  feretLine: { ax: number; ay: number; bx: number; by: number };
   /** Índices de la paleta que efectivamente quedaron en la pieza. */
   usedPaletteIndices: readonly number[];
 }
@@ -110,6 +117,12 @@ export const runTuftingPipeline = ({
   return {
     measure,
     preview: { rgba, width: masks.width, height: masks.height },
+    feretLine: {
+      ax: measure.feretLine.ax + masks.pad,
+      ay: measure.feretLine.ay + masks.pad,
+      bx: measure.feretLine.bx + masks.pad,
+      by: measure.feretLine.by + masks.pad,
+    },
     usedPaletteIndices,
   };
 };
