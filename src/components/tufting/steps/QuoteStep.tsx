@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageCircle, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import { Info } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import { AnimatedPrice } from '../../dev/AnimatedPrice';
 import {
@@ -14,6 +14,7 @@ import { describeDimensions, describeShape } from '../../../data/tuftingCalculat
 import { buildQuoteWhatsAppUrl } from '../../../data/contact';
 import { woolById } from '../../../data/wools';
 import { resolveAreaM2, type CalculatorAction, type CalculatorState } from '../../../hooks/useCalculatorState';
+import { PaymentActions } from './PaymentActions';
 
 interface QuoteStepProps {
   state: CalculatorState;
@@ -25,6 +26,7 @@ interface QuoteStepProps {
 // verifica para que nadie lo agregue sin querer.
 export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
   const { shape, dimensions, discounts, woolIds } = state;
+  const [discountCode, setDiscountCode] = useState('');
   const areaM2 = resolveAreaM2(state);
 
   if (!shape || areaM2 === null) {
@@ -127,6 +129,27 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
             solo, mes a mes.
           </p>
         </div>
+
+        {discounts.includes('instagram') && (
+          <div className="flex flex-col gap-1.5 p-4 rounded-xl border border-line bg-surface">
+            <label htmlFor="discount-code" className="text-sm font-semibold">
+              Tu código de Instagram
+            </label>
+            <input
+              id="discount-code"
+              type="text"
+              value={discountCode}
+              onChange={(event) => setDiscountCode(event.target.value.toUpperCase())}
+              placeholder="PEDIMELO-POR-DM"
+              aria-describedby="discount-code-hint"
+              className="bg-base border border-line rounded-lg px-3 py-2 min-h-11 text-primary"
+            />
+            <p id="discount-code-hint" className="text-xs text-secondary">
+              Instagram no me deja verificar solo quién me sigue, así que el código te lo paso yo
+              por mensaje directo.
+            </p>
+          </div>
+        )}
       </fieldset>
 
       <p className="flex items-start gap-2 text-xs text-secondary">
@@ -134,17 +157,15 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch }) => {
         Los descuentos no se acumulan: se aplica el que más te conviene.
       </p>
 
-      {whatsappUrl && (
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
-        >
-          <MessageCircle size={18} aria-hidden="true" />
-          Encargarlo por WhatsApp
-        </a>
-      )}
+      <PaymentActions
+        shape={shape}
+        dimensions={dimensions}
+        woolIds={woolIds}
+        payByTransfer={discounts.includes('transferencia')}
+        discountCode={discountCode}
+        total={price.total}
+        whatsappUrl={whatsappUrl}
+      />
     </div>
   );
 };

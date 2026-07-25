@@ -48,14 +48,22 @@ describe('QuoteStep', () => {
   it('NO muestra el desglose de costos', () => {
     // El requisito es que el cliente vea un total y nada más. Este test existe
     // para que nadie agregue "materiales: $X" en un refactor bienintencionado.
+    //
+    // Se busca el desglose de verdad —las CIFRAS internas y las palabras que
+    // solo aparecen al desglosar— y no cualquier mención de la palabra
+    // "materiales": decirle al cliente que el anticipo cubre los materiales es
+    // información útil y no revela ningún número.
     const state = estadoConPresupuesto({ discounts: ['transferencia'] });
-    renderWithProviders(<QuoteStep state={state} dispatch={vi.fn()} />);
+    const { container } = renderWithProviders(<QuoteStep state={state} dispatch={vi.fn()} />);
+    const texto = container.textContent ?? '';
 
-    for (const prohibido of [/materiales/i, /mano de obra/i, /margen/i, /ganancia/i, /costo/i]) {
-      expect(screen.queryByText(prohibido)).toBeNull();
+    for (const prohibido of [/margen/i, /ganancia/i, /mano de obra/i, /costo de/i, /por m²:/i]) {
+      expect(texto, `apareció "${prohibido}" en pantalla`).not.toMatch(prohibido);
     }
-    // Y el número del costo de material tampoco puede aparecer en pantalla.
-    expect(screen.queryByText(/75\.000/)).toBeNull();
+
+    // Ni el costo del material ni el precio por m² pueden llegar a la pantalla.
+    expect(texto).not.toContain('75.000');
+    expect(texto).not.toContain('132.35');
   });
 
   it('muestra el resumen de forma, medidas y superficie', () => {
@@ -98,10 +106,31 @@ describe('QuoteStep', () => {
   it('arma el link de WhatsApp con el presupuesto adentro', () => {
     renderWithProviders(<QuoteStep state={estadoConPresupuesto()} dispatch={vi.fn()} />);
 
-    const link = screen.getByRole('link', { name: /encargarlo por whatsapp/i });
+    const link = screen.getByRole('link', { name: /whatsapp/i });
     const texto = decodeURIComponent(link.getAttribute('href')?.split('?text=')[1] ?? '');
     expect(texto).toContain('Rectangular');
     expect(texto).toContain('100 x 100 cm');
+  });
+
+  it('ofrece pagar online las formas que el servidor puede verificar', () => {
+    renderWithProviders(<QuoteStep state={estadoConPresupuesto()} dispatch={vi.fn()} />);
+
+    expect(screen.getByRole('button', { name: /pagar \$/i })).toBeInTheDocument();
+    expect(screen.getByText(/pagarlo en cuotas/i)).toBeInTheDocument();
+  });
+
+  it('NO ofrece pago online en una pieza contorneada', () => {
+    // El servidor no puede recalcular su área sin la máscara de la imagen, así
+    // que no puede verificar el precio: esos pedidos se cierran a mano.
+    const state = estadoConPresupuesto({
+      shape: 'contorneada',
+      dimensions: { feretCm: 80 },
+      measuredAreaM2: 0.91,
+    });
+    renderWithProviders(<QuoteStep state={state} dispatch={vi.fn()} />);
+
+    expect(screen.queryByRole('button', { name: /pagar \$/i })).toBeNull();
+    expect(screen.getByRole('link', { name: /whatsapp/i })).toBeInTheDocument();
   });
 
   it('pide volver atrás si todavía no hay medidas', () => {
