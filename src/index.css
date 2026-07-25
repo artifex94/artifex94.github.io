@@ -58,6 +58,15 @@
     --color-accent: #c25e4c; /* terracota */
     --color-on-accent: #fdf9f3;
   }
+
+  /* Foco visible consistente dentro del taller: la calculadora se recorre con
+     teclado y el anillo terracota tiene que verse sobre crema Y sobre blanco.
+     Scopeado al tema para no pisar el foco del resto del sitio. */
+  [data-theme='tufting'] :is(button, a, input, select, summary):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 @layer utilities {

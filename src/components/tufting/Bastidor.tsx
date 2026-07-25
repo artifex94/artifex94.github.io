@@ -29,15 +29,40 @@ interface BastidorProps {
 // el diseño crudo, después el contorno o la cinta métrica, al final la pieza
 // remapeada a lanas reales. El juego es mirar cómo evoluciona.
 
-/** Colores del marco de madera. Locales a este componente: no son tokens del tema. */
-const WOOD = '#b08968';
-const WOOD_SHADOW = '#8a6a52';
+// Materialidad del marco. Locales a este componente: no son tokens del tema.
+//
+// Un gradiente solo se lee como "div pintado". La madera creíble necesita tres
+// capas: el tono base con dirección de luz, la veta (bandas irregulares casi
+// imperceptibles) y el bisel — luz arriba, sombra abajo — que es lo que hace
+// que el marco tenga espesor en vez de ser una calcomanía.
+const woodFrame: React.CSSProperties = {
+  background:
+    'linear-gradient(150deg, #bd9573 0%, #ab8260 42%, #916f55 78%, #82624c 100%)',
+  boxShadow:
+    '0 24px 48px -20px rgba(43, 35, 32, 0.45),' + // apoyo sobre la mesa
+    'inset 0 2px 3px rgba(255, 246, 235, 0.55),' + // luz del bisel superior
+    'inset 0 -3px 6px rgba(60, 42, 30, 0.4)', // sombra del bisel inferior
+};
 
-/** El lienzo vacío: tela de monje con su retícula, esperando el diseño. */
+/** Veta: bandas finas a un ángulo apenas distinto del horizontal. */
+const woodGrain: React.CSSProperties = {
+  backgroundImage:
+    'repeating-linear-gradient(93deg, rgba(43,35,32,0.09) 0 2px, transparent 2px 6px,' +
+    ' rgba(255,246,235,0.05) 6px 8px, transparent 8px 13px)',
+};
+
+/**
+ * La tela de monje: trama fina y un viñeteado hacia los bordes.
+ *
+ * El viñeteado es lo que vende la ilusión: una tela tensada sobre un marco
+ * siempre oscurece apenas contra el borde interior, donde dobla.
+ */
 const clothBackground: React.CSSProperties = {
   backgroundImage:
-    'repeating-linear-gradient(0deg, rgba(43,35,32,0.05) 0 1px, transparent 1px 9px),' +
-    'repeating-linear-gradient(90deg, rgba(43,35,32,0.05) 0 1px, transparent 1px 9px)',
+    'repeating-linear-gradient(0deg, rgba(43,35,32,0.055) 0 1px, transparent 1px 5px),' +
+    'repeating-linear-gradient(90deg, rgba(43,35,32,0.055) 0 1px, transparent 1px 5px)',
+  boxShadow:
+    'inset 0 0 28px rgba(43, 35, 32, 0.16), inset 0 0 3px rgba(43, 35, 32, 0.3)',
 };
 
 export const Bastidor: React.FC<BastidorProps> = ({
@@ -65,14 +90,14 @@ export const Bastidor: React.FC<BastidorProps> = ({
   return (
     <div className={cn('flex flex-col gap-4', className)}>
       {/* El marco de madera. El grosor y el bisel son el "chrome" del juego. */}
-      <div
-        className="rounded-2xl p-3 shadow-lg"
-        style={{
-          background: `linear-gradient(135deg, ${WOOD} 0%, ${WOOD_SHADOW} 100%)`,
-        }}
-      >
+      <div className="relative rounded-[1.4rem] p-3.5" style={woodFrame}>
         <div
-          className="relative rounded-xl bg-base overflow-hidden aspect-square flex items-center justify-center"
+          aria-hidden="true"
+          className="absolute inset-0 rounded-[1.4rem] pointer-events-none"
+          style={woodGrain}
+        />
+        <div
+          className="relative rounded-lg bg-base overflow-hidden aspect-square flex items-center justify-center"
           style={clothBackground}
         >
           {!upload && (
@@ -159,25 +184,28 @@ export const Bastidor: React.FC<BastidorProps> = ({
         </div>
       </div>
 
-      {/* La ficha al pie: el estado de la pieza, siempre visible. */}
-      <div
-        className="bg-surface border border-line rounded-xl px-4 py-3 text-sm"
-        aria-live="polite"
-      >
-        <p className="font-medium">{statusText}</p>
-        {areaM2 !== null && (
-          <p className="text-secondary font-mono mt-1" style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {areaM2.toFixed(2)} m²
-            {showContoured && pipelineResult && (
-              <> · terminada mide ~{Math.round(pipelineResult.finalFeretCm)} cm</>
-            )}
-          </p>
-        )}
-        {pipelineResult?.warnings.map((warning) => (
-          <p key={warning} className="text-accent text-xs mt-1.5">
-            {warning}
-          </p>
-        ))}
+      {/* La ficha al pie: la etiqueta de taller de la pieza, siempre visible.
+          El borde punteado interior es la costura de la etiqueta. */}
+      <div className="bg-surface border border-line rounded-xl p-1.5 shadow-sm" aria-live="polite">
+        <div className="border border-dashed border-accent/35 rounded-lg px-3.5 py-2.5 text-sm">
+          <p className="font-medium">{statusText}</p>
+          {areaM2 !== null && (
+            <p
+              className="text-secondary font-mono mt-1"
+              style={{ fontVariantNumeric: 'tabular-nums' }}
+            >
+              {areaM2.toFixed(2)} m²
+              {showContoured && pipelineResult && (
+                <> · terminada mide ~{Math.round(pipelineResult.finalFeretCm)} cm</>
+              )}
+            </p>
+          )}
+          {pipelineResult?.warnings.map((warning) => (
+            <p key={warning} className="text-accent text-xs mt-1.5">
+              {warning}
+            </p>
+          ))}
+        </div>
       </div>
     </div>
   );

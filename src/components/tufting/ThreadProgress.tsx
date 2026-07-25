@@ -69,8 +69,22 @@ export const ThreadProgress: React.FC<ThreadProgressProps> = ({
           d={THREAD_PATH}
           fill="none"
           stroke={threadColor}
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
+          initial={false}
+          animate={{ pathLength: Math.max(progress, 0.001) }}
+          transition={reduce ? { duration: 0 } : { duration: 0.6, ease: 'easeInOut' }}
+        />
+        {/* La torsión: un punteado claro sobre el tramo tejido. Es lo que hace
+            que se lea como lana hilada y no como una línea de progreso. */}
+        <motion.path
+          d={THREAD_PATH}
+          fill="none"
+          stroke="var(--color-surface)"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeDasharray="2.5 6"
+          opacity="0.65"
           initial={false}
           animate={{ pathLength: Math.max(progress, 0.001) }}
           transition={reduce ? { duration: 0 } : { duration: 0.6, ease: 'easeInOut' }}
@@ -95,16 +109,23 @@ export const ThreadProgress: React.FC<ThreadProgressProps> = ({
                   !reachable && !active && 'cursor-not-allowed',
                 )}
               >
-                {/* El nodo: un ovillo. Lleno si la etapa ya se tejió. */}
+                {/* El nodo: un ovillo. La luz arriba a la izquierda es lo que lo
+                    hace esfera de lana en vez de círculo de formulario. */}
                 <span
                   aria-hidden="true"
                   className={cn(
                     'w-5 h-5 rounded-full border-2 transition-colors',
-                    active && 'border-accent bg-accent shadow-[0_0_0_4px_rgba(194,94,76,0.15)]',
-                    done && 'border-accent bg-accent/70',
+                    active && 'shadow-[0_0_0_4px_rgba(194,94,76,0.15)]',
                     !done && !active && 'border-line bg-surface',
                   )}
-                  style={done || active ? { backgroundColor: threadColor, borderColor: threadColor } : undefined}
+                  style={
+                    done || active
+                      ? {
+                          background: `radial-gradient(circle at 35% 30%, color-mix(in srgb, ${threadColor} 55%, #fdf9f3), ${threadColor} 70%)`,
+                          borderColor: threadColor,
+                        }
+                      : undefined
+                  }
                 />
                 <span
                   className={cn(
