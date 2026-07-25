@@ -15,6 +15,8 @@ export interface PipelineOutput {
   warnings: readonly string[];
   usedPaletteIndices: readonly number[];
   preview: { rgba: Uint8ClampedArray; width: number; height: number };
+  /** Extremos del Feret en coordenadas del preview, para la cinta de referencia. */
+  feretLine: { ax: number; ay: number; bx: number; by: number };
 }
 
 export interface PipelineRunInput {
@@ -72,6 +74,7 @@ const runInline = async (input: PipelineRunInput): Promise<PipelineOutput | null
     warnings: result.measure.warnings,
     usedPaletteIndices: result.usedPaletteIndices,
     preview: result.preview,
+    feretLine: result.feretLine,
   };
 };
 
@@ -117,6 +120,7 @@ export const useTuftingPipeline = () => {
           warnings: message.warnings,
           usedPaletteIndices: message.usedPaletteIndices,
           preview: message.preview,
+          feretLine: message.feretLine,
         });
       };
 

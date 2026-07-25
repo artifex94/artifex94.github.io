@@ -4,10 +4,10 @@ import { renderWithProviders } from '../test/render';
 import { TuftingCalculadora } from './TuftingCalculadora';
 
 describe('TuftingCalculadora', () => {
-  it('renderiza el encabezado y el stepper', () => {
+  it('renderiza el encabezado del taller y el primer paso', () => {
     renderWithProviders(<TuftingCalculadora />);
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/cuánto sale/i);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/bastidor/i);
     expect(screen.getByRole('heading', { name: /subí tu diseño/i })).toBeInTheDocument();
   });
 
@@ -23,19 +23,29 @@ describe('TuftingCalculadora', () => {
     );
   });
 
-  it('arranca en el primer paso, con los siguientes bloqueados', () => {
+  it('muestra el bastidor vacío antes de subir nada', () => {
+    renderWithProviders(<TuftingCalculadora />);
+    expect(screen.getByText(/bastidor está vacío/i)).toBeInTheDocument();
+  });
+
+  it('arranca en la etapa del diseño, con las siguientes bloqueadas', () => {
     renderWithProviders(<TuftingCalculadora />);
 
-    expect(screen.getByRole('button', { name: /1\. diseño/i })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /el diseño/i })).toHaveAttribute(
       'aria-current',
       'step',
     );
-    expect(screen.getByRole('button', { name: /4\. presupuesto/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /la ficha/i })).toBeDisabled();
   });
 
-  it('no deja seguir hasta que haya un archivo', () => {
+  it('el hilo de etapas es navegación accesible', () => {
     renderWithProviders(<TuftingCalculadora />);
-    expect(screen.getByRole('button', { name: /seguir/i })).toBeDisabled();
+    expect(screen.getByRole('navigation', { name: /etapas/i })).toBeInTheDocument();
+  });
+
+  it('no deja continuar hasta que haya un archivo', () => {
+    renderWithProviders(<TuftingCalculadora />);
+    expect(screen.getByRole('button', { name: /continuar/i })).toBeDisabled();
   });
 
   it('deja volver a la página de tufting', () => {

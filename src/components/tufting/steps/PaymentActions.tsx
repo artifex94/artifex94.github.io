@@ -92,15 +92,34 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
     );
   }
 
+  // Jerarquía a propósito: WhatsApp primero, el pago online como opción.
+  // Una pieza artesanal se cierra conversando; que la pantalla no se sienta
+  // una pasarela de checkout es pedido explícito del dueño.
   return (
     <div className="flex flex-col gap-6">
+      {whatsappUrl && (
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
+        >
+          <MessageCircle size={18} aria-hidden="true" />
+          Encargarla por WhatsApp
+        </a>
+      )}
+
+      <p className="text-center text-xs text-secondary uppercase tracking-widest">
+        o si preferís, pagala online ahora
+      </p>
+
       <button
         type="button"
         onClick={() => go('checkout')}
         disabled={busy !== null}
         className={cn(
-          'inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity min-h-11',
-          busy ? 'opacity-60 cursor-wait' : 'hover:opacity-90',
+          'inline-flex items-center justify-center gap-2 border border-accent text-accent px-8 py-4 rounded-full font-bold transition-colors min-h-11',
+          busy ? 'opacity-60 cursor-wait' : 'hover:bg-accent hover:text-on-accent',
         )}
       >
         {busy === 'checkout' ? (
@@ -183,18 +202,6 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
         <p role="alert" className="text-sm text-accent">
           {error}
         </p>
-      )}
-
-      {whatsappUrl && (
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-line font-semibold transition-colors hover:border-accent hover:text-accent min-h-11"
-        >
-          <MessageCircle size={16} aria-hidden="true" />
-          Prefiero consultarte por WhatsApp
-        </a>
       )}
     </div>
   );

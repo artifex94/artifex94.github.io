@@ -180,6 +180,12 @@ export interface MeasureResult {
   cmPerPx: number;
   /** Cuánto va a medir la pieza terminada en su punto más largo. */
   finalFeretCm: number;
+  /**
+   * Extremos del diámetro de Feret, en coordenadas de la imagen de trabajo SIN
+   * margen. Sirven para dibujar la línea de referencia sobre el diseño: es el
+   * segmento exacto al que corresponde la medida que declara el cliente.
+   */
+  feretLine: { ax: number; ay: number; bx: number; by: number };
   warnings: readonly string[];
   /**
    * Máscaras con el margen ya aplicado, para dibujar la previsualización.
@@ -194,6 +200,8 @@ export interface MeasureResult {
     dilated: Uint8Array;
     width: number;
     height: number;
+    /** Margen aplicado en cada lado: coordenada sin margen + pad = con margen. */
+    pad: number;
   };
 }
 
@@ -265,12 +273,14 @@ export const measurePiece = ({
     cmPerPx,
     // El borde se agrega de los dos lados del eje más largo.
     finalFeretCm: feretCm + 2 * borderCm,
+    feretLine: { ax: feret.ax, ay: feret.ay, bx: feret.bx, by: feret.by },
     warnings,
     masks: {
       silhouette: padded.mask,
       dilated: dilateFromDistance(distanceSquared, borderPx),
       width: padded.width,
       height: padded.height,
+      pad,
     },
   };
 };

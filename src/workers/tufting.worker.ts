@@ -37,6 +37,8 @@ export type WorkerResponse =
       warnings: readonly string[];
       usedPaletteIndices: readonly number[];
       preview: { rgba: Uint8ClampedArray; width: number; height: number };
+      /** Extremos del Feret en coordenadas del preview, para la línea de referencia. */
+      feretLine: { ax: number; ay: number; bx: number; by: number };
     }
   | { runId: number; ok: false; message: string };
 
@@ -100,6 +102,7 @@ workerScope.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       warnings: result.measure.warnings,
       usedPaletteIndices: result.usedPaletteIndices,
       preview: result.preview,
+      feretLine: result.feretLine,
     };
 
     // El buffer de la previsualización se transfiere en vez de clonarse: son

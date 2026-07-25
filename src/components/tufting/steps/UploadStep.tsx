@@ -139,37 +139,31 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         </p>
       )}
 
+      {/* La imagen en sí queda prendida en el bastidor: acá solo el veredicto. */}
       {upload && (
-        <div className="flex items-start gap-4 bg-surface border border-line rounded-2xl p-4">
-          <img
-            src={upload.objectUrl}
-            alt={`Diseño subido: ${upload.fileName}`}
-            className="w-20 h-20 object-contain rounded-lg bg-base shrink-0"
-          />
-          <div className="min-w-0">
-            <p className="font-semibold truncate">{upload.fileName}</p>
-            <p className="text-sm text-secondary">
-              {upload.info.width} x {upload.info.height} px · {upload.info.format.toUpperCase()}
-            </p>
-            <p
-              className={cn(
-                'flex items-center gap-1.5 text-sm mt-1',
-                upload.contourable ? 'text-accent' : 'text-secondary',
-              )}
-            >
-              {upload.contourable ? (
-                <>
-                  <CheckCircle2 size={14} aria-hidden="true" />
-                  Tiene transparencia: podés pedirla contorneada.
-                </>
-              ) : (
-                <>
-                  <AlertCircle size={14} aria-hidden="true" />
-                  Sin transparencia: circular o rectangular.
-                </>
-              )}
-            </p>
-          </div>
+        <div className="bg-surface border border-line rounded-2xl p-4 min-w-0">
+          <p className="font-semibold truncate">{upload.fileName}</p>
+          <p className="text-sm text-secondary">
+            {upload.info.width} x {upload.info.height} px · {upload.info.format.toUpperCase()}
+          </p>
+          <p
+            className={cn(
+              'flex items-center gap-1.5 text-sm mt-1',
+              upload.contourable ? 'text-accent' : 'text-secondary',
+            )}
+          >
+            {upload.contourable ? (
+              <>
+                <CheckCircle2 size={14} aria-hidden="true" />
+                Tiene transparencia: podés pedirla contorneada.
+              </>
+            ) : (
+              <>
+                <AlertCircle size={14} aria-hidden="true" />
+                Sin transparencia: circular o rectangular.
+              </>
+            )}
+          </p>
         </div>
       )}
     </div>
