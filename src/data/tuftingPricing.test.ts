@@ -47,6 +47,26 @@ describe('constantes derivadas', () => {
   });
 });
 
+describe('coherencia con el backend de pagos', () => {
+  it('las constantes coinciden con las del backend de pagos', () => {
+    // El precio vive duplicado: acá y en
+    // artifex-portal/supabase/functions/_shared/pricing.ts, porque el sitio es
+    // un build estático y las edge functions corren en Deno, sin módulo común.
+    //
+    // Este test fija los valores exactos. Si alguien cambia el precio de un solo
+    // lado, la suite falla y obliga a tocar el otro. Sin esto, la página podría
+    // mostrar un total distinto del que termina cobrando MercadoPago, que es el
+    // bug más probable de toda esta funcionalidad.
+    expect(MATERIAL_COST_PER_M2).toBe(75_000);
+    expect(MIN_MARGIN).toBe(0.5);
+    expect(DISCOUNTS.transferencia).toBe(0.15);
+    expect(DISCOUNTS.instagram).toBe(0.1);
+    expect(MIN_BILLABLE_M2).toBe(0.09);
+    expect(MAX_QUOTABLE_M2).toBe(6);
+    expect(ROUNDING_STEP).toBe(1_000);
+  });
+});
+
 describe('invariante de ganancia', () => {
   it('nunca perfora el piso de markup, para ninguna combinación de área y descuentos', () => {
     for (const areaM2 of AREAS_M2) {
