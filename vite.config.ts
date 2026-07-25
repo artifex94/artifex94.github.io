@@ -49,6 +49,7 @@ function buildSitemapXml(): string {
     { loc: `${BASE_URL}/servicios/desarrollo`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
     { loc: `${BASE_URL}/servicios/fotografia`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate, images: galleryImages },
     { loc: `${BASE_URL}/servicios/tufting`, changefreq: 'monthly', priority: '0.8', lastmod: buildDate },
+    { loc: `${BASE_URL}/servicios/tufting/calculadora`, changefreq: 'monthly', priority: '0.7', lastmod: buildDate },
     { loc: `${BASE_URL}/portfolio`, changefreq: 'monthly', priority: '0.6', lastmod: buildDate },
   ];
 
