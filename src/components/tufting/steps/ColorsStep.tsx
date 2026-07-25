@@ -2,14 +2,17 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import { availableWools, MAX_WOOLS_PER_PIECE } from '../../../data/wools';
+import { PreviewCanvas } from '../PreviewCanvas';
 import type { CalculatorAction, CalculatorState } from '../../../hooks/useCalculatorState';
 
 interface ColorsStepProps {
   state: CalculatorState;
   dispatch: React.Dispatch<CalculatorAction>;
+  /** Previsualización algorítmica, si la pieza es contorneada y ya se midió. */
+  preview: { rgba: Uint8ClampedArray; width: number; height: number } | null;
 }
 
-export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch }) => {
+export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, preview }) => {
   const wools = availableWools();
   const { woolIds } = state;
   const full = woolIds.length >= MAX_WOOLS_PER_PIECE;
@@ -23,6 +26,20 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch }) => {
           cono distinto que hay que cargar en la pistola.
         </p>
       </div>
+
+      {preview && (
+        <figure className="m-0 flex flex-col gap-2">
+          <PreviewCanvas
+            rgba={preview.rgba}
+            width={preview.width}
+            height={preview.height}
+            className="w-full max-w-sm mx-auto h-auto rounded-xl bg-base"
+          />
+          <figcaption className="text-xs text-secondary text-center">
+            Así quedaría tu diseño con las lanas que tengo. Los colores son los reales de cada cono.
+          </figcaption>
+        </figure>
+      )}
 
       <p className="text-sm" aria-live="polite">
         <span className="font-semibold">{woolIds.length}</span> de {MAX_WOOLS_PER_PIECE} elegidos

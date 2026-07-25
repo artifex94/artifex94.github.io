@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Loader2, AlertTriangle } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import {
   SHAPE_OPTIONS,
@@ -14,6 +14,12 @@ import type { CalculatorAction, CalculatorState } from '../../../hooks/useCalcul
 interface ShapeStepProps {
   state: CalculatorState;
   dispatch: React.Dispatch<CalculatorAction>;
+  /** Estado de la medición automática. Solo se usa en la forma contorneada. */
+  pipeline: {
+    status: 'idle' | 'running' | 'done' | 'error';
+    error: string | null;
+    result: { areaM2: number; finalFeretCm: number; warnings: readonly string[] } | null;
+  };
 }
 
 interface DimensionFieldProps {
@@ -71,7 +77,7 @@ const DimensionField: React.FC<DimensionFieldProps> = ({
   </div>
 );
 
-export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch }) => {
+export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch, pipeline }) => {
   const { shape, dimensions, upload } = state;
   const issues = shape ? validateDimensions(shape, dimensions) : [];
   const errorFor = (field: keyof Dimensions): string | undefined =>
@@ -152,14 +158,46 @@ export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch }) => {
       )}
 
       {shape === 'contorneada' && (
-        <DimensionField
-          id="feretCm"
-          label="Medida más larga del diseño"
-          hint={`De punta a punta, sin contar el borde. Le sumo ${BORDER_WIDTH_CM} cm de borde alrededor.`}
-          value={dimensions.feretCm}
-          error={errorFor('feretCm')}
-          onChange={setDimension('feretCm')}
-        />
+        <div className="flex flex-col gap-4">
+          <DimensionField
+            id="feretCm"
+            label="Medida más larga del diseño"
+            hint={`De punta a punta, sin contar el borde. Le sumo ${BORDER_WIDTH_CM} cm de borde alrededor.`}
+            value={dimensions.feretCm}
+            error={errorFor('feretCm')}
+            onChange={setDimension('feretCm')}
+          />
+
+          {pipeline.status === 'running' && (
+            <p className="flex items-center gap-2 text-sm text-secondary" aria-live="polite">
+              <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+              Midiendo tu diseño…
+            </p>
+          )}
+
+          {pipeline.status === 'error' && pipeline.error && (
+            <p role="alert" className="text-sm text-accent">
+              {pipeline.error}
+            </p>
+          )}
+
+          {pipeline.status === 'done' && pipeline.result && (
+            <div className="bg-surface border border-line rounded-xl p-4 text-sm" aria-live="polite">
+              <p className="font-semibold mb-1">
+                Terminada mide {Math.round(pipeline.result.finalFeretCm)} cm en su punto más largo
+              </p>
+              <p className="text-secondary">
+                Superficie con borde: {pipeline.result.areaM2.toFixed(2)} m²
+              </p>
+              {pipeline.result.warnings.map((warning) => (
+                <p key={warning} className="flex items-start gap-2 text-accent mt-2">
+                  <AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+                  {warning}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

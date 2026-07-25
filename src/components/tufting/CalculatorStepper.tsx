@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { STEPS, canAdvance, useCalculatorState, type Step } from '../../hooks/useCalculatorState';
+import { useTuftingPipeline } from '../../hooks/useTuftingPipeline';
+import { availableWools, woolById, DEFAULT_BORDER_WOOL_ID, MAX_WOOLS_PER_PIECE } from '../../data/wools';
+import { BORDER_WIDTH_CM } from '../../data/tuftingPricing';
+import { validateDimensions } from '../../data/tuftingCalculator';
 import { UploadStep } from './steps/UploadStep';
 import { ShapeStep } from './steps/ShapeStep';
 import { ColorsStep } from './steps/ColorsStep';
@@ -14,9 +18,13 @@ const STEP_LABELS: Record<Step, string> = {
   quote: 'Presupuesto',
 };
 
+/** Espera a que el cliente termine de escribir antes de medir. */
+const MEASURE_DEBOUNCE_MS = 400;
+
 export const CalculatorStepper: React.FC = () => {
   const [state, dispatch] = useCalculatorState();
-  const { step, upload } = state;
+  const pipeline = useTuftingPipeline();
+  const { step, upload, shape, dimensions } = state;
   const objectUrl = upload?.objectUrl;
 
   // Las object URLs sostienen el archivo en memoria hasta que se revocan.
@@ -25,6 +33,63 @@ export const CalculatorStepper: React.FC = () => {
     if (!objectUrl) return;
     return () => URL.revokeObjectURL(objectUrl);
   }, [objectUrl]);
+
+  const palette = useMemo(() => {
+    const wools = availableWools();
+    return {
+      wools,
+      lab: wools.map((wool) => wool.lab),
+      rgb: wools.map((wool) => wool.rgb),
+      border: woolById(DEFAULT_BORDER_WOOL_ID)?.rgb ?? ([26, 26, 26] as const),
+    };
+  }, []);
+
+  const { run: runPipeline, reset: resetPipeline } = pipeline;
+  const feretCm = dimensions.feretCm;
+  const measurementReady =
+    shape === 'contorneada' &&
+    objectUrl !== undefined &&
+    feretCm !== undefined &&
+    validateDimensions('contorneada', dimensions).length === 0;
+
+  // Guarda la última medición pedida para no repetirla al volver de un paso.
+  const lastRunKey = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!measurementReady || !objectUrl || feretCm === undefined) {
+      lastRunKey.current = null;
+      return;
+    }
+
+    const key = `${objectUrl}|${feretCm}`;
+    if (lastRunKey.current === key) return;
+
+    const timer = setTimeout(async () => {
+      lastRunKey.current = key;
+      // El File original se recupera de la object URL: así el estado del
+      // reducer se mantiene serializable y los tests no dependen de un File.
+      const blob = await fetch(objectUrl).then((response) => response.blob());
+      const result = await runPipeline({
+        blob,
+        feretCm,
+        borderCm: BORDER_WIDTH_CM,
+        paletteLab: palette.lab,
+        paletteRgb: palette.rgb,
+        borderRgb: palette.border,
+        maxColors: MAX_WOOLS_PER_PIECE,
+      });
+
+      if (result) dispatch({ type: 'measured', areaM2: result.areaM2 });
+    }, MEASURE_DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [measurementReady, objectUrl, feretCm, palette, runPipeline, dispatch]);
+
+  // Cambiar de archivo invalida cualquier medición anterior.
+  useEffect(() => {
+    lastRunKey.current = null;
+    resetPipeline();
+  }, [objectUrl, resetPipeline]);
 
   const currentIndex = STEPS.indexOf(step);
   const isLast = step === 'quote';
@@ -66,8 +131,10 @@ export const CalculatorStepper: React.FC = () => {
         {step === 'upload' && (
           <UploadStep upload={upload} error={state.uploadError} dispatch={dispatch} />
         )}
-        {step === 'shape' && <ShapeStep state={state} dispatch={dispatch} />}
-        {step === 'colors' && <ColorsStep state={state} dispatch={dispatch} />}
+        {step === 'shape' && <ShapeStep state={state} dispatch={dispatch} pipeline={pipeline} />}
+        {step === 'colors' && (
+          <ColorsStep state={state} dispatch={dispatch} preview={pipeline.result?.preview ?? null} />
+        )}
         {step === 'quote' && <QuoteStep state={state} dispatch={dispatch} />}
       </div>
 
