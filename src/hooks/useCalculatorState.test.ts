@@ -18,12 +18,17 @@ const PNG_CON_ALFA: ImageHeaderInfo = {
 
 const JPEG: ImageHeaderInfo = { format: 'jpeg', hasAlphaChannel: false };
 
-const subirArchivo = (info: ImageHeaderInfo, state = initialCalculatorState): CalculatorState =>
+const subirArchivo = (
+  info: ImageHeaderInfo,
+  state = initialCalculatorState,
+  contourable = info.hasAlphaChannel,
+): CalculatorState =>
   calculatorReducer(state, {
     type: 'file-accepted',
     fileName: 'diseño.png',
     objectUrl: 'blob:fake',
     info,
+    contourable,
   });
 
 describe('subida de archivo', () => {
@@ -35,6 +40,10 @@ describe('subida de archivo', () => {
 
   it('marca los archivos sin transparencia como no contorneables', () => {
     expect(subirArchivo(JPEG).upload?.contourable).toBe(false);
+  });
+
+  it('usa el alfa real detectado aunque la cabecera no declare PNG con alfa', () => {
+    expect(subirArchivo(JPEG, initialCalculatorState, true).upload?.contourable).toBe(true);
   });
 
   it('descarta todo lo derivado del archivo anterior', () => {

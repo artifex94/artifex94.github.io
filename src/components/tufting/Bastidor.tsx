@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { PreviewCanvas } from './PreviewCanvas';
@@ -75,6 +75,11 @@ export const Bastidor: React.FC<BastidorProps> = ({
   className,
 }) => {
   const reduce = useReducedMotion();
+  const [previewError, setPreviewError] = useState<{ objectUrl: string; failed: boolean } | null>(
+    null,
+  );
+  const currentPreviewFailed =
+    previewError?.failed === true && previewError.objectUrl === upload?.objectUrl;
 
   const showContoured = shape === 'contorneada' && pipelineResult !== null;
   const feretCm = dimensions.feretCm;
@@ -116,11 +121,18 @@ export const Bastidor: React.FC<BastidorProps> = ({
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 22 }}
             >
-              <img
-                src={upload.objectUrl}
-                alt={`Tu diseño: ${upload.fileName}`}
-                className="max-w-full max-h-full object-contain"
-              />
+              {currentPreviewFailed ? (
+                <p role="status" className="text-sm text-secondary text-center px-6 leading-relaxed">
+                  No pude mostrar la vista previa acá, pero el diseño se cargó bien.
+                </p>
+              ) : (
+                <img
+                  src={upload.objectUrl}
+                  alt={`Tu diseño: ${upload.fileName}`}
+                  className="max-w-full max-h-full object-contain"
+                  onError={() => setPreviewError({ objectUrl: upload.objectUrl, failed: true })}
+                />
+              )}
 
               {/* Contorno de la forma elegida, para las formas simples. */}
               {shape === 'circular' && (

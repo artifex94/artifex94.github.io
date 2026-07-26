@@ -31,6 +31,8 @@ export interface PipelineRunInput {
 
 export type PipelineStatus = 'idle' | 'running' | 'done' | 'error';
 
+const WORKER_NEEDS_OFFSCREEN_CANVAS = 'Sin OffscreenCanvas en el worker';
+
 interface PipelineState {
   status: PipelineStatus;
   result: PipelineOutput | null;
@@ -105,7 +107,12 @@ export const useTuftingPipeline = () => {
         if (!resolve) return; // corrida vieja: se descarta
 
         if (!message.ok) {
-          setState({ status: 'error', result: null, error: message.message });
+          if (message.message === WORKER_NEEDS_OFFSCREEN_CANVAS) {
+            workerRef.current?.terminate();
+            workerRef.current = null;
+          } else {
+            setState({ status: 'error', result: null, error: message.message });
+          }
           resolve(null);
           return;
         }
@@ -168,6 +175,20 @@ export const useTuftingPipeline = () => {
           pendingRef.current.set(runId, resolve);
           worker.postMessage(request);
         });
+
+        if (!result && !workerRef.current) {
+          try {
+            return finish(await runInline(input));
+          } catch (error) {
+            if (runId !== runIdRef.current) return null;
+            setState({
+              status: 'error',
+              result: null,
+              error: error instanceof Error ? error.message : 'No pude procesar la imagen.',
+            });
+            return null;
+          }
+        }
 
         return finish(result);
       }

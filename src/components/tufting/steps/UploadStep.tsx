@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import { HEADER_BYTES_NEEDED, sniffImageHeader } from '../../../utils/imageFormat';
+import { probeImage } from '../../../utils/imageProbe';
 import type { CalculatorAction, UploadState } from '../../../hooks/useCalculatorState';
 
 /** Tamaño máximo del archivo. Arriba de esto el navegador sufre al decodificar. */
@@ -40,26 +41,33 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
       const header = new Uint8Array(await file.slice(0, HEADER_BYTES_NEEDED).arrayBuffer());
       const info = sniffImageHeader(header);
 
-      if (info.format === 'desconocido') {
+      const probe = await probeImage(file);
+
+      if (!probe.ok) {
         dispatch({
           type: 'file-rejected',
-          message: 'No pude reconocer el archivo como una imagen. Subí un PNG, JPG o WebP.',
+          message:
+            probe.reason === 'heic'
+              ? 'Las fotos de iPhone (y algunos Android) vienen en formato HEIC. Convertila a PNG o JPG y volvé a subirla.'
+              : 'No pude abrir esta imagen en tu dispositivo. Probá con un PNG o JPG exportado de nuevo.',
         });
         return;
       }
 
-      const side = Math.max(info.width ?? 0, info.height ?? 0);
+      const width = probe.width;
+      const height = probe.height;
+      const side = Math.max(width ?? 0, height ?? 0);
       if (side > MAX_IMAGE_SIDE) {
         dispatch({
           type: 'file-rejected',
-          message: `La imagen mide ${info.width}x${info.height} px. El máximo por lado es ${MAX_IMAGE_SIDE} px.`,
+          message: `La imagen mide ${width}x${height} px. El máximo por lado es ${MAX_IMAGE_SIDE} px.`,
         });
         return;
       }
-      if (info.width !== undefined && side < MIN_IMAGE_SIDE) {
+      if (side < MIN_IMAGE_SIDE) {
         dispatch({
           type: 'file-rejected',
-          message: `La imagen es muy chica (${info.width}x${info.height} px). Necesito al menos ${MIN_IMAGE_SIDE} px de lado.`,
+          message: `La imagen es muy chica (${width}x${height} px). Necesito al menos ${MIN_IMAGE_SIDE} px de lado.`,
         });
         return;
       }
@@ -68,7 +76,8 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         type: 'file-accepted',
         fileName: file.name,
         objectUrl: URL.createObjectURL(file),
-        info,
+        info: { ...info, width, height },
+        contourable: probe.hasAlpha,
       });
     },
     [dispatch],
@@ -86,8 +95,8 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Subí tu diseño</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Si querés que la alfombra siga el contorno de tu dibujo, subilo en{' '}
-          <strong className="text-primary">PNG con fondo transparente</strong>. Con otros formatos
+          Si querés que la alfombra siga el contorno de tu dibujo, el diseño tiene que tener{' '}
+          <strong className="text-primary">fondo transparente (PNG)</strong>. Con otros formatos
           puedo hacerla circular o rectangular.
         </p>
       </div>
@@ -107,7 +116,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/png,image/jpeg,image/webp,image/*"
           className="sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];

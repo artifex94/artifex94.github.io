@@ -1,6 +1,5 @@
 import { useReducer, type Dispatch } from 'react';
 import type { ImageHeaderInfo } from '../utils/imageFormat';
-import { canBeContoured } from '../utils/imageFormat';
 import type { Dimensions, Shape } from '../data/tuftingCalculator';
 import { areaM2ForShape, validateDimensions } from '../data/tuftingCalculator';
 import type { DiscountId } from '../data/tuftingPricing';
@@ -21,7 +20,7 @@ export interface UploadState {
   /** URL temporal para previsualizar. Hay que revocarla al reemplazar el archivo. */
   objectUrl: string;
   info: ImageHeaderInfo;
-  /** true si el archivo habilita la forma contorneada (PNG con alfa declarado). */
+  /** true si el archivo habilita la forma contorneada (alfa real detectado en píxeles). */
   contourable: boolean;
 }
 
@@ -51,7 +50,13 @@ export const initialCalculatorState: CalculatorState = {
 };
 
 export type CalculatorAction =
-  | { type: 'file-accepted'; fileName: string; objectUrl: string; info: ImageHeaderInfo }
+  | {
+      type: 'file-accepted';
+      fileName: string;
+      objectUrl: string;
+      info: ImageHeaderInfo;
+      contourable: boolean;
+    }
   | { type: 'file-rejected'; message: string }
   | { type: 'shape-selected'; shape: Shape }
   | { type: 'dimension-changed'; field: keyof Dimensions; value: number | undefined }
@@ -71,7 +76,6 @@ export const calculatorReducer = (
 ): CalculatorState => {
   switch (action.type) {
     case 'file-accepted': {
-      const contourable = canBeContoured(action.info);
       // Un archivo nuevo invalida todo lo que se derivó del anterior: la forma
       // elegida puede ya no estar disponible y el área medida no corresponde.
       return {
@@ -81,7 +85,7 @@ export const calculatorReducer = (
           fileName: action.fileName,
           objectUrl: action.objectUrl,
           info: action.info,
-          contourable,
+          contourable: action.contourable,
         },
       };
     }

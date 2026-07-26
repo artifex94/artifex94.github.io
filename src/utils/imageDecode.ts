@@ -42,6 +42,9 @@ const createCanvas = (width: number, height: number): Canvas2D => {
   if (typeof OffscreenCanvas !== 'undefined') {
     return new OffscreenCanvas(width, height) as unknown as Canvas2D;
   }
+  if (typeof document === 'undefined') {
+    throw new Error('Sin OffscreenCanvas en el worker');
+  }
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
