@@ -8,6 +8,7 @@ import {
   MIN_BILLABLE_M2,
   MAX_QUOTABLE_M2,
   ROUNDING_STEP,
+  MIN_PRICE_ARS,
   bestDiscount,
   computePrice,
   markupOverCost,
@@ -59,11 +60,29 @@ describe('coherencia con el backend de pagos', () => {
     // bug más probable de toda esta funcionalidad.
     expect(MATERIAL_COST_PER_M2).toBe(75_000);
     expect(MIN_MARGIN).toBe(0.5);
-    expect(DISCOUNTS.transferencia).toBe(0.15);
-    expect(DISCOUNTS.instagram).toBe(0.1);
+    expect(DISCOUNTS.transferencia).toBe(0.1);
+    expect(DISCOUNTS.instagram).toBe(0.05);
     expect(MIN_BILLABLE_M2).toBe(0.09);
     expect(MAX_QUOTABLE_M2).toBe(6);
     expect(ROUNDING_STEP).toBe(1_000);
+    expect(MIN_PRICE_ARS).toBe(30_000);
+  });
+});
+
+describe('piso de precio', () => {
+  it('ninguna pieza cobra menos que MIN_PRICE_ARS, ni con descuento', () => {
+    for (const discounts of DISCOUNT_COMBOS) {
+      const chica = computePrice({ areaM2: 0.09, discounts });
+      expect(chica.total).toBeGreaterThanOrEqual(MIN_PRICE_ARS);
+      expect(chica.listTotal).toBeGreaterThanOrEqual(MIN_PRICE_ARS);
+      // El total nunca supera la lista, aun con el piso aplicado.
+      expect(chica.total).toBeLessThanOrEqual(chica.listTotal);
+    }
+  });
+
+  it('el piso no afecta a las piezas que ya superan el mínimo', () => {
+    const grande = computePrice({ areaM2: 2 });
+    expect(grande.total).toBeGreaterThan(MIN_PRICE_ARS);
   });
 });
 

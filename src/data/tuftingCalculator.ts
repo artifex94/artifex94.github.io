@@ -38,7 +38,7 @@ export const SHAPE_OPTIONS: readonly ShapeOption[] = [
 ];
 
 /** Medida mínima de un lado, en cm. Más chico que esto el borde se come la pieza. */
-export const MIN_DIMENSION_CM = 20;
+export const MIN_DIMENSION_CM = 25;
 
 /**
  * Medida máxima de un lado, en cm.

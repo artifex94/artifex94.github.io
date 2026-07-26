@@ -30,9 +30,9 @@ export const MIN_MARGIN = 0.5;
 /** Descuentos disponibles, como fracción del precio de lista. */
 export const DISCOUNTS = {
   /** Pago por transferencia o efectivo: no hay comisión de plataforma. */
-  transferencia: 0.15,
+  transferencia: 0.1,
   /** Código canjeable que se entrega por DM a quien sigue la cuenta. */
-  instagram: 0.1,
+  instagram: 0.05,
 } as const;
 
 export type DiscountId = keyof typeof DISCOUNTS;
@@ -92,6 +92,15 @@ export const MAX_QUOTABLE_M2 = 6;
 
 /** Todos los totales se redondean hacia arriba a este múltiplo, en pesos. */
 export const ROUNDING_STEP = 1_000;
+
+/**
+ * Precio mínimo de cualquier pieza, en pesos.
+ *
+ * Por debajo de esto no se toma el trabajo: montar el bastidor, preparar la
+ * lana y el rato mínimo de taller no bajan aunque la pieza sea chica. Se aplica
+ * como piso final, después de calcular y de aplicar descuentos.
+ */
+export const MIN_PRICE_ARS = 30_000;
 
 export interface PriceInput {
   /** Área de la pieza terminada, en m², con el borde ya incluido. */
@@ -153,8 +162,13 @@ export const computePrice = ({ areaM2, discounts = [] }: PriceInput): PriceResul
   const billableAreaM2 = Math.max(safeArea, MIN_BILLABLE_M2);
   const { id, rate } = bestDiscount(discounts);
 
-  const listTotal = roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2, ROUNDING_STEP);
-  const total = roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2 * (1 - rate), ROUNDING_STEP);
+  // Piso de precio: ninguna pieza baja de MIN_PRICE_ARS, ni en lista ni con el
+  // mejor descuento. Como el piso sube ambos por igual, se mantiene total <= lista.
+  const listTotal = Math.max(roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2, ROUNDING_STEP), MIN_PRICE_ARS);
+  const total = Math.max(
+    roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2 * (1 - rate), ROUNDING_STEP),
+    MIN_PRICE_ARS,
+  );
 
   return {
     total,
