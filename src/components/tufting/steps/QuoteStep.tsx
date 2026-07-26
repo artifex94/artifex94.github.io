@@ -10,7 +10,7 @@ import {
   INSTALLMENT_DEPOSIT_RATE,
   type DiscountId,
 } from '../../../data/tuftingPricing';
-import { describeDimensions, describeShape } from '../../../data/tuftingCalculator';
+import { describeDimensions, describeShape, minorAxisCm } from '../../../data/tuftingCalculator';
 import { buildQuoteWhatsAppUrl } from '../../../data/contact';
 import { woolById } from '../../../data/wools';
 import type { DetectedColor } from '../../../utils/tuftingPipeline';
@@ -29,7 +29,16 @@ interface QuoteStepProps {
 // el cliente ve un total y las formas de pago, nada más. Hay un test que lo
 // verifica para que nadie lo agregue sin querer.
 export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedColors }) => {
-  const { shape, dimensions, discounts, borderWoolId } = state;
+  const {
+    shape,
+    dimensions,
+    discounts,
+    borderWoolId,
+    fillWoolId,
+    borderSameAsFill,
+    borderThick,
+    rotationDeg,
+  } = state;
   const [discountCode, setDiscountCode] = useState('');
   const areaM2 = resolveAreaM2(state);
 
@@ -43,7 +52,17 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
 
   const price = computePrice({ areaM2, discounts });
   const colorNames = detectedColors.map((color) => color.name);
-  const borderName = woolById(borderWoolId)?.name;
+  const fillColor = woolById(fillWoolId)?.hex ?? '#f4f1ea';
+  const borderColor = borderSameAsFill ? fillColor : (woolById(borderWoolId)?.hex ?? '#1a1a1a');
+  const borderName = borderSameAsFill ? woolById(fillWoolId)?.name : woolById(borderWoolId)?.name;
+  const pieceWidthCm =
+    shape === 'circular' ? dimensions.diameterCm : shape === 'rectangular' ? dimensions.widthCm : undefined;
+  const pieceHeightCm =
+    shape === 'circular' && dimensions.diameterCm
+      ? minorAxisCm(dimensions.diameterCm, dimensions.ovalRatio)
+      : shape === 'rectangular'
+        ? dimensions.heightCm
+        : undefined;
 
   const whatsappUrl = buildQuoteWhatsAppUrl({
     shape: describeShape(shape),
@@ -178,6 +197,12 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
           colors={colorNames}
           borderName={borderName}
           designObjectUrl={state.upload?.objectUrl}
+          fillColor={fillColor}
+          borderColor={borderColor}
+          borderThick={borderThick}
+          rotationDeg={rotationDeg}
+          pieceWidthCm={pieceWidthCm}
+          pieceHeightCm={pieceHeightCm}
           payByTransfer={discounts.includes('transferencia')}
           discountCode={discountCode}
         />

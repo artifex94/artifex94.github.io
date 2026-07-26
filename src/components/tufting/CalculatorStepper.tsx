@@ -13,7 +13,7 @@ import { useTuftingPipeline } from '../../hooks/useTuftingPipeline';
 import { woolById, MAX_WOOLS_PER_PIECE } from '../../data/wools';
 import { rgbToHex } from '../../utils/color';
 import { BORDER_WIDTH_CM } from '../../data/tuftingPricing';
-import { validateDimensions } from '../../data/tuftingCalculator';
+import { minorAxisCm, validateDimensions } from '../../data/tuftingCalculator';
 import { Bastidor } from './Bastidor';
 import { ThreadProgress } from './ThreadProgress';
 import { UploadStep } from './steps/UploadStep';
@@ -34,7 +34,17 @@ export const CalculatorStepper: React.FC = () => {
   const [state, dispatch] = useCalculatorState();
   const pipeline = useTuftingPipeline();
   const reduce = useReducedMotion();
-  const { step, upload, shape, dimensions, borderWoolId } = state;
+  const {
+    step,
+    upload,
+    shape,
+    dimensions,
+    borderWoolId,
+    fillWoolId,
+    borderSameAsFill,
+    borderThick,
+    rotationDeg,
+  } = state;
   const objectUrl = upload?.objectUrl;
 
   // Las object URLs sostienen el archivo en memoria hasta que se revocan.
@@ -97,6 +107,17 @@ export const CalculatorStepper: React.FC = () => {
   const detectedColors = pipeline.result?.detectedColors ?? [];
   const threadColor = detectedColors[0] ? rgbToHex(detectedColors[0].rgb) : undefined;
 
+  const fillColor = woolById(fillWoolId)?.hex ?? '#f4f1ea';
+  const borderColor = borderSameAsFill ? fillColor : (woolById(borderWoolId)?.hex ?? '#1a1a1a');
+  const pieceWidthCm =
+    shape === 'circular' ? dimensions.diameterCm : shape === 'rectangular' ? dimensions.widthCm : undefined;
+  const pieceHeightCm =
+    shape === 'circular' && dimensions.diameterCm
+      ? minorAxisCm(dimensions.diameterCm, dimensions.ovalRatio)
+      : shape === 'rectangular'
+        ? dimensions.heightCm
+        : undefined;
+
   const canVisit = (candidate: Step): boolean => {
     const target = STEPS.indexOf(candidate);
     if (target < currentIndex) return true;
@@ -113,6 +134,12 @@ export const CalculatorStepper: React.FC = () => {
         areaM2={resolveAreaM2(state)}
         pipelineStatus={pipeline.status}
         pipelineResult={pipeline.result}
+        fillColor={fillColor}
+        borderColor={borderColor}
+        borderThick={borderThick}
+        rotationDeg={rotationDeg}
+        pieceWidthCm={pieceWidthCm}
+        pieceHeightCm={pieceHeightCm}
         className="lg:sticky lg:top-24"
       />
 

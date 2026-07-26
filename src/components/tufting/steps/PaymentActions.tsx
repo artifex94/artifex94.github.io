@@ -47,6 +47,7 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
   const basePayload = {
     shape: shape as 'circular' | 'rectangular',
     diameterCm: dimensions.diameterCm,
+    ovalRatio: dimensions.ovalRatio,
     widthCm: dimensions.widthCm,
     heightCm: dimensions.heightCm,
     woolIds: colors,

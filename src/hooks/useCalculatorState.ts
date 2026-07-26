@@ -1,9 +1,21 @@
 import { useReducer, type Dispatch } from 'react';
 import type { ImageHeaderInfo } from '../utils/imageFormat';
 import type { Dimensions, Shape } from '../data/tuftingCalculator';
-import { areaM2ForShape, validateDimensions } from '../data/tuftingCalculator';
+import {
+  areaM2ForShape,
+  validateDimensions,
+  dimensionsFromAspect,
+  DEFAULT_ASPECT_RATIO_ID,
+} from '../data/tuftingCalculator';
 import type { DiscountId } from '../data/tuftingPricing';
 import { DEFAULT_BORDER_WOOL_ID } from '../data/wools';
+
+/** Tono de relleno inicial: un neutro claro (id de un tono de referencia de wools). */
+export const DEFAULT_FILL_WOOL_ID = 'blanco-crudo';
+/** Tamaño inicial de la pieza (lado mayor del rectángulo / diámetro del círculo), en cm. */
+export const DEFAULT_SIZE_CM = 120;
+/** Salto de rotación para el rectángulo, en grados. */
+export const ROTATION_STEP_DEG = 90;
 
 // Estado de la calculadora, como reducer puro.
 //
@@ -33,8 +45,23 @@ export interface CalculatorState {
   dimensions: Dimensions;
   /** Área medida sobre la imagen. Solo la usa la forma contorneada. */
   measuredAreaM2: number | null;
+  // --- Diseñador de circular/rectangular ---
+  /** Proporción del rectángulo (id de ASPECT_RATIOS). */
+  aspectRatioId: string;
+  /** Tamaño de la pieza: lado mayor del rectángulo / diámetro del círculo, en cm. */
+  sizeCm: number;
+  /** Ovalado del círculo: 1 = círculo; >1 achata el eje menor. */
+  ovalRatio: number;
+  /** Rotación de la imagen dentro de la forma, en grados. */
+  rotationDeg: number;
+  /** Tono de referencia del relleno. */
+  fillWoolId: string;
   /** Tono de referencia elegido para el borde perimetral. */
   borderWoolId: string;
+  /** Si el borde usa el mismo color que el relleno. */
+  borderSameAsFill: boolean;
+  /** Borde grueso (true) o normal (false). */
+  borderThick: boolean;
   discounts: readonly DiscountId[];
 }
 
@@ -45,8 +72,27 @@ export const initialCalculatorState: CalculatorState = {
   shape: null,
   dimensions: {},
   measuredAreaM2: null,
+  aspectRatioId: DEFAULT_ASPECT_RATIO_ID,
+  sizeCm: DEFAULT_SIZE_CM,
+  ovalRatio: 1,
+  rotationDeg: 0,
+  fillWoolId: DEFAULT_FILL_WOOL_ID,
   borderWoolId: DEFAULT_BORDER_WOOL_ID,
+  borderSameAsFill: false,
+  borderThick: false,
   discounts: [],
+};
+
+/** Medidas derivadas de los controles del diseñador, para una forma dada. */
+const designerDimensions = (
+  shape: Shape,
+  aspectRatioId: string,
+  sizeCm: number,
+  ovalRatio: number,
+): Dimensions => {
+  if (shape === 'rectangular') return dimensionsFromAspect(aspectRatioId, sizeCm);
+  if (shape === 'circular') return { diameterCm: sizeCm, ovalRatio };
+  return {};
 };
 
 export type CalculatorAction =
@@ -62,6 +108,15 @@ export type CalculatorAction =
   | { type: 'dimension-changed'; field: keyof Dimensions; value: number | undefined }
   | { type: 'measured'; areaM2: number }
   | { type: 'border-selected'; woolId: string }
+  | { type: 'aspect-selected'; aspectId: string }
+  | { type: 'size-changed'; sizeCm: number }
+  | { type: 'oval-changed'; ovalRatio: number }
+  | { type: 'rotate-step' }
+  | { type: 'rotate-set'; deg: number }
+  | { type: 'rotate-reset' }
+  | { type: 'fill-selected'; woolId: string }
+  | { type: 'border-same-toggled' }
+  | { type: 'border-thick-toggled' }
   | { type: 'discount-toggled'; discount: DiscountId }
   | { type: 'go-to-step'; step: Step }
   | { type: 'next' }
@@ -97,8 +152,15 @@ export const calculatorReducer = (
       // No se puede elegir contorneada si el archivo no tiene transparencia.
       if (action.shape === 'contorneada' && !state.upload?.contourable) return state;
       if (action.shape === state.shape) return state;
-      // Cambiar de forma descarta las medidas: no significan lo mismo.
-      return { ...state, shape: action.shape, dimensions: {}, measuredAreaM2: null };
+      // En circular/rectangular el diseñador arranca con medidas válidas derivadas
+      // de sus controles; contorneada mide sobre la imagen (dimensiones vacías).
+      return {
+        ...state,
+        shape: action.shape,
+        dimensions: designerDimensions(action.shape, state.aspectRatioId, state.sizeCm, state.ovalRatio),
+        rotationDeg: 0,
+        measuredAreaM2: null,
+      };
     }
 
     case 'dimension-changed':
@@ -113,9 +175,49 @@ export const calculatorReducer = (
       return { ...state, measuredAreaM2: action.areaM2 };
 
     case 'border-selected':
-      // Los colores del diseño los detecta el pipeline; lo único que elige el
-      // cliente es el color del borde perimetral.
+      // En contorneada, el color del borde perimetral (el resto sale del pipeline).
       return { ...state, borderWoolId: action.woolId };
+
+    case 'aspect-selected':
+      return {
+        ...state,
+        aspectRatioId: action.aspectId,
+        dimensions: designerDimensions('rectangular', action.aspectId, state.sizeCm, state.ovalRatio),
+      };
+
+    case 'size-changed':
+      return {
+        ...state,
+        sizeCm: action.sizeCm,
+        dimensions: state.shape
+          ? designerDimensions(state.shape, state.aspectRatioId, action.sizeCm, state.ovalRatio)
+          : state.dimensions,
+      };
+
+    case 'oval-changed':
+      return {
+        ...state,
+        ovalRatio: action.ovalRatio,
+        dimensions: designerDimensions('circular', state.aspectRatioId, state.sizeCm, action.ovalRatio),
+      };
+
+    case 'rotate-step':
+      return { ...state, rotationDeg: (state.rotationDeg + ROTATION_STEP_DEG) % 360 };
+
+    case 'rotate-set':
+      return { ...state, rotationDeg: ((action.deg % 360) + 360) % 360 };
+
+    case 'rotate-reset':
+      return { ...state, rotationDeg: 0 };
+
+    case 'fill-selected':
+      return { ...state, fillWoolId: action.woolId };
+
+    case 'border-same-toggled':
+      return { ...state, borderSameAsFill: !state.borderSameAsFill };
+
+    case 'border-thick-toggled':
+      return { ...state, borderThick: !state.borderThick };
 
     case 'discount-toggled': {
       const alreadyPicked = state.discounts.includes(action.discount);

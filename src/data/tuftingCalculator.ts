@@ -49,8 +49,13 @@ export const MIN_DIMENSION_CM = 25;
 export const MAX_DIMENSION_CM = 300;
 
 export interface Dimensions {
-  /** Forma circular: diámetro de la pieza terminada. */
+  /** Forma circular: diámetro (eje mayor) de la pieza terminada. */
   diameterCm?: number;
+  /**
+   * Forma circular: cuánto se estira para hacerla óvalo. 1 = círculo perfecto;
+   * >1 achata el eje menor (eje menor = diámetro / ovalRatio).
+   */
+  ovalRatio?: number;
   /** Forma rectangular: ancho de la pieza terminada. */
   widthCm?: number;
   /** Forma rectangular: alto de la pieza terminada. */
@@ -61,6 +66,60 @@ export interface Dimensions {
    */
   feretCm?: number;
 }
+
+export interface AspectRatio {
+  id: string;
+  /** Cómo se le muestra al cliente. */
+  label: string;
+  /** Relación ancho:alto. */
+  w: number;
+  h: number;
+}
+
+/**
+ * Proporciones disponibles para el rectángulo, de cuadrado a "caminito".
+ *
+ * El lado mayor lo fija el slider de tamaño; de la proporción sale el otro lado.
+ */
+export const ASPECT_RATIOS: readonly AspectRatio[] = [
+  { id: '1:1', label: 'Cuadrado 1:1', w: 1, h: 1 },
+  { id: '3:2', label: 'Clásico 3:2', w: 3, h: 2 },
+  { id: '2:1', label: 'Alargado 2:1', w: 2, h: 1 },
+  { id: '3:1', label: 'Reposamuñecas 3:1', w: 3, h: 1 },
+  { id: '4:1', label: 'Caminito 4:1', w: 4, h: 1 },
+];
+
+export const DEFAULT_ASPECT_RATIO_ID = '3:2';
+
+/** Óvalo máximo: el eje menor no baja de major/OVAL_RATIO_MAX. */
+export const OVAL_RATIO_MAX = 2.5;
+
+export const aspectRatioById = (id: string): AspectRatio =>
+  ASPECT_RATIOS.find((ratio) => ratio.id === id) ?? ASPECT_RATIOS[0];
+
+/**
+ * Medidas del rectángulo a partir de la proporción y el lado mayor (en cm).
+ *
+ * `sizeCm` es siempre el lado más largo; el otro sale de la relación de aspecto.
+ */
+export const dimensionsFromAspect = (
+  aspectId: string,
+  sizeCm: number,
+): { widthCm: number; heightCm: number } => {
+  const { w, h } = aspectRatioById(aspectId);
+  if (w >= h) {
+    return { widthCm: sizeCm, heightCm: Math.round((sizeCm * h) / w) };
+  }
+  return { widthCm: Math.round((sizeCm * w) / h), heightCm: sizeCm };
+};
+
+/** Área de una elipse, en m², a partir de sus dos ejes (diámetros) en cm. */
+export const ellipseAreaM2 = (majorCm: number, minorCm: number): number =>
+  (Math.PI * (majorCm / 2) * (minorCm / 2)) / CM2_PER_M2;
+
+/** Eje menor de la forma circular/ovalada, dado el diámetro y el ovalRatio. */
+export const minorAxisCm = (diameterCm: number, ovalRatio?: number): number =>
+  diameterCm / (ovalRatio && ovalRatio > 1 ? ovalRatio : 1);
 
 const CM2_PER_M2 = 10_000;
 
@@ -82,8 +141,10 @@ export const rectangleAreaM2 = (widthCm: number, heightCm: number): number =>
  */
 export const areaM2ForShape = (shape: Shape, dimensions: Dimensions): number | null => {
   if (shape === 'circular') {
-    const { diameterCm } = dimensions;
-    return typeof diameterCm === 'number' ? circleAreaM2(diameterCm) : null;
+    const { diameterCm, ovalRatio } = dimensions;
+    if (typeof diameterCm !== 'number') return null;
+    // ovalRatio 1 (o ausente) ⇒ eje menor = mayor ⇒ círculo perfecto.
+    return ellipseAreaM2(diameterCm, minorAxisCm(diameterCm, ovalRatio));
   }
 
   if (shape === 'rectangular') {
@@ -140,6 +201,16 @@ export const validateDimensions = (
   if (shape === 'circular') {
     const issue = validateSide('diameterCm', 'el diámetro', dimensions.diameterCm);
     if (issue) issues.push(issue);
+    // Al ovalar, el eje menor no puede quedar por debajo del mínimo.
+    if (!issue && typeof dimensions.diameterCm === 'number') {
+      const minor = minorAxisCm(dimensions.diameterCm, dimensions.ovalRatio);
+      if (minor < MIN_DIMENSION_CM) {
+        issues.push({
+          field: 'diameterCm',
+          message: `Ovalada así, el lado corto queda en ${Math.round(minor)} cm (mínimo ${MIN_DIMENSION_CM}). Achicá el óvalo o agrandá la pieza.`,
+        });
+      }
+    }
   }
 
   if (shape === 'rectangular') {
@@ -169,7 +240,10 @@ export const validateDimensions = (
 /** Texto legible de las medidas, para el resumen y el mensaje de WhatsApp. */
 export const describeDimensions = (shape: Shape, dimensions: Dimensions): string => {
   if (shape === 'circular' && dimensions.diameterCm) {
-    return `${dimensions.diameterCm} cm de diámetro`;
+    const minor = Math.round(minorAxisCm(dimensions.diameterCm, dimensions.ovalRatio));
+    return minor === dimensions.diameterCm
+      ? `${dimensions.diameterCm} cm de diámetro`
+      : `${dimensions.diameterCm} × ${minor} cm (óvalo)`;
   }
   if (shape === 'rectangular' && dimensions.widthCm && dimensions.heightCm) {
     return `${dimensions.widthCm} x ${dimensions.heightCm} cm`;

@@ -39,6 +39,8 @@ export const canPayOnline = (shape: Shape | null): boolean =>
 export interface CheckoutRequest {
   shape: Shape;
   diameterCm?: number;
+  /** Circular ovalado: eje menor = diámetro / ovalRatio (1 = círculo). */
+  ovalRatio?: number;
   widthCm?: number;
   heightCm?: number;
   woolIds?: readonly string[];
@@ -121,8 +123,10 @@ export interface OrderRequest {
   heightCm?: number;
   /** Solo para contorneada: área declarada por el cliente (el server la usa de estimación). */
   areaM2?: number;
+  ovalRatio?: number;
   colors?: readonly string[];
   designImagePath?: string;
+  referenceImagePath?: string;
   customerNote?: string;
   contact: { name: string; email: string; phone?: string };
   payByTransfer?: boolean;

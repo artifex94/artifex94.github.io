@@ -9,8 +9,47 @@ import {
   SHAPE_OPTIONS,
   MIN_DIMENSION_CM,
   MAX_DIMENSION_CM,
+  ASPECT_RATIOS,
+  dimensionsFromAspect,
+  ellipseAreaM2,
+  minorAxisCm,
 } from './tuftingCalculator';
 import { MAX_QUOTABLE_M2 } from './tuftingPricing';
+
+describe('proporciones y óvalo', () => {
+  it('deriva las medidas del rectángulo desde la proporción y el lado mayor', () => {
+    expect(dimensionsFromAspect('1:1', 100)).toEqual({ widthCm: 100, heightCm: 100 });
+    expect(dimensionsFromAspect('2:1', 100)).toEqual({ widthCm: 100, heightCm: 50 });
+    expect(dimensionsFromAspect('4:1', 200)).toEqual({ widthCm: 200, heightCm: 50 });
+  });
+
+  it('el lado mayor siempre es sizeCm', () => {
+    for (const ratio of ASPECT_RATIOS) {
+      const { widthCm, heightCm } = dimensionsFromAspect(ratio.id, 150);
+      expect(Math.max(widthCm, heightCm)).toBe(150);
+    }
+  });
+
+  it('la elipse con ejes iguales es un círculo', () => {
+    expect(ellipseAreaM2(120, 120)).toBeCloseTo(circleAreaM2(120), 10);
+  });
+
+  it('minorAxisCm achata según el ovalRatio', () => {
+    expect(minorAxisCm(100, 1)).toBe(100);
+    expect(minorAxisCm(100, 2)).toBe(50);
+    expect(minorAxisCm(100, undefined)).toBe(100);
+  });
+
+  it('el área circular usa la elipse cuando hay ovalRatio', () => {
+    const area = areaM2ForShape('circular', { diameterCm: 100, ovalRatio: 2 });
+    expect(area).toBeCloseTo(ellipseAreaM2(100, 50), 10);
+  });
+
+  it('rechaza un óvalo cuyo eje menor cae por debajo del mínimo', () => {
+    const issues = validateDimensions('circular', { diameterCm: 40, ovalRatio: 2 }); // menor = 20 < 25
+    expect(issues.length).toBeGreaterThan(0);
+  });
+});
 
 describe('áreas', () => {
   it('calcula el área de un círculo', () => {

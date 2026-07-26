@@ -8,6 +8,7 @@ import {
   type DesignImageType,
 } from '../../../data/tuftingCheckout';
 import type { Dimensions, Shape } from '../../../data/tuftingCalculator';
+import { exportDesignBlob, type ComposeParams } from '../../../utils/shapeComposer';
 
 interface OrderFormProps {
   shape: Shape;
@@ -20,12 +21,32 @@ interface OrderFormProps {
   borderName?: string;
   /** URL temporal del diseño subido: de ahí se saca el blob para subir a Storage. */
   designObjectUrl?: string;
+  fillColor?: string;
+  borderColor?: string;
+  borderThick?: boolean;
+  rotationDeg?: number;
+  pieceWidthCm?: number;
+  pieceHeightCm?: number;
   payByTransfer: boolean;
   discountCode: string;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ALLOWED: readonly string[] = ['image/png', 'image/jpeg', 'image/webp'];
+
+const loadHtmlImage = (url: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('No pude preparar la imagen para exportar el diseño.'));
+    image.src = url;
+  });
+
+const uploadBlob = async (blob: Blob, contentType: DesignImageType): Promise<string> => {
+  const upload = await getDesignUploadUrl(contentType);
+  await uploadDesign(upload.signedUrl, blob);
+  return upload.path;
+};
 
 // Envía el encargo al taller: sube el diseño al bucket privado y crea el registro
 // que aparece en el panel admin (con aviso por email). Funciona para las tres
@@ -38,6 +59,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   colors,
   borderName,
   designObjectUrl,
+  fillColor,
+  borderColor,
+  borderThick = false,
+  rotationDeg = 0,
+  pieceWidthCm,
+  pieceHeightCm,
   payByTransfer,
   discountCode,
 }) => {
@@ -57,16 +84,39 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     setBusy(true);
     try {
       let designImagePath: string | undefined;
+      let referenceImagePath: string | undefined;
 
       // Subir el diseño, si hay uno prendido en el bastidor.
       if (designObjectUrl) {
-        const blob = await fetch(designObjectUrl).then((response) => response.blob());
-        if (!ALLOWED.includes(blob.type)) {
+        const originalBlob = await fetch(designObjectUrl).then((response) => response.blob());
+        if (!ALLOWED.includes(originalBlob.type)) {
           throw new Error('El diseño tiene que ser PNG, JPG o WebP.');
         }
-        const upload = await getDesignUploadUrl(blob.type as DesignImageType);
-        await uploadDesign(upload.signedUrl, blob);
-        designImagePath = upload.path;
+
+        if (shape === 'circular' || shape === 'rectangular') {
+          if (!fillColor || !borderColor || !pieceWidthCm || !pieceHeightCm) {
+            throw new Error('Faltan datos del diseño para exportar la pieza.');
+          }
+
+          const image = await loadHtmlImage(designObjectUrl);
+          const params: ComposeParams = {
+            shape,
+            pieceWidthCm,
+            pieceHeightCm,
+            fillColor,
+            borderColor,
+            borderThick,
+            rotationDeg,
+            image,
+            imageWidth: image.naturalWidth || image.width,
+            imageHeight: image.naturalHeight || image.height,
+          };
+          const composedBlob = await exportDesignBlob(params);
+          designImagePath = await uploadBlob(composedBlob, 'image/png');
+          referenceImagePath = await uploadBlob(originalBlob, originalBlob.type as DesignImageType);
+        } else {
+          designImagePath = await uploadBlob(originalBlob, originalBlob.type as DesignImageType);
+        }
       }
 
       // El color del borde no tiene columna propia: viaja en la nota.
@@ -77,12 +127,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       await createOrder({
         shape,
         diameterCm: dimensions.diameterCm,
+        ovalRatio: dimensions.ovalRatio,
         widthCm: dimensions.widthCm,
         heightCm: dimensions.heightCm,
         // Solo la contorneada manda área; en las simples el server la recalcula.
         areaM2: shape === 'contorneada' ? (areaM2 ?? undefined) : undefined,
         colors,
         designImagePath,
+        referenceImagePath,
         customerNote: noteParts.join('\n\n') || undefined,
         contact: { name: name.trim(), email: email.trim(), phone: phone.trim() || undefined },
         payByTransfer,

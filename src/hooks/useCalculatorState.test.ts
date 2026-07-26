@@ -82,14 +82,17 @@ describe('elección de forma', () => {
     expect(elegida.shape).toBe('contorneada');
   });
 
-  it('cambiar de forma descarta las medidas anteriores', () => {
+  it('cambiar de forma no arrastra las medidas anteriores', () => {
     // Un diámetro no significa lo mismo que un ancho: arrastrarlo sería un bug.
+    // Al cambiar de forma, el diseñador regenera medidas frescas para la nueva.
     let state = subirArchivo(PNG_CON_ALFA);
     state = calculatorReducer(state, { type: 'shape-selected', shape: 'circular' });
     state = calculatorReducer(state, { type: 'dimension-changed', field: 'diameterCm', value: 80 });
     state = calculatorReducer(state, { type: 'shape-selected', shape: 'rectangular' });
 
-    expect(state.dimensions).toEqual({});
+    expect(state.dimensions.diameterCm).toBeUndefined();
+    expect(state.dimensions.widthCm).toBeGreaterThan(0);
+    expect(state.dimensions.heightCm).toBeGreaterThan(0);
   });
 
   it('reelegir la misma forma no borra nada', () => {
@@ -156,16 +159,75 @@ describe('color del borde', () => {
   });
 });
 
+describe('diseñador de circular/rectangular', () => {
+  const conForma = (shape: 'circular' | 'rectangular'): CalculatorState => {
+    const state = subirArchivo(JPEG);
+    return calculatorReducer(state, { type: 'shape-selected', shape });
+  };
+
+  it('al elegir rectángulo arranca con medidas válidas derivadas', () => {
+    const state = conForma('rectangular');
+    expect(state.dimensions.widthCm).toBeGreaterThan(0);
+    expect(state.dimensions.heightCm).toBeGreaterThan(0);
+    expect(canAdvance(state)).toBe(true);
+  });
+
+  it('cambiar la proporción recalcula las medidas', () => {
+    let state = conForma('rectangular');
+    state = calculatorReducer(state, { type: 'aspect-selected', aspectId: '4:1' });
+    expect(state.aspectRatioId).toBe('4:1');
+    expect(state.dimensions.widthCm).toBe(state.sizeCm);
+    expect(state.dimensions.heightCm).toBe(Math.round(state.sizeCm / 4));
+  });
+
+  it('el slider de tamaño actualiza el diámetro en circular', () => {
+    let state = conForma('circular');
+    state = calculatorReducer(state, { type: 'size-changed', sizeCm: 90 });
+    expect(state.dimensions.diameterCm).toBe(90);
+  });
+
+  it('ovalar guarda el ratio en las dimensiones circulares', () => {
+    let state = conForma('circular');
+    state = calculatorReducer(state, { type: 'oval-changed', ovalRatio: 1.8 });
+    expect(state.dimensions.ovalRatio).toBe(1.8);
+  });
+
+  it('rotar en pasos de 90 y resetear', () => {
+    let state = conForma('rectangular');
+    state = calculatorReducer(state, { type: 'rotate-step' });
+    expect(state.rotationDeg).toBe(90);
+    state = calculatorReducer(state, { type: 'rotate-step' });
+    state = calculatorReducer(state, { type: 'rotate-step' });
+    state = calculatorReducer(state, { type: 'rotate-step' });
+    expect(state.rotationDeg).toBe(0); // 360 % 360
+    state = calculatorReducer(state, { type: 'rotate-set', deg: 200 });
+    expect(state.rotationDeg).toBe(200);
+    expect(calculatorReducer(state, { type: 'rotate-reset' }).rotationDeg).toBe(0);
+  });
+
+  it('elige relleno y borde, con opción de igualarlos y engrosar', () => {
+    let state = conForma('rectangular');
+    state = calculatorReducer(state, { type: 'fill-selected', woolId: wools[2].id });
+    expect(state.fillWoolId).toBe(wools[2].id);
+    expect(state.borderSameAsFill).toBe(false);
+    state = calculatorReducer(state, { type: 'border-same-toggled' });
+    expect(state.borderSameAsFill).toBe(true);
+    state = calculatorReducer(state, { type: 'border-thick-toggled' });
+    expect(state.borderThick).toBe(true);
+  });
+});
+
 describe('navegación entre pasos', () => {
   it('no avanza sin haber subido un archivo', () => {
     expect(canAdvance(initialCalculatorState)).toBe(false);
     expect(calculatorReducer(initialCalculatorState, { type: 'next' }).step).toBe('upload');
   });
 
-  it('no avanza de forma sin medidas válidas', () => {
+  it('no avanza de forma con medidas inválidas', () => {
     let state = subirArchivo(JPEG);
     state = calculatorReducer(state, { type: 'shape-selected', shape: 'circular' });
-    expect(canAdvance(state)).toBe(false);
+    // El diseñador arranca con un diámetro válido por defecto.
+    expect(canAdvance(state)).toBe(true);
 
     state = calculatorReducer(state, { type: 'dimension-changed', field: 'diameterCm', value: 5 });
     expect(canAdvance(state)).toBe(false);

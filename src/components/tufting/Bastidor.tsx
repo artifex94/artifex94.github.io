@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { PreviewCanvas } from './PreviewCanvas';
+import { ShapeDesignCanvas } from './ShapeDesignCanvas';
 import { FeretTape } from './FeretTape';
 import {
   describeDimensions,
@@ -19,6 +20,12 @@ interface BastidorProps {
   areaM2: number | null;
   pipelineStatus: PipelineStatus;
   pipelineResult: PipelineOutput | null;
+  fillColor?: string;
+  borderColor?: string;
+  borderThick?: boolean;
+  rotationDeg?: number;
+  pieceWidthCm?: number;
+  pieceHeightCm?: number;
   className?: string;
 }
 
@@ -72,6 +79,12 @@ export const Bastidor: React.FC<BastidorProps> = ({
   areaM2,
   pipelineStatus,
   pipelineResult,
+  fillColor,
+  borderColor,
+  borderThick = false,
+  rotationDeg = 0,
+  pieceWidthCm,
+  pieceHeightCm,
   className,
 }) => {
   const reduce = useReducedMotion();
@@ -82,6 +95,13 @@ export const Bastidor: React.FC<BastidorProps> = ({
     previewError?.failed === true && previewError.objectUrl === upload?.objectUrl;
 
   const showContoured = shape === 'contorneada' && pipelineResult !== null;
+  const showShapeDesign =
+    upload !== null &&
+    (shape === 'circular' || shape === 'rectangular') &&
+    fillColor !== undefined &&
+    borderColor !== undefined &&
+    pieceWidthCm !== undefined &&
+    pieceHeightCm !== undefined;
   const feretCm = dimensions.feretCm;
 
   const statusText = (() => {
@@ -121,7 +141,19 @@ export const Bastidor: React.FC<BastidorProps> = ({
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 22 }}
             >
-              {currentPreviewFailed ? (
+              {showShapeDesign ? (
+                <ShapeDesignCanvas
+                  shape={shape}
+                  pieceWidthCm={pieceWidthCm}
+                  pieceHeightCm={pieceHeightCm}
+                  fillColor={fillColor}
+                  borderColor={borderColor}
+                  borderThick={borderThick}
+                  rotationDeg={rotationDeg}
+                  imageUrl={upload.objectUrl}
+                  className="w-full h-full"
+                />
+              ) : currentPreviewFailed ? (
                 <p role="status" className="text-sm text-secondary text-center px-6 leading-relaxed">
                   No pude mostrar la vista previa acá, pero el diseño se cargó bien.
                 </p>
@@ -132,43 +164,6 @@ export const Bastidor: React.FC<BastidorProps> = ({
                   className="max-w-full max-h-full object-contain"
                   onError={() => setPreviewError({ objectUrl: upload.objectUrl, failed: true })}
                 />
-              )}
-
-              {/* Contorno de la forma elegida, para las formas simples. */}
-              {shape === 'circular' && (
-                <svg
-                  viewBox="0 0 100 100"
-                  className="absolute inset-0 w-full h-full pointer-events-none"
-                  aria-hidden="true"
-                >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="46"
-                    fill="none"
-                    stroke="var(--color-accent)"
-                    strokeWidth="1"
-                    strokeDasharray="3 2"
-                  />
-                </svg>
-              )}
-              {shape === 'rectangular' && (
-                <svg
-                  viewBox="0 0 100 100"
-                  className="absolute inset-0 w-full h-full pointer-events-none"
-                  aria-hidden="true"
-                >
-                  <rect
-                    x="6"
-                    y="6"
-                    width="88"
-                    height="88"
-                    fill="none"
-                    stroke="var(--color-accent)"
-                    strokeWidth="1"
-                    strokeDasharray="3 2"
-                  />
-                </svg>
               )}
             </motion.div>
           )}
