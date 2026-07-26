@@ -101,9 +101,11 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Cargá tu diseño</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Elegí el <strong className="text-primary">archivo</strong> de tu diseño desde tu dispositivo
-          (mejor un <strong className="text-primary">PNG con fondo transparente</strong> si querés la
-          forma contorneada). Lo convierto a PNG automáticamente.
+          Elegí el <strong className="text-primary">archivo</strong> desde{' '}
+          <strong className="text-primary">Archivos / Documentos</strong> — no desde la galería de
+          fotos, que lo convierte a JPEG y le borra la transparencia. Un{' '}
+          <strong className="text-primary">PNG con fondo transparente</strong> es lo ideal para la
+          forma contorneada.
         </p>
       </div>
 
@@ -122,9 +124,11 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         <input
           ref={inputRef}
           type="file"
-          // Sin `accept` de imagen a propósito: en mobile abre el selector de
-          // ARCHIVOS (no la cámara/galería, que rompe y re-encoda a JPEG). Lo que
-          // no se pueda decodificar como imagen se rechaza con un mensaje claro.
+          // Por EXTENSIÓN (no `image/*`) y sin `capture`: en mobile esto abre el
+          // selector de ARCHIVOS y no ofrece cámara ni video. La galería/cámara
+          // re-encoda a JPEG y mata la transparencia; el picker de archivos
+          // entrega el PNG original. Lo que no se decodifique se rechaza con aviso.
+          accept=".png,.jpg,.jpeg,.webp"
           className="sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -145,7 +149,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         </button>
 
         <p className="text-xs text-secondary mt-4">
-          O arrastralo acá. PNG, JPG o WebP, hasta {formatMb(MAX_FILE_BYTES)}. Lo paso a PNG solo.
+          O arrastralo acá. PNG, JPG o WebP (desde Archivos), hasta {formatMb(MAX_FILE_BYTES)}.
         </p>
       </div>
 
