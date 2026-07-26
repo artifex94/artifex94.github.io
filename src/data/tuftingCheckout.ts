@@ -125,6 +125,12 @@ export interface OrderRequest {
   areaM2?: number;
   ovalRatio?: number;
   colors?: readonly string[];
+  /** Nombre del color de borde elegido en el bastidor. */
+  borderColor?: string;
+  /** Borde grueso (true) o normal (false). */
+  borderThick?: boolean;
+  /** Rotación del diseño dentro de la forma, en grados. */
+  rotationDeg?: number;
   designImagePath?: string;
   referenceImagePath?: string;
   customerNote?: string;

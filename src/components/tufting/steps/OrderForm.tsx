@@ -148,10 +148,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         }
       }
 
-      // El color del borde no tiene columna propia: viaja en la nota.
-      const noteParts = [];
-      if (borderName) noteParts.push(`Borde: ${borderName}`);
-      if (note.trim()) noteParts.push(note.trim());
+      // El color y el grosor del borde, la rotación y el óvalo viajan como datos
+      // estructurados (no en la nota): así el encargo especifica exactamente lo
+      // que la persona armó en el bastidor. La nota queda solo para el cliente.
+      const isDesigned = shape === 'circular' || shape === 'rectangular';
 
       const result = await createOrder({
         shape,
@@ -162,9 +162,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         // Solo la contorneada manda área; en las simples el server la recalcula.
         areaM2: shape === 'contorneada' ? (areaM2 ?? undefined) : undefined,
         colors,
+        ...(isDesigned ? { borderColor: borderName, borderThick, rotationDeg } : {}),
         designImagePath,
         referenceImagePath,
-        customerNote: noteParts.join('\n\n') || undefined,
+        customerNote: note.trim() || undefined,
         contact: { name: name.trim(), email: email.trim(), phone: phone.trim() || undefined },
         payByTransfer,
         discountCode: discountCode.trim() || undefined,
