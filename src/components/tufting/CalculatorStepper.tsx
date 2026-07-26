@@ -103,6 +103,27 @@ export const CalculatorStepper: React.FC = () => {
   const currentIndex = STEPS.indexOf(step);
   const isLast = step === 'quote';
 
+  // Reposicionamiento al cambiar de paso (mobile). El bastidor es una banda
+  // sticky; sin esto, el comienzo del paso nuevo aparece tapado por ella y el
+  // cliente tiene que scrollear a mano para encontrarlo.
+  const bastidorRef = useRef<HTMLDivElement>(null);
+  const stepTopRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Guardas para entornos sin DOM completo (SSR / jsdom en tests).
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    if (typeof window.scrollTo !== 'function') return;
+    // En desktop las dos columnas conviven sin taparse: no hace falta.
+    if (window.matchMedia('(min-width: 1024px)').matches) return;
+    const anchor = stepTopRef.current;
+    if (!anchor) return;
+    // Dejar el inicio del paso JUSTO debajo de la banda sticky del bastidor.
+    const bandHeight = bastidorRef.current?.offsetHeight ?? 0;
+    const NAV_HEIGHT = 64; // el header del sitio, también sticky
+    const target = window.scrollY + anchor.getBoundingClientRect().top - bandHeight - NAV_HEIGHT - 12;
+    window.scrollTo({ top: Math.max(0, target), behavior: reduce ? 'auto' : 'smooth' });
+  }, [step, reduce]);
+
   // Los colores del diseño ya llevados a lana. Alimentan la revelación, el hilo
   // de progreso y el mensaje de WhatsApp.
   const detectedColors = pipeline.result?.detectedColors ?? [];
@@ -127,25 +148,28 @@ export const CalculatorStepper: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_3fr] lg:gap-12 items-start">
-      {/* El bastidor: en desktop acompaña el scroll; en mobile encabeza. */}
-      <Bastidor
-        upload={upload}
-        shape={shape}
-        dimensions={dimensions}
-        areaM2={resolveAreaM2(state)}
-        pipelineStatus={pipeline.status}
-        pipelineResult={pipeline.result}
-        fillColor={fillColor}
-        borderColor={borderColor}
-        borderThick={borderThick}
-        rotationDeg={rotationDeg}
-        pieceWidthCm={pieceWidthCm}
-        pieceHeightCm={pieceHeightCm}
-        className="sticky top-16 z-20 lg:top-24"
-      />
+      {/* El bastidor: en desktop acompaña el scroll; en mobile encabeza como
+          banda compacta. El sticky vive en este wrapper para poder medir su
+          alto y reposicionar el paso debajo al cambiar de etapa. */}
+      <div ref={bastidorRef} className="sticky top-16 z-20 lg:top-24">
+        <Bastidor
+          upload={upload}
+          shape={shape}
+          dimensions={dimensions}
+          areaM2={resolveAreaM2(state)}
+          pipelineStatus={pipeline.status}
+          pipelineResult={pipeline.result}
+          fillColor={fillColor}
+          borderColor={borderColor}
+          borderThick={borderThick}
+          rotationDeg={rotationDeg}
+          pieceWidthCm={pieceWidthCm}
+          pieceHeightCm={pieceHeightCm}
+        />
+      </div>
 
       {/* La mesa de trabajo. */}
-      <div className="flex flex-col gap-5 min-w-0 lg:gap-8">
+      <div ref={stepTopRef} className="flex flex-col gap-5 min-w-0 lg:gap-8">
         <ThreadProgress
           current={step}
           canVisit={canVisit}

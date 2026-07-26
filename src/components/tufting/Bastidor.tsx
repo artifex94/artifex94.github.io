@@ -113,20 +113,20 @@ export const Bastidor: React.FC<BastidorProps> = ({
   })();
 
   return (
-    <div className={cn('flex flex-col gap-2.5 lg:gap-4', className)}>
+    <div className={cn('flex flex-row items-center gap-3 sm:flex-col sm:items-stretch sm:gap-2.5 lg:gap-4', className)}>
       {/* El marco de madera. El grosor y el bisel son el "chrome" del juego. */}
-      <div className="relative rounded-[1.4rem] p-2.5 shadow-xl lg:p-3.5" style={woodFrame}>
+      <div className="relative w-[6.5rem] shrink-0 rounded-[1rem] p-2 shadow-xl sm:w-full sm:rounded-[1.4rem] sm:p-2.5 lg:p-3.5" style={woodFrame}>
         <div
           aria-hidden="true"
-          className="absolute inset-0 rounded-[1.4rem] pointer-events-none"
+          className="absolute inset-0 rounded-[1rem] pointer-events-none sm:rounded-[1.4rem]"
           style={woodGrain}
         />
         <div
-          className="relative flex h-[min(62vw,32vh)] min-h-[10.5rem] items-center justify-center overflow-hidden rounded-lg bg-base sm:h-auto sm:aspect-square lg:aspect-square"
+          className="relative flex size-[5.5rem] min-h-0 items-center justify-center overflow-hidden rounded-md bg-base sm:size-auto sm:h-auto sm:min-h-[10.5rem] sm:aspect-square sm:rounded-lg lg:aspect-square"
           style={clothBackground}
         >
           {!upload && (
-            <p className="px-6 text-center text-xs leading-relaxed text-secondary sm:text-sm lg:px-8">
+            <p className="px-2 text-center text-xs leading-snug text-secondary sm:px-6 sm:leading-relaxed sm:text-sm lg:px-8">
               Tu diseño va a aparecer acá,
               <br />
               prendido al bastidor.
@@ -136,7 +136,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
           {upload && !showContoured && (
             <motion.div
               key={upload.objectUrl}
-              className="relative flex h-full w-full items-center justify-center p-2.5 sm:p-4"
+              className="relative flex h-full w-full items-center justify-center p-1.5 sm:p-4"
               initial={reduce ? false : { opacity: 0, scale: 0.85, rotate: -3 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 22 }}
@@ -169,7 +169,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
           )}
 
           {showContoured && pipelineResult && (
-            <div className="relative flex h-full w-full items-center justify-center p-2.5 sm:p-4">
+            <div className="relative flex h-full w-full items-center justify-center p-1.5 sm:p-4">
               <div className="relative max-w-full max-h-full">
                 <PreviewCanvas
                   rgba={pipelineResult.preview.rgba}
@@ -193,7 +193,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
 
       {/* La ficha al pie: la etiqueta de taller de la pieza, siempre visible.
           El borde punteado interior es la costura de la etiqueta. */}
-      <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.9))] p-1.5 shadow-[0_10px_26px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.95)]" aria-live="polite">
+      <div className="min-w-0 flex-1 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.9))] p-1.5 shadow-[0_10px_26px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.95)] sm:w-full" aria-live="polite">
         <div className="rounded-lg border border-dashed border-accent/35 px-3 py-2 text-xs sm:px-3.5 sm:py-2.5 sm:text-sm">
           <p className="font-medium">{statusText}</p>
           {areaM2 !== null && (
