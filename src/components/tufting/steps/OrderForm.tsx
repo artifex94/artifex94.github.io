@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { Loader2, PackageCheck, Send } from 'lucide-react';
+import { Loader2, PackageCheck, Send, CreditCard } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import {
   createOrder,
   getDesignUploadUrl,
   uploadDesign,
+  payOrderDeposit,
+  DepositError,
   type DesignImageType,
+  type DepositPortion,
 } from '../../../data/tuftingCheckout';
+import { formatARS } from '../../../data/tuftingPricing';
 import type { Dimensions, Shape } from '../../../data/tuftingCalculator';
 import { exportDesignBlob, type ComposeParams } from '../../../utils/shapeComposer';
 
@@ -29,6 +33,8 @@ interface OrderFormProps {
   pieceHeightCm?: number;
   payByTransfer: boolean;
   discountCode: string;
+  /** Total del presupuesto, para calcular y mostrar la seña. */
+  total: number;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,6 +73,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   pieceHeightCm,
   payByTransfer,
   discountCode,
+  total,
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -74,9 +81,31 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [depositBusy, setDepositBusy] = useState<DepositPortion | null>(null);
+  const [depositError, setDepositError] = useState<string | null>(null);
 
   const canSend = name.trim().length > 0 && EMAIL_RE.test(email.trim()) && !busy;
+
+  // La seña: el total, o la mitad redondeada a 1000 (igual que el servidor).
+  const halfArs = Math.ceil(total / 2 / 1000) * 1000;
+
+  const payDeposit = async (portion: DepositPortion) => {
+    if (!orderId) return;
+    setDepositError(null);
+    setDepositBusy(portion);
+    try {
+      const { initPoint } = await payOrderDeposit(orderId, portion);
+      window.location.href = initPoint;
+    } catch (cause) {
+      const msg =
+        cause instanceof DepositError && cause.code === 'mp_unavailable'
+          ? 'El pago online no está disponible en este momento. Te coordino la seña por WhatsApp.'
+          : 'No pude iniciar el pago de la seña. Probá de nuevo en un rato.';
+      setDepositError(msg);
+      setDepositBusy(null);
+    }
+  };
 
   const submit = async () => {
     setError(null);
@@ -124,7 +153,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       if (borderName) noteParts.push(`Borde: ${borderName}`);
       if (note.trim()) noteParts.push(note.trim());
 
-      await createOrder({
+      const result = await createOrder({
         shape,
         diameterCm: dimensions.diameterCm,
         ovalRatio: dimensions.ovalRatio,
@@ -141,7 +170,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         discountCode: discountCode.trim() || undefined,
       });
 
-      setSent(true);
+      setOrderId(result.orderId);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No pude enviar el encargo.');
     } finally {
@@ -149,14 +178,53 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     }
   };
 
-  if (sent) {
+  if (orderId) {
+    const depositBtn =
+      'inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full font-bold transition-opacity min-h-11 disabled:opacity-50 disabled:cursor-not-allowed';
     return (
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-accent/40 bg-accent/5 p-6 text-center">
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-accent/40 bg-accent/5 p-6 text-center">
         <PackageCheck size={28} className="text-accent" aria-hidden="true" />
         <p className="font-display text-lg font-semibold">¡Encargo enviado!</p>
         <p className="text-sm text-secondary leading-relaxed">
-          Me llegó tu diseño y tus medidas. Te escribo a la brevedad para confirmar todo y coordinar.
+          Me llegó tu diseño y tus medidas. Si querés, dejá la seña para reservar tu lugar en el
+          taller — el resto lo saldás al entregar.
         </p>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-1">
+          <button
+            type="button"
+            onClick={() => payDeposit('half')}
+            disabled={depositBusy !== null}
+            className={cn(depositBtn, 'flex-1 bg-accent text-on-accent hover:opacity-90')}
+          >
+            {depositBusy === 'half' ? (
+              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+            ) : (
+              <CreditCard size={18} aria-hidden="true" />
+            )}
+            Seña 50% · {formatARS(halfArs)}
+          </button>
+          <button
+            type="button"
+            onClick={() => payDeposit('full')}
+            disabled={depositBusy !== null}
+            className={cn(depositBtn, 'flex-1 border border-accent text-accent hover:bg-accent hover:text-on-accent')}
+          >
+            {depositBusy === 'full' ? (
+              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+            ) : (
+              <CreditCard size={18} aria-hidden="true" />
+            )}
+            Pagar todo · {formatARS(total)}
+          </button>
+        </div>
+        <p className="text-xs text-secondary">Pago seguro con MercadoPago. También podés coordinar por WhatsApp.</p>
+
+        {depositError && (
+          <p role="alert" className="text-sm text-accent">
+            {depositError}
+          </p>
+        )}
       </div>
     );
   }

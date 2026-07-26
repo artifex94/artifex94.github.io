@@ -164,3 +164,48 @@ export const createOrder = (request: OrderRequest): Promise<OrderResponse> =>
     request,
     'No pude enviar el encargo. Probá de nuevo en un rato.',
   );
+
+// ---- Seña del encargo (total o mitad) --------------------------------------
+
+/** Cuánto del total se paga como seña. */
+export type DepositPortion = 'full' | 'half';
+
+export interface OrderDepositResponse {
+  orderId: string;
+  /** URL de checkout de MercadoPago a la que redirigir. */
+  initPoint: string;
+}
+
+/** Error del pago de seña que el UI puede distinguir (ej. MP no configurado). */
+export class DepositError extends Error {
+  code: string;
+  constructor(code: string) {
+    super(code);
+    this.name = 'DepositError';
+    this.code = code;
+  }
+}
+
+/**
+ * Genera el checkout de la seña de un encargo ya creado. El monto (total o
+ * mitad) lo calcula el servidor a partir de la orden; el cliente solo elige.
+ */
+export const payOrderDeposit = async (
+  orderId: string,
+  portion: DepositPortion,
+): Promise<OrderDepositResponse> => {
+  const response = await fetch(`${FUNCTIONS_URL}/tufting-order-deposit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId, portion }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const code =
+      payload && typeof payload === 'object' && 'error' in payload
+        ? String((payload as { error: unknown }).error)
+        : 'deposit_error';
+    throw new DepositError(code);
+  }
+  return payload as OrderDepositResponse;
+};

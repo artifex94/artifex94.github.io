@@ -205,6 +205,7 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
           pieceHeightCm={pieceHeightCm}
           payByTransfer={discounts.includes('transferencia')}
           discountCode={discountCode}
+          total={price.total}
         />
       </div>
 
