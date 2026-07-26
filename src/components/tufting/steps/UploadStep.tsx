@@ -22,6 +22,22 @@ interface UploadStepProps {
 
 const formatMb = (bytes: number): string => `${(bytes / 1024 / 1024).toFixed(0)} MB`;
 
+// File System Access API: abre el explorador de ARCHIVOS real del sistema (no la
+// cámara ni la galería, que re-encodan a JPEG). No existe en iOS Safari → ahí se
+// cae al <input type=file>.
+interface FsFileHandle {
+  getFile: () => Promise<File>;
+}
+interface FsWindow {
+  showOpenFilePicker?: (opts?: unknown) => Promise<FsFileHandle[]>;
+}
+const IMAGE_PICKER_TYPES = [
+  {
+    description: 'Imagen',
+    accept: { 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'], 'image/webp': ['.webp'] },
+  },
+];
+
 export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -36,10 +52,11 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         return;
       }
 
-      // Se decodifica el archivo y se re-encoda a PNG bajo nuestro control: así el
-      // celular no puede colarnos un JPEG sin transparencia ni un formato raro, y
-      // el preview/pipeline/subida siempre trabajan sobre un PNG.
-      const result = await normalizeToPng(file);
+      // Se decodifica el archivo y se re-encoda a PNG bajo nuestro control, y si
+      // viene opaco (típico JPEG de galería) se le quita el fondo para GENERAR la
+      // transparencia. Así el preview/pipeline/subida siempre trabajan sobre un
+      // PNG y la forma contorneada funciona en cualquier teléfono.
+      const result = await normalizeToPng(file, { autoRemoveBackground: true });
 
       if (!result.ok || !result.blob) {
         dispatch({
@@ -96,16 +113,34 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
     if (file) void handleFile(file);
   };
 
+  // Abre el explorador de archivos real cuando el navegador lo soporta; si no,
+  // dispara el <input> como fallback.
+  const onPickClick = useCallback(async () => {
+    const picker = (window as unknown as FsWindow).showOpenFilePicker;
+    if (typeof picker !== 'function') {
+      inputRef.current?.click();
+      return;
+    }
+    try {
+      const [handle] = await picker({
+        multiple: false,
+        excludeAcceptAllOption: false,
+        types: IMAGE_PICKER_TYPES,
+      });
+      if (handle) void handleFile(await handle.getFile());
+    } catch {
+      // El usuario canceló el diálogo: no hacer nada.
+    }
+  }, [handleFile]);
+
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Cargá tu diseño</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Elegí el <strong className="text-primary">archivo</strong> desde{' '}
-          <strong className="text-primary">Archivos / Documentos</strong> — no desde la galería de
-          fotos, que lo convierte a JPEG y le borra la transparencia. Un{' '}
-          <strong className="text-primary">PNG con fondo transparente</strong> es lo ideal para la
-          forma contorneada.
+          Elegí el <strong className="text-primary">archivo</strong> de tu diseño. Si tiene un{' '}
+          <strong className="text-primary">fondo parejo, se lo quito solo</strong> para dejarlo
+          recortado. Ideal un PNG con fondo transparente; si no, uno con fondo liso también sirve.
         </p>
       </div>
 
@@ -142,7 +177,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
 
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
+          onClick={() => void onPickClick()}
           className="inline-flex items-center gap-2 bg-accent text-on-accent px-6 py-3 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
         >
           Elegir archivo

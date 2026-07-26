@@ -1,3 +1,5 @@
+import { removeBackground } from './backgroundRemoval';
+
 export interface ImageProbe {
   ok: boolean;
   width?: number;
@@ -91,7 +93,14 @@ export interface PngResult {
   width?: number;
   height?: number;
   hasAlpha?: boolean;
+  /** true si el alfa se generó quitando el fondo (no venía en el original). */
+  backgroundRemoved?: boolean;
   reason?: 'heic' | 'undecodable';
+}
+
+export interface NormalizeOptions {
+  /** Si la imagen es opaca, intentar quitarle el fondo para generar transparencia. */
+  autoRemoveBackground?: boolean;
 }
 
 /** Lado máximo del PNG normalizado: alcanza de sobra para el diseño y lo mantiene liviano. */
@@ -106,7 +115,10 @@ export const NORMALIZED_MAX_SIDE = 2000;
  * dibuja sobre un canvas transparente), y produce un PNG opaco cuando no. El
  * lado mayor se topea en NORMALIZED_MAX_SIDE para que el archivo no se dispare.
  */
-export const normalizeToPng = async (file: Blob): Promise<PngResult> => {
+export const normalizeToPng = async (
+  file: Blob,
+  options: NormalizeOptions = {},
+): Promise<PngResult> => {
   const header = new Uint8Array(await file.slice(0, 32).arrayBuffer());
   const looksHeic = isHeicHeader(header);
 
@@ -142,13 +154,26 @@ export const normalizeToPng = async (file: Blob): Promise<PngResult> => {
     ctx.drawImage(bitmap, 0, 0, outW, outH);
     closeBitmap(bitmap);
 
-    // Alfa real: algún píxel semitransparente ⇒ el diseño tiene transparencia.
+    // Alfa real: algún píxel semitransparente ⇒ el diseño ya tiene transparencia.
+    const imageData = ctx.getImageData(0, 0, outW, outH);
+    const { data } = imageData;
     let hasAlpha = false;
-    const data = ctx.getImageData(0, 0, outW, outH).data;
     for (let i = 3; i < data.length; i += 4) {
       if (data[i] < 250) {
         hasAlpha = true;
         break;
+      }
+    }
+
+    // Imagen opaca (típico JPEG de galería): intentar GENERAR transparencia
+    // quitando el fondo sólido, para que la forma contorneada funcione igual.
+    let backgroundRemoved = false;
+    if (!hasAlpha && options.autoRemoveBackground) {
+      const { removed } = removeBackground(imageData);
+      if (removed) {
+        ctx.putImageData(imageData, 0, 0);
+        hasAlpha = true;
+        backgroundRemoved = true;
       }
     }
 
@@ -158,7 +183,7 @@ export const normalizeToPng = async (file: Blob): Promise<PngResult> => {
     if (!blob) return { ok: false, reason: 'undecodable' };
 
     // Se reportan las dimensiones ORIGINALES para validar tamaño real.
-    return { ok: true, blob, width, height, hasAlpha };
+    return { ok: true, blob, width, height, hasAlpha, backgroundRemoved };
   } catch {
     closeBitmap(bitmap);
     return { ok: false, reason: 'undecodable' };
