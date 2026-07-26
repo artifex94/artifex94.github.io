@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Upload, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../../utils/cn';
-import { HEADER_BYTES_NEEDED, sniffImageHeader } from '../../../utils/imageFormat';
-import { probeImage } from '../../../utils/imageProbe';
+import type { ImageHeaderInfo } from '../../../utils/imageFormat';
+import { normalizeToPng } from '../../../utils/imageProbe';
 import type { CalculatorAction, UploadState } from '../../../hooks/useCalculatorState';
 
 /** Tamaño máximo del archivo. Arriba de esto el navegador sufre al decodificar. */
@@ -36,26 +36,24 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         return;
       }
 
-      // Se leen solo los primeros bytes: alcanza para identificar el formato de
-      // verdad, sin depender de la extensión ni cargar el archivo entero.
-      const header = new Uint8Array(await file.slice(0, HEADER_BYTES_NEEDED).arrayBuffer());
-      const info = sniffImageHeader(header);
+      // Se decodifica el archivo y se re-encoda a PNG bajo nuestro control: así el
+      // celular no puede colarnos un JPEG sin transparencia ni un formato raro, y
+      // el preview/pipeline/subida siempre trabajan sobre un PNG.
+      const result = await normalizeToPng(file);
 
-      const probe = await probeImage(file);
-
-      if (!probe.ok) {
+      if (!result.ok || !result.blob) {
         dispatch({
           type: 'file-rejected',
           message:
-            probe.reason === 'heic'
+            result.reason === 'heic'
               ? 'Las fotos de iPhone (y algunos Android) vienen en formato HEIC. Convertila a PNG o JPG y volvé a subirla.'
-              : 'No pude abrir esta imagen en tu dispositivo. Probá con un PNG o JPG exportado de nuevo.',
+              : 'No pude abrir este archivo como imagen. Subí un PNG, JPG o WebP.',
         });
         return;
       }
 
-      const width = probe.width;
-      const height = probe.height;
+      const width = result.width;
+      const height = result.height;
       const side = Math.max(width ?? 0, height ?? 0);
       if (side > MAX_IMAGE_SIDE) {
         dispatch({
@@ -72,12 +70,20 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         return;
       }
 
+      const info: ImageHeaderInfo = {
+        format: 'png',
+        width,
+        height,
+        hasAlphaChannel: !!result.hasAlpha,
+      };
+      const pngName = file.name.replace(/\.[^.]+$/, '') + '.png';
+
       dispatch({
         type: 'file-accepted',
-        fileName: file.name,
-        objectUrl: URL.createObjectURL(file),
-        info: { ...info, width, height },
-        contourable: probe.hasAlpha,
+        fileName: pngName,
+        objectUrl: URL.createObjectURL(result.blob),
+        info,
+        contourable: !!result.hasAlpha,
       });
     },
     [dispatch],
@@ -93,11 +99,11 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="font-display text-2xl font-semibold mb-2">Subí tu diseño</h2>
+        <h2 className="font-display text-2xl font-semibold mb-2">Cargá tu diseño</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Si querés que la alfombra siga el contorno de tu dibujo, el diseño tiene que tener{' '}
-          <strong className="text-primary">fondo transparente (PNG)</strong>. Con otros formatos
-          puedo hacerla circular o rectangular.
+          Elegí el <strong className="text-primary">archivo</strong> de tu diseño desde tu dispositivo
+          (mejor un <strong className="text-primary">PNG con fondo transparente</strong> si querés la
+          forma contorneada). Lo convierto a PNG automáticamente.
         </p>
       </div>
 
@@ -116,7 +122,9 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp,image/*"
+          // Sin `accept` de imagen a propósito: en mobile abre el selector de
+          // ARCHIVOS (no la cámara/galería, que rompe y re-encoda a JPEG). Lo que
+          // no se pueda decodificar como imagen se rechaza con un mensaje claro.
           className="sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -137,7 +145,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         </button>
 
         <p className="text-xs text-secondary mt-4">
-          O arrastralo acá. PNG, JPG o WebP, hasta {formatMb(MAX_FILE_BYTES)}.
+          O arrastralo acá. PNG, JPG o WebP, hasta {formatMb(MAX_FILE_BYTES)}. Lo paso a PNG solo.
         </p>
       </div>
 

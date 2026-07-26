@@ -8,7 +8,7 @@ describe('TuftingCalculadora', () => {
     renderWithProviders(<TuftingCalculadora />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/bastidor/i);
-    expect(screen.getByRole('heading', { name: /subí tu diseño/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /cargá tu diseño/i })).toBeInTheDocument();
   });
 
   it('setea title y canonical propios de la ruta', () => {
