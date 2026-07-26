@@ -197,9 +197,9 @@ const DesignerControls: React.FC<{
   if (shape !== 'circular' && shape !== 'rectangular') return null;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 md:gap-6">
       {shape === 'rectangular' && (
-        <div className="flex flex-col gap-5 rounded-2xl border border-line bg-surface/70 p-4">
+        <div className="flex flex-col gap-5 rounded-2xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,248,240,0.78))] p-4 shadow-[0_12px_28px_rgba(112,70,52,0.08)]">
           <fieldset className="flex flex-col gap-3">
             <legend className="text-sm font-semibold mb-1">Proporción</legend>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -255,7 +255,7 @@ const DesignerControls: React.FC<{
       )}
 
       {shape === 'circular' && (
-        <div className="flex flex-col gap-5 rounded-2xl border border-line bg-surface/70 p-4">
+        <div className="flex flex-col gap-5 rounded-2xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,248,240,0.78))] p-4 shadow-[0_12px_28px_rgba(112,70,52,0.08)]">
           <RangeControl
             id="circle-size"
             label="Diámetro"
@@ -298,8 +298,8 @@ const DesignerControls: React.FC<{
         </div>
       )}
 
-      <p id="shape-result" className="rounded-xl border border-line bg-base p-3 text-sm">
-        Medida resultante:{' '}
+      <p id="shape-result" className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.72))] p-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+        Así queda la pieza:{' '}
         <strong className="font-semibold">{describeDimensions(shape, dimensions)}</strong>
       </p>
 
@@ -311,7 +311,7 @@ const DesignerControls: React.FC<{
       />
 
       <div className="flex flex-col gap-3">
-        <label className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 text-sm font-semibold min-h-11 cursor-pointer">
+        <label className="flex items-center gap-3 min-h-11 cursor-pointer rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
           <input
             type="checkbox"
             checked={state.borderSameAsFill}
@@ -329,7 +329,7 @@ const DesignerControls: React.FC<{
         />
       </div>
 
-      <label className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3 text-sm font-semibold min-h-11 cursor-pointer">
+      <label className="flex items-center gap-3 min-h-11 cursor-pointer rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
         <input
           type="checkbox"
           checked={state.borderThick}
@@ -352,15 +352,15 @@ export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch, pipeline 
     dispatch({ type: 'dimension-changed', field, value });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-5 md:gap-8">
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Elegí la forma</h2>
         <p className="text-secondary text-sm">
-          Las medidas son las de la alfombra terminada, con el borde incluido.
+          Las medidas son las de la alfombra terminada, borde incluido.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         {SHAPE_OPTIONS.map((option) => {
           const blocked = option.requiresAlpha && !upload?.contourable;
           const selected = shape === option.id;
@@ -373,8 +373,10 @@ export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch, pipeline 
               aria-pressed={selected}
               onClick={() => dispatch({ type: 'shape-selected', shape: option.id })}
               className={cn(
-                'text-left p-5 rounded-2xl border transition-colors min-h-11',
-                selected ? 'border-accent bg-accent/5' : 'border-line bg-surface',
+                'min-h-11 rounded-2xl border p-4 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] transition-colors sm:p-5',
+                selected
+                  ? 'border-accent bg-accent/5'
+                  : 'border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,248,240,0.78))]',
                 blocked ? 'opacity-50 cursor-not-allowed' : 'hover:border-accent',
               )}
             >

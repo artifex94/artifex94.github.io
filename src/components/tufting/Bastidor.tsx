@@ -113,20 +113,20 @@ export const Bastidor: React.FC<BastidorProps> = ({
   })();
 
   return (
-    <div className={cn('flex flex-col gap-4', className)}>
+    <div className={cn('flex flex-col gap-2.5 lg:gap-4', className)}>
       {/* El marco de madera. El grosor y el bisel son el "chrome" del juego. */}
-      <div className="relative rounded-[1.4rem] p-3.5" style={woodFrame}>
+      <div className="relative rounded-[1.4rem] p-2.5 shadow-xl lg:p-3.5" style={woodFrame}>
         <div
           aria-hidden="true"
           className="absolute inset-0 rounded-[1.4rem] pointer-events-none"
           style={woodGrain}
         />
         <div
-          className="relative rounded-lg bg-base overflow-hidden aspect-square flex items-center justify-center"
+          className="relative flex h-[min(62vw,32vh)] min-h-[10.5rem] items-center justify-center overflow-hidden rounded-lg bg-base sm:h-auto sm:aspect-square lg:aspect-square"
           style={clothBackground}
         >
           {!upload && (
-            <p className="text-sm text-secondary text-center px-8 leading-relaxed">
+            <p className="px-6 text-center text-xs leading-relaxed text-secondary sm:text-sm lg:px-8">
               Tu diseño va a aparecer acá,
               <br />
               prendido al bastidor.
@@ -136,7 +136,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
           {upload && !showContoured && (
             <motion.div
               key={upload.objectUrl}
-              className="relative w-full h-full flex items-center justify-center p-4"
+              className="relative flex h-full w-full items-center justify-center p-2.5 sm:p-4"
               initial={reduce ? false : { opacity: 0, scale: 0.85, rotate: -3 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 260, damping: 22 }}
@@ -154,7 +154,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
                   className="w-full h-full"
                 />
               ) : currentPreviewFailed ? (
-                <p role="status" className="text-sm text-secondary text-center px-6 leading-relaxed">
+                <p role="status" className="px-5 text-center text-xs leading-relaxed text-secondary sm:text-sm">
                   No pude mostrar la vista previa acá, pero el diseño se cargó bien.
                 </p>
               ) : (
@@ -169,7 +169,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
           )}
 
           {showContoured && pipelineResult && (
-            <div className="relative w-full h-full flex items-center justify-center p-4">
+            <div className="relative flex h-full w-full items-center justify-center p-2.5 sm:p-4">
               <div className="relative max-w-full max-h-full">
                 <PreviewCanvas
                   rgba={pipelineResult.preview.rgba}
@@ -193,8 +193,8 @@ export const Bastidor: React.FC<BastidorProps> = ({
 
       {/* La ficha al pie: la etiqueta de taller de la pieza, siempre visible.
           El borde punteado interior es la costura de la etiqueta. */}
-      <div className="bg-surface border border-line rounded-xl p-1.5 shadow-sm" aria-live="polite">
-        <div className="border border-dashed border-accent/35 rounded-lg px-3.5 py-2.5 text-sm">
+      <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.9))] p-1.5 shadow-[0_10px_26px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.95)]" aria-live="polite">
+        <div className="rounded-lg border border-dashed border-accent/35 px-3 py-2 text-xs sm:px-3.5 sm:py-2.5 sm:text-sm">
           <p className="font-medium">{statusText}</p>
           {areaM2 !== null && (
             <p

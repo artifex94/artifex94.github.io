@@ -130,7 +130,7 @@ describe('QuoteStep', () => {
     renderQuote(estadoConPresupuesto());
 
     expect(screen.getByRole('button', { name: /pagar \$/i })).toBeInTheDocument();
-    expect(screen.getByText(/pagarlo en cuotas/i)).toBeInTheDocument();
+    expect(screen.getByText(/pagarla en cuotas/i)).toBeInTheDocument();
   });
 
   it('NO ofrece pago online en una pieza contorneada', () => {

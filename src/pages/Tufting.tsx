@@ -42,12 +42,12 @@ export const Tufting: React.FC = () => {
             Tufting · Alfombras y tapices artesanales · Victoria, Entre Ríos
           </span>
           <h1 className="font-display text-4xl md:text-6xl font-semibold mb-6 leading-tight">
-            Tejido a mano, <br />
-            <span className="text-accent italic">hilo por hilo.</span>
+            Un territorio de lana, <br />
+            <span className="text-accent italic">tejido hilo por hilo.</span>
           </h1>
           <p className="text-lg text-secondary leading-relaxed">
-            Alfombras artesanales y tapices únicos hechos con pistola de tufting: encargá tu pieza,
-            proponé una colaboración artística o elegí una obra lista para llevar.
+            Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
+            traé tu obra de artista o llevate una que ya está esperando pared.
           </p>
           <WoolStitch className="mx-auto mt-8 max-w-sm" />
         </section>
@@ -59,11 +59,11 @@ export const Tufting: React.FC = () => {
               <Sparkles size={14} aria-hidden="true" /> Elegí por dónde arrancar
             </span>
             <h2 id="tufting-caminos" className="font-display text-3xl font-semibold mt-5 mb-3">
-              Tres caminos para darle forma a la lana
+              Tres senderos que llevan a la misma lana
             </h2>
             <p className="text-secondary max-w-2xl mx-auto">
-              Cada tarjeta te lleva al próximo paso: bastidor para presupuestar, formulario para
-              obras compartidas o tienda de piezas únicas.
+              Cada tarjeta es el primer paso de uno: el bastidor para presupuestar al toque, el
+              formulario para obras compartidas, la tienda para piezas que ya existen.
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export const Tufting: React.FC = () => {
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl font-semibold mb-3">Qué tejo</h2>
             <p className="text-secondary max-w-2xl mx-auto">
-              Tres formatos para arrancar. Contame tu idea y la armamos juntos, a tu medida.
+              Tres formatos para empezar; tu idea decide el resto.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -155,13 +155,13 @@ export const Tufting: React.FC = () => {
         {/* Proceso breve */}
         <section className={cn(puffyCardClass, 'p-8 md:p-12')}>
           <h2 className="font-display text-2xl font-semibold mb-8 text-center">
-            Si la pieza es por encargo, el proceso es simple
+            Si es por encargo, el camino es corto
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
-              'Me contás tu idea: medidas, colores y dónde va. Puede ser boceto, foto o intuición.',
-              'Te paso diseño digital y presupuesto. Ajustamos juntos hasta que quede como lo imaginás.',
-              'Tejo la pieza a mano y la entrego terminada, con base y bordes rematados.',
+              'Me contás tu idea: medidas, colores y dónde va a vivir. Sirve un boceto, una foto o una corazonada.',
+              'Te mando el diseño digital y el presupuesto. Lo damos vuelta juntos hasta que sea el que imaginaste.',
+              'La tejo a mano, punto por punto, y te la entrego terminada: con base y bordes rematados.',
             ].map((step, index) => (
               <div key={step}>
                 <p className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 font-display text-2xl font-bold text-accent shadow-[inset_0_2px_8px_rgba(255,255,255,0.8)]">
@@ -177,7 +177,7 @@ export const Tufting: React.FC = () => {
         <section className="mb-16 text-center">
           <h2 className="font-display text-3xl font-semibold mb-3">¿Tejemos algo juntos?</h2>
           <p className="text-secondary mb-8">
-            Escribime y vemos juntos si conviene encargo, colaboración o una pieza disponible.
+            Escribime y lo charlamos: encargo, colaboración o una pieza que ya está lista. El primer hilo siempre es un mensaje.
           </p>
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded />
           <p className="text-sm text-secondary mt-6">

@@ -77,8 +77,8 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
     return (
       <div className="flex flex-col gap-4">
         <p className="text-sm text-secondary leading-relaxed">
-          Las piezas contorneadas las cierro a mano: te confirmo el diseño, el borde y las medidas
-          finales, y te paso el link de pago.
+          Las piezas contorneadas se cierran conversando: te confirmo el diseño, el borde y las
+          medidas finales, y te paso el link de pago.
         </p>
         {whatsappUrl && (
           <a
@@ -88,7 +88,7 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
             className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
           >
             <MessageCircle size={18} aria-hidden="true" />
-            Encargarlo por WhatsApp
+            Encargarla por WhatsApp
           </a>
         )}
       </div>
@@ -133,17 +133,17 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
         Pagar {formatARS(total)}
       </button>
 
-      <details className="border border-line rounded-xl bg-surface">
+      <details className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,248,240,0.78))] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
         <summary className="flex items-center gap-2 p-4 cursor-pointer font-semibold min-h-11">
           <CalendarClock size={16} aria-hidden="true" />
-          Pagarlo en cuotas
+          Pagarla en cuotas
         </summary>
 
         <div className="flex flex-col gap-4 p-4 pt-0">
           <p className="text-sm text-secondary leading-relaxed">
             Se debita solo, mes a mes. Arranca con un anticipo de{' '}
-            <strong className="text-primary">{formatARS(deposit)}</strong>, que cubre los
-            materiales: la pieza se teje a tu medida y no se puede revender.
+            <strong className="text-primary">{formatARS(deposit)}</strong> que cubre los materiales:
+            la pieza se teje a tu medida y no hay otra igual para revender.
           </p>
 
           <div className="flex flex-col gap-1.5">

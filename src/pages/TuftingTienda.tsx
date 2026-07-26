@@ -112,11 +112,11 @@ export const TuftingTienda: React.FC = () => {
             Piezas disponibles
           </span>
           <h1 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-            Obras listas para <span className="text-accent italic">llevar</span>
+            Piezas que esperan <span className="text-accent italic">su casa</span>
           </h1>
           <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-            Piezas únicas ya tejidas, suaves y terminadas. Cuando una se va, no se repite igual:
-            cada textura queda con su pequeña historia de taller.
+            Piezas únicas, ya tejidas, suaves y terminadas. Ninguna se repite: cuando una encuentra
+            dueño, esa historia se cierra y en el bastidor empieza otra.
           </p>
           <WoolStitch className="mx-auto mt-7 max-w-sm" />
         </header>
@@ -144,17 +144,18 @@ export const TuftingTienda: React.FC = () => {
           <div className={cn(puffyCardClass, 'flex min-h-[18rem] items-center justify-center p-10 text-center')}>
             <div className="flex flex-col items-center gap-3 text-secondary">
               <Loader2 size={28} className="animate-spin text-accent" aria-hidden="true" />
-              Cargando piezas disponibles…
+              Buscando piezas en el estante…
             </div>
           </div>
         ) : products.length === 0 ? (
           <section className={cn(puffyCardClass, 'p-8 text-center md:p-12')}>
             <ShoppingBag size={36} className="mx-auto mb-4 text-accent" aria-hidden="true" />
             <h2 className="font-display text-2xl font-semibold mb-3">
-              Muy pronto voy a subir piezas disponibles
+              Por ahora, el estante está vacío
             </h2>
             <p className="text-secondary leading-relaxed max-w-xl mx-auto mb-7">
-              Mientras tanto, podés encargar la tuya en el bastidor y ver el presupuesto al toque.
+              Las próximas piezas todavía están en el bastidor, tomando forma. Mientras tanto, podés
+              encargar la tuya y ver el presupuesto al toque.
             </p>
             <Link
               to="/servicios/tufting/calculadora"
@@ -175,7 +176,7 @@ export const TuftingTienda: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-30px' }}
                   transition={{ duration: 0.5, delay: index * 0.06 }}
-                  className={cn(puffyCardClass, puffyInteractiveClass, 'flex flex-col p-3')}
+                  className={cn(puffyCardClass, puffyInteractiveClass, 'flex flex-col p-3 ring-1 ring-white/35')}
                 >
                   {product.imageUrl ? (
                     <img

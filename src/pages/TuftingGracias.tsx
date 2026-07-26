@@ -17,18 +17,18 @@ type Outcome = 'approved' | 'pending' | 'failure';
 const OUTCOMES: Record<Outcome, { icon: typeof CheckCircle2; title: string; body: string }> = {
   approved: {
     icon: CheckCircle2,
-    title: '¡Listo, tu alfombra está encargada!',
-    body: 'Ya me llegó el pago. Te escribo por WhatsApp para coordinar los últimos detalles del diseño y contarte los tiempos de entrega.',
+    title: '¡Listo! Tu alfombra ya tiene turno en el bastidor',
+    body: 'Me llegó el pago. Te escribo por WhatsApp para afinar los últimos detalles del diseño y contarte los tiempos de entrega — lo tejido a mano lleva su tiempo, y ese tiempo se nota.',
   },
   pending: {
     icon: Clock,
-    title: 'Tu pago está en camino',
-    body: 'MercadoPago todavía lo está procesando. En cuanto se acredite te aviso y arrancamos con la pieza.',
+    title: 'Tu pago viene en camino',
+    body: 'MercadoPago todavía lo está procesando. En cuanto se acredite te aviso y la pieza entra al bastidor.',
   },
   failure: {
     icon: XCircle,
     title: 'El pago no se completó',
-    body: 'No se hizo ningún cargo. Podés volver a la calculadora e intentarlo de nuevo, o escribirme y lo arreglamos por otro medio.',
+    body: 'No se hizo ningún cargo. Podés volver al bastidor e intentarlo de nuevo, o escribirme y lo resolvemos por otro lado.',
   },
 };
 
@@ -83,7 +83,7 @@ export const TuftingGracias: React.FC = () => {
             to="/servicios/tufting/calculadora"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-line font-semibold transition-colors hover:border-accent hover:text-accent min-h-11"
           >
-            Volver a la calculadora
+            Volver al bastidor
           </Link>
         </div>
       </div>

@@ -26,21 +26,21 @@ export interface TuftingLine {
 export const tuftingLines: TuftingLine[] = [
   {
     title: 'Piezas por encargo',
-    desc: 'Alfombras y tapices personalizados para tu casa o tu negocio: diseñamos juntos la pieza, o traés tu propio diseño y lo tejo.',
+    desc: 'Alfombras y tapices a tu medida, para tu casa o tu negocio. Me contás la idea y la dibujamos juntos, o traés tu diseño y yo lo traduzco a lana.',
     icon: Home,
     href: '/servicios/tufting/calculadora',
-    cta: 'Calcular en el bastidor',
+    cta: 'Armarla en el bastidor',
   },
   {
     title: 'Colaboraciones con artistas',
-    desc: 'Llevá tu obra a la lana: trabajo con ilustradores y artistas para producir sus diseños en tufting, en ediciones únicas o series.',
+    desc: 'Tu obra, dicha en otro idioma: trabajo con ilustradores y artistas para tejer sus diseños en tufting, en ediciones únicas o series.',
     icon: Palette,
     href: '/servicios/tufting/colaboraciones',
     cta: 'Proponer una colaboración',
   },
   {
     title: 'Piezas disponibles',
-    desc: 'Piezas únicas ya terminadas, listas para entregar. Lo que ves es lo que hay: cuando se va, se fue.',
+    desc: 'Piezas únicas, ya tejidas y terminadas. Cada una existe una sola vez: cuando encuentra casa, no vuelve.',
     icon: ShoppingBag,
     href: '/servicios/tufting/tienda',
     cta: 'Ver piezas disponibles',
@@ -51,16 +51,16 @@ export const tuftingCategories: TuftingCategory[] = [
   {
     id: 'alfombra',
     title: 'Alfombra',
-    desc: 'Piezas de piso tejidas a mano, del boceto a tu espacio.',
+    desc: 'Un pedazo de suelo que se vuelve tuyo: del boceto a tus pies.',
   },
   {
     id: 'reposamunecas',
     title: 'Reposamuñecas',
-    desc: 'Compañeros de escritorio: suaves, prácticos y con tu toque.',
+    desc: 'Lo infinito en lo chiquito: suave, práctico y con tu toque, al lado del teclado.',
   },
   {
     id: 'tapete',
     title: 'Tapete',
-    desc: 'Piezas de pared y de acento, para darle calidez a cualquier rincón.',
+    desc: 'Piezas de pared y de acento: un cuadro que además se puede tocar.',
   },
 ];

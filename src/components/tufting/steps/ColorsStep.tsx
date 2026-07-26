@@ -22,26 +22,25 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detecte
   const hasColors = detectedColors.length > 0;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 md:gap-6">
       <div>
-        <h2 className="font-display text-2xl font-semibold mb-2">Tu diseño en lana</h2>
+        <h2 className="font-display text-2xl font-semibold mb-2">Tu diseño, dicho en lana</h2>
         <p className="text-secondary text-sm leading-relaxed">
-          La alfombra se teje en <strong className="text-primary">colores planos</strong>: la lana no
-          hace degradés ni detalle fino, así que tu diseño se lleva a las regiones sólidas que se ven
-          en el bastidor.
+          La lana habla en <strong className="text-primary">colores planos</strong>: no hace degradés ni
+          detalle fino. Tu diseño se traduce a las regiones sólidas que ves en el bastidor.
         </p>
       </div>
 
       {hasColors ? (
         <div className="flex flex-col gap-3">
-          <p className="text-sm font-semibold">Los colores que salen de tu diseño</p>
-          <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 list-none p-0">
+          <p className="text-sm font-semibold">Las lanas que tu diseño trajo consigo</p>
+          <ul className="grid grid-cols-2 gap-2 list-none p-0 sm:grid-cols-3 sm:gap-3">
             {detectedColors.map((color, index) => {
               const hex = rgbToHex(color.rgb);
               return (
                 <li
                   key={`${hex}-${index}`}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-line bg-surface"
+                  className="flex items-center gap-3 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,248,240,0.78))] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]"
                 >
                   <span
                     className="w-8 h-8 rounded-full border border-line shrink-0"
@@ -54,13 +53,13 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detecte
             })}
           </ul>
           <p className="text-xs text-secondary">
-            Son aproximados: cada color es el tono de lana más cercano al de tu diseño.
+            Son aproximados: cada uno es el tono de lana más cercano al tuyo. Una traducción fiel, no idéntica.
           </p>
         </div>
       ) : (
         <p className="text-sm text-secondary leading-relaxed">
-          Los colores salen de tu propio diseño. La previsualización en lana se arma para la forma
-          contorneada; en circular o rectangular se teje tu diseño tal cual, en colores planos.
+          Los colores nacen de tu propio diseño. La previsualización en lana se arma para la forma
+          contorneada; en circular o rectangular tu diseño se teje tal cual, en colores planos.
         </p>
       )}
 

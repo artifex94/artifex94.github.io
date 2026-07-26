@@ -93,16 +93,17 @@ export const TuftingColaboraciones: React.FC = () => {
             Colaboraciones con artistas
           </span>
           <h1 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-            Pasemos tu obra <span className="text-accent italic">a la lana</span>
+            Tu obra tiene <span className="text-accent italic">una versión en lana</span>
           </h1>
           <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-            Si tenés una ilustración, serie, personaje, textura o idea para transformar en pieza
-            textil, contame por acá. La pensamos juntos con criterio artesanal y cariño por el detalle.
+            Toda ilustración, personaje o textura guarda una versión tejida esperando que alguien la
+            encuentre. Si la tuya te anda dando vueltas, contame por acá: la buscamos juntos, con
+            criterio artesanal y cariño por el detalle.
           </p>
           <WoolStitch className="mx-auto mt-7 max-w-sm" />
         </header>
 
-        <section className={cn(puffyCardClass, 'p-6 md:p-9')} aria-labelledby="collab-form-title">
+        <section className={cn(puffyCardClass, 'p-5 ring-1 ring-white/35 md:p-9')} aria-labelledby="collab-form-title">
           {sent ? (
             <div className="text-center">
               <Sparkles size={34} className="mx-auto mb-4 text-accent" aria-hidden="true" />
@@ -110,8 +111,9 @@ export const TuftingColaboraciones: React.FC = () => {
                 ¡Propuesta enviada!
               </h2>
               <p className="text-secondary leading-relaxed max-w-2xl mx-auto mb-7">
-                Me llegó tu idea. La voy a mirar con tiempo de taller y te respondo para ver materialidad,
-                medidas, tiempos y formato de producción.
+                Tu idea ya está en el taller. La voy a mirar con tiempo — el tiempo del taller, que es
+                más lento y más honesto — y te escribo para hablar de materialidad, medidas, tiempos
+                y formato.
               </p>
               {whatsappUrl && (
                 <a
@@ -132,8 +134,8 @@ export const TuftingColaboraciones: React.FC = () => {
                   Contame la colaboración
                 </h2>
                 <p className="text-sm text-secondary leading-relaxed">
-                  No hace falta que esté todo cerrado: con una intención, referencias y una forma de
-                  contacto ya podemos empezar a conversar.
+                  No hace falta que esté todo resuelto: con una intención, alguna referencia y una forma de
+                  contacto ya arrancamos la conversación.
                 </p>
               </div>
 

@@ -15,6 +15,7 @@ import { rgbToHex } from '../../utils/color';
 import { BORDER_WIDTH_CM } from '../../data/tuftingPricing';
 import { minorAxisCm, validateDimensions } from '../../data/tuftingCalculator';
 import { Bastidor } from './Bastidor';
+import { puffyCardClass } from './PuffySurface';
 import { ThreadProgress } from './ThreadProgress';
 import { UploadStep } from './steps/UploadStep';
 import { ShapeStep } from './steps/ShapeStep';
@@ -125,7 +126,7 @@ export const CalculatorStepper: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-12 items-start">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_3fr] lg:gap-12 items-start">
       {/* El bastidor: en desktop acompaña el scroll; en mobile encabeza. */}
       <Bastidor
         upload={upload}
@@ -140,11 +141,11 @@ export const CalculatorStepper: React.FC = () => {
         rotationDeg={rotationDeg}
         pieceWidthCm={pieceWidthCm}
         pieceHeightCm={pieceHeightCm}
-        className="lg:sticky lg:top-24"
+        className="sticky top-16 z-20 lg:top-24"
       />
 
       {/* La mesa de trabajo. */}
-      <div className="flex flex-col gap-8 min-w-0">
+      <div className="flex flex-col gap-5 min-w-0 lg:gap-8">
         <ThreadProgress
           current={step}
           canVisit={canVisit}
@@ -152,10 +153,10 @@ export const CalculatorStepper: React.FC = () => {
           threadColor={threadColor}
         />
 
-        <div className="bg-surface/60 border border-line rounded-2xl p-6 md:p-8 overflow-hidden shadow-sm">
+        <div className={cn(puffyCardClass, 'rounded-[1.75rem] p-4 md:p-8 overflow-hidden')}>
           {/* La etapa es una secuencia real: numerarla orienta sin volverse checkout. */}
           <p
-            className="font-mono text-[11px] uppercase tracking-[0.2em] text-secondary mb-5"
+            className="font-mono text-[11px] uppercase tracking-[0.2em] text-secondary mb-4 md:mb-5"
             style={{ fontVariantNumeric: 'tabular-nums' }}
           >
             Etapa {currentIndex + 1} de {STEPS.length}

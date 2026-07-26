@@ -28,9 +28,9 @@ export const TuftingCalculadora: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
+      className="min-h-screen w-full bg-tufting-warm px-4 py-8 text-primary sm:px-6 sm:py-12 lg:px-8"
     >
-      <div className="max-w-6xl mx-auto flex flex-col gap-10">
+      <div className="max-w-6xl mx-auto flex flex-col gap-7 lg:gap-10">
         <header className="text-center">
           <Link
             to="/servicios/tufting"
@@ -42,20 +42,21 @@ export const TuftingCalculadora: React.FC = () => {
           <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
             El taller
           </span>
-          <h1 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-            Armá <span className="text-accent italic">tu alfombra</span> en el bastidor
+          <h1 className="font-display text-3xl font-semibold leading-tight mb-4 md:text-5xl">
+            Tu alfombra empieza <span className="text-accent italic">en este bastidor</span>
           </h1>
           <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-            Prendé tu diseño, dale forma, elegí las lanas y mirá cómo queda — el precio sale
-            solo. Sin esperar, sin compromiso.
+            Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
+            solo. Sin esperas y sin compromiso.
           </p>
         </header>
 
         <CalculatorStepper />
 
         <p className="text-xs text-secondary text-center leading-relaxed">
-          El presupuesto es para las medidas que cargaste. Las piezas se tejen a mano, así que el
-          color y la textura finales pueden variar un poco respecto de la pantalla.
+          El presupuesto vale para las medidas que cargaste. Las piezas se tejen a mano: el color
+          y la textura finales pueden variar apenas respecto de la pantalla — esa pequeña
+          diferencia es la firma de lo hecho a mano.
         </p>
       </div>
     </motion.div>

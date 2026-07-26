@@ -184,10 +184,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-accent/40 bg-accent/5 p-6 text-center">
         <PackageCheck size={28} className="text-accent" aria-hidden="true" />
-        <p className="font-display text-lg font-semibold">¡Encargo enviado!</p>
+        <p className="font-display text-lg font-semibold">Reservale un turno en el bastidor</p>
         <p className="text-sm text-secondary leading-relaxed">
-          Me llegó tu diseño y tus medidas. Si querés, dejá la seña para reservar tu lugar en el
-          taller — el resto lo saldás al entregar.
+          Tu diseño y tus medidas ya están en el taller. Te escribo a la brevedad para confirmar
+          todo y coordinar.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-1">
@@ -202,7 +202,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             ) : (
               <CreditCard size={18} aria-hidden="true" />
             )}
-            Seña 50% · {formatARS(halfArs)}
+            Señar la mitad · {formatARS(halfArs)}
           </button>
           <button
             type="button"
@@ -215,10 +215,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             ) : (
               <CreditCard size={18} aria-hidden="true" />
             )}
-            Pagar todo · {formatARS(total)}
+            Pagar el total · {formatARS(total)}
           </button>
         </div>
-        <p className="text-xs text-secondary">Pago seguro con MercadoPago. También podés coordinar por WhatsApp.</p>
+        <p className="text-xs text-secondary">Si pagás el total, queda todo cerrado y no pensás más en plata: solo en la alfombra.</p>
 
         {depositError && (
           <p role="alert" className="text-sm text-accent">
@@ -237,8 +237,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       <div>
         <h3 className="font-display text-lg font-semibold">Enviá tu encargo</h3>
         <p className="text-sm text-secondary leading-relaxed">
-          Te pido tus datos para pasarte el presupuesto en firme y coordinar. Me llega tu diseño y
-          las medidas tal cual las armaste.
+          Dejame tus datos para pasarte el presupuesto en firme y coordinar. Tu diseño y tus
+          medidas viajan al taller tal cual los armaste en el bastidor.
         </p>
       </div>
 

@@ -78,15 +78,15 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
   const deposit = Math.ceil((price.total * INSTALLMENT_DEPOSIT_RATE) / 1000) * 1000;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6 md:gap-8">
       <div>
-        <h2 className="font-display text-2xl font-semibold mb-2">Tu presupuesto</h2>
+        <h2 className="font-display text-2xl font-semibold mb-2">La ficha de tu pieza</h2>
         <p className="text-secondary text-sm">
-          Es una estimación firme para estas medidas. Si querés cambiar algo, volvé atrás.
+          Un presupuesto firme para estas medidas. Si algo no cierra, el bastidor sigue ahí: volvé y ajustá.
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 gap-4 bg-surface border border-line rounded-2xl p-6 text-sm">
+      <dl className="grid grid-cols-2 gap-3 rounded-2xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(255,248,240,0.8))] p-4 text-sm shadow-[0_14px_30px_rgba(112,70,52,0.09),inset_0_1px_0_rgba(255,255,255,0.9)] sm:gap-4 sm:p-6">
         <dt className="text-secondary">Forma</dt>
         <dd className="text-right font-medium">{describeShape(shape)}</dd>
 
@@ -111,7 +111,7 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
         )}
       </dl>
 
-      <div className="text-center py-4">
+      <div className="py-2 text-center sm:py-4">
         {price.appliedDiscount && (
           <p className="text-secondary line-through text-lg mb-1">{formatARS(price.listTotal)}</p>
         )}
@@ -153,17 +153,17 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
           );
         })}
 
-        <div className="p-4 rounded-xl border border-line bg-surface text-sm">
+        <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
           <p className="font-semibold mb-1">Cuotas con débito automático</p>
           <p className="text-secondary leading-relaxed">
-            Sin descuento, pero lo pagás en partes. Se arranca con un anticipo de{' '}
-            <strong className="text-primary">{formatARS(deposit)}</strong> y el resto se debita
-            solo, mes a mes.
+            Sin descuento, pero a tu ritmo: arrancás con un anticipo de{' '}
+            <strong className="text-primary">{formatARS(deposit)}</strong> y el resto se debita solo,
+            mes a mes.
           </p>
         </div>
 
         {discounts.includes('instagram') && (
-          <div className="flex flex-col gap-1.5 p-4 rounded-xl border border-line bg-surface">
+          <div className="flex flex-col gap-1.5 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
             <label htmlFor="discount-code" className="text-sm font-semibold">
               Tu código de Instagram
             </label>
@@ -211,7 +211,7 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
 
       <div className="border-t border-line pt-6">
         <p className="text-center text-xs text-secondary uppercase tracking-widest mb-4">
-          o cerralo directo
+          o cerralo ahora mismo
         </p>
         <PaymentActions
           shape={shape}

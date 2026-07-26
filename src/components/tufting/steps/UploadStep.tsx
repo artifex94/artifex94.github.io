@@ -134,7 +134,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
   }, [handleFile]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 md:gap-6">
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Cargá tu diseño</h2>
         <p className="text-secondary text-sm leading-relaxed">
@@ -152,8 +152,10 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
         className={cn(
-          'border-2 border-dashed rounded-2xl p-8 text-center transition-colors',
-          dragging ? 'border-accent bg-accent/5' : 'border-line',
+          'rounded-[1.75rem] border-2 border-dashed p-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] transition-colors sm:p-8',
+          dragging
+            ? 'border-accent bg-accent/10'
+            : 'border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.88),rgba(255,248,240,0.72))]',
         )}
       >
         <input
@@ -184,7 +186,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
         </button>
 
         <p className="text-xs text-secondary mt-4">
-          O arrastralo acá. PNG, JPG o WebP (desde Archivos), hasta {formatMb(MAX_FILE_BYTES)}.
+          O soltalo acá, como quien apoya un boceto en la mesa. PNG, JPG o WebP (desde Archivos), hasta {formatMb(MAX_FILE_BYTES)}.
         </p>
       </div>
 
@@ -197,7 +199,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
 
       {/* La imagen en sí queda prendida en el bastidor: acá solo el veredicto. */}
       {upload && (
-        <div className="bg-surface border border-line rounded-2xl p-4 min-w-0">
+        <div className="min-w-0 rounded-2xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.94),rgba(255,248,240,0.82))] p-4 shadow-[0_12px_28px_rgba(112,70,52,0.08)]">
           <p className="font-semibold truncate">{upload.fileName}</p>
           <p className="text-sm text-secondary">
             {upload.info.width} x {upload.info.height} px · {upload.info.format.toUpperCase()}
@@ -216,7 +218,7 @@ export const UploadStep: React.FC<UploadStepProps> = ({ upload, error, dispatch 
             ) : (
               <>
                 <AlertCircle size={14} aria-hidden="true" />
-                Sin transparencia: circular o rectangular.
+                Sin transparencia: puede ser circular o rectangular.
               </>
             )}
           </p>
