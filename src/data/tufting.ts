@@ -19,6 +19,8 @@ export interface TuftingLine {
   title: string;
   desc: string;
   icon: LucideIcon;
+  href: string;
+  cta: string;
 }
 
 export const tuftingLines: TuftingLine[] = [
@@ -26,16 +28,22 @@ export const tuftingLines: TuftingLine[] = [
     title: 'Piezas por encargo',
     desc: 'Alfombras y tapices personalizados para tu casa o tu negocio: diseñamos juntos la pieza, o traés tu propio diseño y lo tejo.',
     icon: Home,
+    href: '/servicios/tufting/calculadora',
+    cta: 'Calcular en el bastidor',
   },
   {
     title: 'Colaboraciones con artistas',
     desc: 'Llevá tu obra a la lana: trabajo con ilustradores y artistas para producir sus diseños en tufting, en ediciones únicas o series.',
     icon: Palette,
+    href: '/servicios/tufting/colaboraciones',
+    cta: 'Proponer una colaboración',
   },
   {
     title: 'Piezas disponibles',
     desc: 'Piezas únicas ya terminadas, listas para entregar. Lo que ves es lo que hay: cuando se va, se fue.',
     icon: ShoppingBag,
+    href: '/servicios/tufting/tienda',
+    cta: 'Ver piezas disponibles',
   },
 ];
 

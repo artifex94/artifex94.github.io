@@ -41,6 +41,12 @@ const Tufting = lazy(() =>
 const TuftingCalculadora = lazy(() =>
   import('./pages/TuftingCalculadora').then((m) => ({ default: m.TuftingCalculadora }))
 );
+const TuftingColaboraciones = lazy(() =>
+  import('./pages/TuftingColaboraciones').then((m) => ({ default: m.TuftingColaboraciones }))
+);
+const TuftingTienda = lazy(() =>
+  import('./pages/TuftingTienda').then((m) => ({ default: m.TuftingTienda }))
+);
 // Vuelta desde MercadoPago. Es solo informativa: el estado real lo fija el
 // webhook, así que manipular la URL no cambia nada.
 const TuftingGracias = lazy(() =>
@@ -105,6 +111,8 @@ function App() {
           <Route path="/servicios/fotografia" element={<Fotografia />} />
           <Route path="/servicios/tufting" element={<Tufting />} />
           <Route path="/servicios/tufting/calculadora" element={<TuftingCalculadora />} />
+          <Route path="/servicios/tufting/colaboraciones" element={<TuftingColaboraciones />} />
+          <Route path="/servicios/tufting/tienda" element={<TuftingTienda />} />
           <Route path="/servicios/tufting/calculadora/gracias" element={<TuftingGracias />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
