@@ -187,13 +187,16 @@
   }
 
   .atelier-thread-rule {
-    height: 0.42rem;
+    height: 0.82rem;
     border: 0;
     background:
-      radial-gradient(ellipse at 50% 80%, rgba(43,35,32,0.14) 0 44%, transparent 64%) 0 0.18rem / 1.35rem 0.28rem repeat-x,
-      repeating-linear-gradient(115deg, var(--color-accent) 0 0.32rem, color-mix(in srgb, var(--color-accent) 70%, var(--color-surface)) 0.34rem 0.54rem, var(--color-accent) 0.56rem 0.9rem);
+      radial-gradient(circle at 50% 50%, rgba(43,35,32,0.16) 0 14%, transparent 34%) 0.38rem 0.27rem / 0.86rem 0.62rem repeat-x,
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-accent) 55%, #2b2320) 0 18%, transparent 58%) 0.14rem 0.06rem / 1.14rem 0.72rem repeat-x,
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-surface) 76%, var(--color-accent)) 0 26%, transparent 58%) 0.62rem 0.03rem / 1.08rem 0.7rem repeat-x,
+      radial-gradient(circle at 42% 34%, color-mix(in srgb, var(--color-accent) 74%, #ffffff) 0 18%, color-mix(in srgb, var(--color-accent) 90%, #ffffff) 42%, var(--color-accent) 78%, color-mix(in srgb, var(--color-accent) 86%, #2b2320) 100%) 0.02rem 0.04rem / 0.78rem 0.78rem repeat-x,
+      radial-gradient(circle at 42% 34%, color-mix(in srgb, var(--color-accent) 74%, #ffffff) 0 18%, color-mix(in srgb, var(--color-accent) 90%, #ffffff) 42%, var(--color-accent) 78%, color-mix(in srgb, var(--color-accent) 86%, #2b2320) 100%) 0.45rem 0.08rem / 0.78rem 0.78rem repeat-x,
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-surface) 76%, var(--color-accent)) 0 16%, transparent 42%) 0.26rem 0 / 0.58rem 0.58rem repeat-x;
     border-radius: 9999px;
-    box-shadow: 1px 2px 2px rgba(43,35,32,0.14);
   }
 
   [data-theme='tufting'] .atelier-contact-cta a {

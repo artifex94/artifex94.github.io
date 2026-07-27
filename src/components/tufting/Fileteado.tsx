@@ -49,24 +49,143 @@ const textureDefs = (name: string) => `
     </pattern>
   </defs>`;
 
-const yarnStroke = (
-  d: string,
-  { width = 7, color = COLORS.accent, twist = COLORS.accentTwist, shadow = true }: { width?: number; color?: string; twist?: string; shadow?: boolean } = {},
-) => {
-  const haloWidth = (width + 4.2).toFixed(2);
-  const grooveWidth = Math.max(1.05, width * 0.2).toFixed(2);
-  const twistWidth = Math.max(0.95, width * 0.16).toFixed(2);
-  const hairWidth = Math.max(0.55, width * 0.08).toFixed(2);
-  const dash = `${Math.max(1.05, width * 0.32).toFixed(2)} ${Math.max(2.35, width * 0.52).toFixed(2)}`;
-  const fineDash = `${Math.max(0.85, width * 0.22).toFixed(2)} ${Math.max(3.1, width * 0.72).toFixed(2)}`;
+type Point = readonly [number, number];
+type PileTone = 'accent' | 'gilt' | 'flag';
 
-  return `${shadow ? `<path d="${d}" fill="none" stroke="${COLORS.primary}" stroke-width="${width + 8}" stroke-linecap="round" stroke-linejoin="round" opacity="0.18" transform="translate(1.4 2.4)" />
-    <path d="${d}" fill="none" stroke="${COLORS.primary}" stroke-width="${width + 2.4}" stroke-linecap="round" stroke-linejoin="round" opacity="0.1" transform="translate(0.4 0.8)" />` : ''}
-    <path d="${d}" fill="none" stroke="${COLORS.surface}" stroke-width="${haloWidth}" stroke-linecap="round" stroke-linejoin="round" opacity="0.16" />
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="${d}" fill="none" stroke="${COLORS.primary}" stroke-width="${grooveWidth}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${dash}" opacity="0.12" stroke-dashoffset="${(width * 0.18).toFixed(2)}" />
-    <path d="${d}" fill="none" stroke="${twist}" stroke-width="${twistWidth}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${dash}" opacity="0.5" />
-    <path d="${d}" fill="none" stroke="${COLORS.surface}" stroke-width="${hairWidth}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${fineDash}" opacity="0.32" stroke-dashoffset="${(width * 0.45).toFixed(2)}" />`;
+const pileGradientDefs = (name: string) => `
+  <defs>
+    <radialGradient id="${name}-pile-accent" cx="42%" cy="34%" r="74%">
+      <stop offset="0%" stop-color="#dc8a79" />
+      <stop offset="48%" stop-color="${COLORS.accentTwist}" />
+      <stop offset="82%" stop-color="${COLORS.accent}" />
+      <stop offset="100%" stop-color="#a94d41" />
+    </radialGradient>
+    <radialGradient id="${name}-pile-gilt" cx="42%" cy="34%" r="74%">
+      <stop offset="0%" stop-color="#e2be74" />
+      <stop offset="50%" stop-color="${COLORS.giltTwist}" />
+      <stop offset="84%" stop-color="${COLORS.gilt}" />
+      <stop offset="100%" stop-color="#a98238" />
+    </radialGradient>
+    <radialGradient id="${name}-pile-flag" cx="42%" cy="34%" r="74%">
+      <stop offset="0%" stop-color="#a8cadb" />
+      <stop offset="50%" stop-color="${COLORS.flagTwist}" />
+      <stop offset="84%" stop-color="${COLORS.flag}" />
+      <stop offset="100%" stop-color="#5a8ba6" />
+    </radialGradient>
+  </defs>`;
+
+const pileFiberTone = (tone: PileTone) => {
+  if (tone === 'gilt') return { dark: '#876a2d', light: '#ead09a' };
+  if (tone === 'flag') return { dark: '#47758e', light: '#c0d9e5' };
+  return { dark: '#98463b', light: '#e49a8b' };
+};
+
+const cubicPoint = (p0: Point, p1: Point, p2: Point, p3: Point, t: number): Point => {
+  const mt = 1 - t;
+  const mt2 = mt * mt;
+  const t2 = t * t;
+  return [
+    mt2 * mt * p0[0] + 3 * mt2 * t * p1[0] + 3 * mt * t2 * p2[0] + t2 * t * p3[0],
+    mt2 * mt * p0[1] + 3 * mt2 * t * p1[1] + 3 * mt * t2 * p2[1] + t2 * t * p3[1],
+  ];
+};
+
+const sampleCubic = (p0: Point, p1: Point, p2: Point, p3: Point, steps: number, skipFirst = false): Point[] =>
+  Array.from({ length: steps + 1 - (skipFirst ? 1 : 0) }, (_, index) => cubicPoint(p0, p1, p2, p3, (index + (skipFirst ? 1 : 0)) / steps));
+
+const mirrorX = (points: Point[], axis = 120): Point[] => points.map(([x, y]) => [axis * 2 - x, y]);
+
+const heartPileRows = (): Point[][] => [
+  [[113, 91], [120, 88], [127, 91]],
+  [[104, 99], [112, 98], [120, 101], [128, 98], [136, 99]],
+  [[99, 108], [107, 109], [115, 110], [123, 110], [131, 109], [139, 108]],
+  [[101, 118], [109, 120], [117, 121], [125, 121], [133, 120], [141, 118]],
+  [[106, 128], [114, 130], [122, 131], [130, 130], [138, 128]],
+  [[112, 138], [120, 142], [128, 138]],
+];
+
+const bannerPompon = (id: string, x: number, y: number, radius: number, tone: PileTone) =>
+  pileTrail([[x, y]], { radius, tone, id, dentEvery: 1 });
+
+const pileTrail = (
+  points: Point[],
+  { radius = 6, tone = 'accent', id = 'pile', dentEvery = 1 }: { radius?: number; tone?: PileTone; id?: string; dentEvery?: number } = {},
+) => {
+  const fiberTone = pileFiberTone(tone);
+  const settled = points.map(([x, y], index) => {
+    const previous = points[Math.max(0, index - 1)];
+    const next = points[Math.min(points.length - 1, index + 1)];
+    const dx = next[0] - previous[0];
+    const dy = next[1] - previous[1];
+    const length = Math.hypot(dx, dy) || 1;
+    const nx = -dy / length;
+    const ny = dx / length;
+    const wobble = Math.sin(index * 1.73 + radius) * radius * 0.1;
+    const r = radius * (1 + Math.sin(index * 2.21 + 0.4) * 0.12);
+    return { x, y, cx: x + nx * wobble, cy: y + ny * wobble, r, nx, ny, dx: dx / length, dy: dy / length, index };
+  });
+
+  const contact = settled
+    .map(({ cx, cy, r, index }) => `<circle cx="${(cx + 1.2).toFixed(2)}" cy="${(cy + 1.9).toFixed(2)}" r="${(r * 0.92).toFixed(2)}" fill="${COLORS.primary}" opacity="${(0.095 + (index % 2) * 0.018).toFixed(3)}" />`)
+    .join('');
+
+  const halo = settled
+    .map(({ cx, cy, r, index }) => `<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${(r * (1.18 + Math.sin(index * 1.91) * 0.05)).toFixed(2)}" fill="${COLORS.base}" opacity="0.16" />`)
+    .join('');
+
+  const fuzz = settled
+    .filter((_, index) => index % 2 === 0)
+    .map(({ cx, cy, r, nx, ny, dx, dy, index }) => {
+      const side = index % 4 < 2 ? 1 : -1;
+      const fringe = r * (1.03 + (index % 3) * 0.11);
+      const tangent = ((index % 5) - 2) * r * 0.18;
+      const fx = cx + nx * fringe * side + dx * tangent;
+      const fy = cy + ny * fringe * side + dy * tangent;
+      const rr = 0.62 + (index % 4) * 0.16;
+      const color = index % 3 === 0 ? COLORS.surface : `url(#${id}-pile-${tone})`;
+      const opacity = index % 3 === 0 ? 0.2 : 0.32 + (index % 2) * 0.06;
+      return `<circle cx="${fx.toFixed(2)}" cy="${fy.toFixed(2)}" r="${rr.toFixed(2)}" fill="${color}" opacity="${opacity.toFixed(2)}" />`;
+    })
+    .join('');
+
+  const tuft = settled
+    .map(({ cx, cy, r, index }) => {
+      const arcCount = 3 + (index % 3 === 0 ? 1 : 0);
+      const fibers = Array.from({ length: arcCount }, (_, fiberIndex) => {
+        const angle = index * 0.88 + fiberIndex * 2.08;
+        const inner = r * (0.18 + fiberIndex * 0.08);
+        const outer = r * (0.62 - fiberIndex * 0.055);
+        const sx = cx + Math.cos(angle) * outer;
+        const sy = cy + Math.sin(angle) * outer;
+        const mx = cx + Math.cos(angle + 0.54) * inner;
+        const my = cy + Math.sin(angle + 0.54) * inner;
+        const ex = cx + Math.cos(angle + 1.04) * outer * 0.72;
+        const ey = cy + Math.sin(angle + 1.04) * outer * 0.72;
+        const stroke = (fiberIndex + index) % 2 === 0 ? fiberTone.dark : fiberTone.light;
+        const opacity = (fiberIndex + index) % 2 === 0 ? 0.18 : 0.14;
+        return `<path d="M${sx.toFixed(2)} ${sy.toFixed(2)} C${mx.toFixed(2)} ${my.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}, ${ex.toFixed(2)} ${ey.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${Math.max(0.48, r * 0.085).toFixed(2)}" stroke-linecap="round" opacity="${opacity}" />`;
+      }).join('');
+
+      return `<g><circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${r.toFixed(2)}" fill="url(#${id}-pile-${tone})" />${fibers}</g>`;
+    })
+    .join('');
+
+  const dents = settled
+    .slice(1)
+    .filter((_, index) => index % dentEvery === 0)
+    .map(({ cx, cy, dx, dy }, index) => {
+      const previous = settled[index];
+      const mx = (cx + previous.cx) / 2;
+      const my = (cy + previous.cy) / 2 + radius * 0.16;
+      const nx = -dy;
+      const ny = dx;
+      const span = radius * 0.34;
+      const sag = radius * 0.18;
+      return `<path d="M${(mx - nx * span).toFixed(2)} ${(my - ny * span).toFixed(2)} C${(mx - nx * span * 0.35).toFixed(2)} ${(my + sag - ny * span * 0.35).toFixed(2)}, ${(mx + nx * span * 0.35).toFixed(2)} ${(my + sag + ny * span * 0.35).toFixed(2)}, ${(mx + nx * span).toFixed(2)} ${(my + ny * span).toFixed(2)}" fill="none" stroke="${COLORS.primary}" stroke-width="${Math.max(0.7, radius * 0.13).toFixed(2)}" stroke-linecap="round" opacity="0.16" />`;
+    })
+    .join('');
+
+  return `<g aria-hidden="true">${contact}</g><g aria-hidden="true">${halo}${fuzz}</g><g aria-hidden="true">${tuft}</g><g aria-hidden="true">${dents}</g>`;
 };
 
 const fileteadoSvg = (viewBox: string, content: string, preserveAspectRatio = 'xMidYMid meet') =>
@@ -83,16 +202,63 @@ const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }
   return <img src={src} className={className} draggable={false} decoding="async" {...accessibility} />;
 };
 
+const dividerMainPoints = [
+  ...sampleCubic([24, 44], [58, 14], [96, 17], [112, 39], 14),
+  ...sampleCubic([112, 39], [126, 59], [92, 66], [88, 45], 9, true),
+  ...sampleCubic([88, 45], [86, 30], [104, 27], [124, 39], 9, true),
+  ...sampleCubic([124, 39], [156, 58], [182, 58], [210, 39], 16, true),
+  ...sampleCubic([210, 39], [238, 20], [264, 20], [296, 39], 16, true),
+  ...sampleCubic([296, 39], [316, 27], [334, 30], [332, 45], 9, true),
+  ...sampleCubic([332, 45], [328, 66], [294, 59], [308, 39], 9, true),
+  ...sampleCubic([308, 39], [324, 17], [362, 14], [396, 44], 14, true),
+];
+
+const dividerLeftCurlPoints = [
+  ...sampleCubic([84, 52], [72, 39], [76, 23], [94, 21], 9),
+  ...sampleCubic([94, 21], [112, 23], [112, 43], [96, 46], 9, true),
+];
+
+const dividerRightCurlPoints = [
+  ...sampleCubic([336, 52], [348, 39], [344, 23], [326, 21], 9),
+  ...sampleCubic([326, 21], [308, 23], [308, 43], [324, 46], 9, true),
+];
+
+const dividerFlagPoints = [
+  ...sampleCubic([150, 39], [166, 20], [194, 21], [210, 39], 12),
+  ...sampleCubic([210, 39], [226, 21], [254, 20], [270, 39], 12, true),
+];
+
 const DIVIDER_SVG = fileteadoSvg(
-  '0 0 420 72',
-  `${textureDefs('divider')}
-  ${yarnStroke('M24 38 C58 12, 96 14, 112 36 C126 56, 92 62, 88 42 C86 28, 104 24, 124 35 C156 54, 182 54, 210 36 C238 18, 264 18, 296 35 C316 24, 334 28, 332 42 C328 62, 294 56, 308 36 C324 14, 362 12, 396 38', { width: 7.4 })}
-  ${yarnStroke('M84 46 C72 34, 76 20, 94 18 C112 20, 112 40, 96 42', { width: 5.4, color: COLORS.gilt, twist: COLORS.giltTwist })}
-  ${yarnStroke('M336 46 C348 34, 344 20, 326 18 C308 20, 308 40, 324 42', { width: 5.4, color: COLORS.gilt, twist: COLORS.giltTwist })}
-  ${yarnStroke('M150 36 C166 18, 194 19, 210 36 C226 19, 254 18, 270 36', { width: 5.8, color: COLORS.flag, twist: COLORS.flagTwist })}
-  <circle cx="210" cy="36" r="5.8" fill="${COLORS.gilt}" />
-  <circle cx="210" cy="36" r="2" fill="url(#divider-tuft-edge)" />`,
+  '0 0 420 88',
+  `${pileGradientDefs('divider')}
+  ${pileTrail(dividerMainPoints, { radius: 6.6, tone: 'accent', id: 'divider' })}
+  ${pileTrail(dividerLeftCurlPoints, { radius: 5.2, tone: 'gilt', id: 'divider' })}
+  ${pileTrail(dividerRightCurlPoints, { radius: 5.2, tone: 'gilt', id: 'divider' })}
+  ${pileTrail(dividerFlagPoints, { radius: 5.4, tone: 'flag', id: 'divider' })}
+  ${pileTrail([[210, 39]], { radius: 7.2, tone: 'gilt', id: 'divider' })}`,
 );
+
+const ornamentTopLeftPoints = [
+  ...sampleCubic([120, 39], [82, 40], [58, 66], [68, 92], 15),
+  ...sampleCubic([68, 92], [76, 114], [108, 110], [104, 88], 10, true),
+  ...sampleCubic([104, 88], [101, 72], [78, 76], [82, 94], 9, true),
+];
+
+const ornamentLowerLeftPoints = [
+  ...sampleCubic([66, 132], [38, 138], [38, 178], [70, 182], 15),
+  ...sampleCubic([70, 182], [104, 186], [112, 148], [88, 142], 12, true),
+  ...sampleCubic([88, 142], [72, 138], [62, 152], [72, 164], 8, true),
+];
+
+const ornamentGarlandPoints = sampleCubic([54, 116], [82, 100], [102, 110], [120, 140], 14).concat(
+  sampleCubic([120, 140], [138, 110], [158, 100], [186, 116], 14, true),
+);
+
+const ornamentFlagPoints = sampleCubic([82, 118], [98, 126], [109, 136], [120, 154], 10).concat(
+  sampleCubic([120, 154], [131, 136], [142, 126], [158, 118], 10, true),
+);
+
+const ornamentBottomPoints = sampleCubic([92, 204], [108, 188], [132, 188], [148, 204], 12);
 
 const ORNAMENT_SVG = fileteadoSvg(
   '0 0 240 240',
@@ -103,24 +269,25 @@ const ORNAMENT_SVG = fileteadoSvg(
       <stop offset="100%" stop-color="${COLORS.accent}" stop-opacity="0.08" />
     </radialGradient>
   </defs>
+  ${pileGradientDefs('ornament')}
   ${textureDefs('ornament')}
   <circle cx="120" cy="120" r="88" fill="url(#ornament-wool-glow)" opacity="0.86" style="mix-blend-mode:multiply" />
   <circle cx="120" cy="120" r="84" fill="url(#ornament-felt-grain)" opacity="0.6" />
-  ${yarnStroke('M120 38 C82 40, 58 66, 68 92 C76 114, 108 110, 104 88 C101 72, 78 76, 82 94', { width: 7.2 })}
-  ${yarnStroke('M120 38 C158 40, 182 66, 172 92 C164 114, 132 110, 136 88 C139 72, 162 76, 158 94', { width: 7.2 })}
-  ${yarnStroke('M66 132 C38 138, 38 178, 70 182 C104 186, 112 148, 88 142 C72 138, 62 152, 72 164', { width: 6.9 })}
-  ${yarnStroke('M174 132 C202 138, 202 178, 170 182 C136 186, 128 148, 152 142 C168 138, 178 152, 168 164', { width: 6.9 })}
-  ${yarnStroke('M54 116 C82 100, 102 110, 120 140 C138 110, 158 100, 186 116', { width: 6.2, color: COLORS.gilt, twist: COLORS.giltTwist })}
-  ${yarnStroke('M82 118 C98 126, 109 136, 120 154 C131 136, 142 126, 158 118', { width: 4.8, color: COLORS.flag, twist: COLORS.flagTwist })}
+  ${pileTrail(ornamentTopLeftPoints, { radius: 6.9, tone: 'accent', id: 'ornament' })}
+  ${pileTrail(mirrorX(ornamentTopLeftPoints), { radius: 6.9, tone: 'accent', id: 'ornament' })}
+  ${pileTrail(ornamentLowerLeftPoints, { radius: 6.5, tone: 'accent', id: 'ornament' })}
+  ${pileTrail(mirrorX(ornamentLowerLeftPoints), { radius: 6.5, tone: 'accent', id: 'ornament' })}
+  ${pileTrail(ornamentGarlandPoints, { radius: 5.65, tone: 'gilt', id: 'ornament' })}
+  ${pileTrail(ornamentFlagPoints, { radius: 4.45, tone: 'flag', id: 'ornament' })}
   <g style="mix-blend-mode:multiply">
-    <path d="M120 82 C141 98 145 123 120 150 C95 123 99 98 120 82Z" fill="${COLORS.accent}" opacity="0.92" />
-    <path d="M120 87 C134 105 133 126 120 148 C107 126 106 105 120 87Z" fill="${COLORS.gilt}" opacity="0.46" />
-    <path d="M106 112 C113 106 127 106 134 112" fill="none" stroke="${COLORS.surface}" stroke-width="2.2" stroke-linecap="round" opacity="0.84" />
-    <circle cx="120" cy="119" r="7.5" fill="${COLORS.gilt}" />
-    <circle cx="120" cy="119" r="2.5" fill="${COLORS.surface}" opacity="0.9" />
+    ${heartPileRows().map((row) => pileTrail(row, { radius: 6.35, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
+    ${pileTrail([[120, 119]], { radius: 5.1, tone: 'gilt', id: 'ornament' })}
+    ${pileTrail([[109, 112], [116, 109], [124, 109], [131, 112]], { radius: 2.25, tone: 'gilt', id: 'ornament' })}
+    ${pileTrail([[118, 122], [122, 122]], { radius: 1.75, tone: 'flag', id: 'ornament' })}
   </g>
-  ${yarnStroke('M92 204 C108 188, 132 188, 148 204', { width: 6 })}`,
+  ${pileTrail(ornamentBottomPoints, { radius: 5.5, tone: 'accent', id: 'ornament' })}`,
 );
+
 
 const bannerStitches = (side: 'top' | 'bottom' | 'left' | 'right') => {
   if (side === 'top') {
@@ -155,12 +322,28 @@ const bannerStitches = (side: 'top' | 'bottom' | 'left' | 'right') => {
 const bannerFringes = () =>
   Array.from({ length: 29 }, (_, index) => {
     const x = 144 + index * 24;
-    const length = 54 + (index % 5) * 7;
-    const sway = index % 2 === 0 ? -5 : 5;
-    const color = index % 4 === 0 ? COLORS.accentTwist : index % 4 === 1 ? COLORS.flagTwist : COLORS.giltTwist;
-    return `<path d="M${x} 421 C${x + sway} 445, ${x - sway * 0.7} ${450 + length * 0.32}, ${x + sway * 0.45} ${421 + length}" stroke="${color}" stroke-width="6.2" stroke-linecap="round" opacity="0.82" />
-      <path d="M${x + 2} 421 C${x + sway + 3} 444, ${x - sway * 0.5} ${452 + length * 0.28}, ${x + sway * 0.55 + 2} ${418 + length}" stroke="${COLORS.surface}" stroke-width="1.1" stroke-linecap="round" opacity="0.28" />`;
+    const length = 43 + (index % 5) * 5;
+    const sway = index % 2 === 0 ? -3.5 : 3.5;
+    const tone: PileTone = index % 4 === 1 ? 'flag' : index % 4 === 2 ? 'gilt' : 'accent';
+    const color = tone === 'flag' ? COLORS.flagTwist : tone === 'gilt' ? COLORS.giltTwist : COLORS.accentTwist;
+    const endX = x + sway * 0.52;
+    const endY = 421 + length;
+    return `<path d="M${x} 419 C${x + sway} 435, ${x - sway * 0.45} ${444 + length * 0.18}, ${endX.toFixed(1)} ${(endY - 7).toFixed(1)}" stroke="${color}" stroke-width="3.3" stroke-linecap="round" opacity="0.66" />
+      <path d="M${x + 1.4} 419 C${x + sway + 1.5} 435, ${x - sway * 0.35} ${443 + length * 0.18}, ${(endX + 1.2).toFixed(1)} ${(endY - 7).toFixed(1)}" stroke="${COLORS.surface}" stroke-width="0.72" stroke-linecap="round" opacity="0.34" />
+      ${bannerPompon('banner', endX, endY, 8.2 + (index % 3) * 0.75, tone)}`;
   }).join('');
+
+const bannerInnerTopPoints = sampleCubic([138, 146], [254, 132], [704, 130], [824, 148], 44);
+const bannerInnerRightPoints = sampleCubic([824, 148], [835, 221], [828, 320], [812, 392], 24, true);
+const bannerInnerBottomPoints = sampleCubic([812, 392], [654, 405], [306, 405], [148, 392], 44, true);
+const bannerInnerLeftPoints = sampleCubic([148, 392], [132, 315], [128, 219], [138, 146], 24, true);
+const bannerInnerBorderPoints = [
+  ...bannerInnerTopPoints,
+  ...bannerInnerRightPoints,
+  ...bannerInnerBottomPoints,
+  ...bannerInnerLeftPoints,
+];
+
 
 const BANNER_SVG = fileteadoSvg(
   '0 0 960 560',
@@ -185,6 +368,7 @@ const BANNER_SVG = fileteadoSvg(
       <path d="M1 7 C5 3, 9 10, 15 5 M0 14 C5 9, 10 16, 16 11" stroke="#fff6e6" stroke-width="1" stroke-linecap="round" opacity="0.22" />
     </pattern>
   </defs>
+  ${pileGradientDefs('banner')}
   <path d="M168 92 C252 66, 348 74, 480 70 C612 66, 708 68, 790 92" fill="none" stroke="${COLORS.primary}" stroke-width="8" stroke-linecap="round" opacity="0.18" />
   <path d="M193 98 C190 116, 184 132, 176 148 M767 98 C770 116, 776 132, 784 148" fill="none" stroke="#8a5a3a" stroke-width="6" stroke-linecap="round" opacity="0.86" />
   <path d="M112 84 C256 56, 706 57, 848 84" fill="none" stroke="url(#banner-wood)" stroke-width="24" stroke-linecap="round" />
@@ -195,7 +379,7 @@ const BANNER_SVG = fileteadoSvg(
   <path d="M118 122 C238 106, 716 103, 844 123 C858 207, 852 329, 830 417 C665 432, 294 432, 130 417 C107 322, 105 213, 118 122Z" fill="${COLORS.primary}" opacity="0.15" transform="translate(5 9)" />
   <path d="M118 122 C238 106, 716 103, 844 123 C858 207, 852 329, 830 417 C665 432, 294 432, 130 417 C107 322, 105 213, 118 122Z" fill="url(#banner-wool-ground)" />
   <path d="M118 122 C238 106, 716 103, 844 123 C858 207, 852 329, 830 417 C665 432, 294 432, 130 417 C107 322, 105 213, 118 122Z" fill="url(#banner-felt-fiber)" opacity="0.96" />
-  <path d="M138 146 C254 132, 704 130, 824 148 C835 221, 828 320, 812 392 C654 405, 306 405, 148 392 C132 315, 128 219, 138 146Z" fill="none" stroke="#8b4d3f" stroke-width="9" stroke-linejoin="round" opacity="0.55" />
+  <g opacity="0.78">${pileTrail(bannerInnerBorderPoints, { radius: 4.25, tone: 'accent', id: 'banner', dentEvery: 2 })}</g>
   <path d="M148 157 C263 144, 696 142, 813 158 C822 226, 816 308, 802 379 C650 391, 310 391, 158 379 C144 307, 139 226, 148 157Z" fill="none" stroke="${COLORS.flag}" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.75" stroke-dasharray="2 13" />
   ${bannerStitches('top')}
   ${bannerStitches('bottom')}
@@ -217,33 +401,44 @@ const BANNER_SVG = fileteadoSvg(
 );
 
 
+const cornerMainPoints = sampleCubic([18, 114], [18, 72], [36, 36], [72, 18], 18).concat(
+  sampleCubic([72, 18], [88, 10], [106, 12], [116, 24], 10, true),
+);
+const cornerGiltPoints = sampleCubic([35, 100], [42, 70], [66, 54], [94, 60], 13).concat(
+  sampleCubic([94, 60], [76, 42], [84, 26], [112, 24], 11, true),
+);
+const cornerFlagLoopPoints = [
+  ...sampleCubic([30, 75], [46, 86], [62, 73], [51, 58], 9),
+  ...sampleCubic([51, 58], [40, 44], [24, 54], [30, 75], 9, true),
+];
+const cornerLowerPoints = sampleCubic([58, 107], [78, 88], [100, 86], [116, 100], 11);
+
 const CORNER_SVG = fileteadoSvg(
   '0 0 132 132',
-  `${textureDefs('corner')}
-  ${yarnStroke('M18 114 C18 72, 36 36, 72 18 C88 10, 106 12, 116 24', { width: 7.2 })}
-  ${yarnStroke('M35 100 C42 70, 66 54, 94 60 C76 42, 84 26, 112 24', { width: 5.6, color: COLORS.gilt, twist: COLORS.giltTwist })}
-  ${yarnStroke('M30 75 C46 86, 62 73, 51 58 C40 44, 24 54, 30 75Z', { width: 5.3, color: COLORS.flag, twist: COLORS.flagTwist })}
-  ${yarnStroke('M58 107 C78 88, 100 86, 116 100', { width: 5.1 })}`,
+  `${pileGradientDefs('corner')}
+  ${textureDefs('corner')}
+  <path d="M17 115 C18 71, 36 35, 72 17 C89 9, 108 11, 118 24" fill="none" stroke="${COLORS.base}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.18" />
+  ${pileTrail(cornerMainPoints, { radius: 6.55, tone: 'accent', id: 'corner' })}
+  ${pileTrail(cornerGiltPoints, { radius: 5.05, tone: 'gilt', id: 'corner' })}
+  ${pileTrail(cornerFlagLoopPoints, { radius: 4.65, tone: 'flag', id: 'corner' })}
+  ${pileTrail(cornerLowerPoints, { radius: 4.65, tone: 'accent', id: 'corner' })}`,
 );
+
+
+const cardRuleMainPoints = [
+  ...sampleCubic([12, 26], [50, 10], [84, 12], [104, 26], 13),
+  ...sampleCubic([104, 26], [118, 34], [142, 34], [156, 26], 9, true),
+  ...sampleCubic([156, 26], [176, 12], [210, 10], [248, 26], 13, true),
+];
+
+const cardRuleFlagPoints = sampleCubic([110, 24], [119, 15], [141, 15], [150, 24], 10);
 
 const CARD_RULE_SVG = fileteadoSvg(
-  '0 0 260 42',
-  `${textureDefs('card-rule')}
-  ${yarnStroke('M12 24 C50 9, 84 11, 104 24 C118 32, 142 32, 156 24 C176 11, 210 9, 248 24', { width: 5.4 })}
-  ${yarnStroke('M110 22 C119 14, 141 14, 150 22', { width: 4.1, color: COLORS.flag, twist: COLORS.flagTwist })}`,
-  'none',
-);
-
-const HORNERO_SVG = fileteadoSvg(
-  '0 0 180 130',
-  `${textureDefs('hornero')}
-  <path d="M52 78 C68 42, 123 38, 142 72 C126 100, 78 108, 52 78Z" fill="${COLORS.accent}" opacity="0.18" style="mix-blend-mode:multiply" />
-  ${yarnStroke('M42 78 C62 42, 118 36, 144 72 C128 104, 76 108, 42 78Z', { width: 7.1 })}
-  ${yarnStroke('M86 66 C104 48, 126 54, 138 72', { width: 5.4, color: COLORS.gilt, twist: COLORS.giltTwist })}
-  ${yarnStroke('M42 78 C32 70, 24 56, 18 40', { width: 5.9, color: COLORS.flag, twist: COLORS.flagTwist })}
-  <path d="M144 70 L166 60 L151 80Z" fill="${COLORS.gilt}" opacity="0.9" />
-  <circle cx="132" cy="64" r="3.4" fill="${COLORS.primary}" />
-  ${yarnStroke('M72 102 C92 92, 112 92, 134 102', { width: 5.4, color: COLORS.flag, twist: COLORS.flagTwist })}`,
+  '0 0 260 52',
+  `${pileGradientDefs('card-rule')}
+  ${pileTrail(cardRuleMainPoints, { radius: 5.25, tone: 'accent', id: 'card-rule' })}
+  ${pileTrail(cardRuleFlagPoints, { radius: 4.35, tone: 'flag', id: 'card-rule' })}`,
+  'xMidYMid meet',
 );
 
 export const FileteadoDivider: React.FC<FileteadoProps> = ({ className, label }) => (
@@ -289,8 +484,4 @@ export const FileteadoCorner: React.FC<CornerProps> = ({ className, label, flip 
 
 export const FileteadoCardRule: React.FC<FileteadoProps> = ({ className, label }) => (
   <FileteadoImg src={svgDataUri(CARD_RULE_SVG)} className={cn('h-10 w-full', className)} label={label} />
-);
-
-export const FileteadoHornero: React.FC<FileteadoProps> = ({ className, label }) => (
-  <FileteadoImg src={svgDataUri(HORNERO_SVG)} className={cn('w-full', className)} label={label} animate />
 );
