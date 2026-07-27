@@ -14,13 +14,21 @@ interface WoodFrameProps {
 }
 
 export const AtelierWoodFrame: React.FC<WoodFrameProps> = ({ children, className, grainClassName }) => (
-  <div className={cn('relative rounded-[2.25rem] p-2.5 md:p-3.5', className)} style={woodFrame}>
+  <div className={cn('relative overflow-hidden rounded-[2.25rem] p-2.5 md:p-3.5', className)} style={woodFrame}>
     <div
       aria-hidden="true"
       className={cn('pointer-events-none absolute inset-0 rounded-[inherit]', grainClassName)}
       style={woodGrain}
     />
-    {children}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(72,45,29,0.34),inset_0_7px_8px_rgba(255,245,226,0.34),inset_7px_0_9px_rgba(255,245,226,0.18),inset_-8px_-10px_14px_rgba(43,28,19,0.36)]"
+    />
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-[0.48rem] rounded-[1.75rem] border border-[rgba(62,39,25,0.26)] shadow-[inset_0_2px_3px_rgba(43,28,19,0.22),0_1px_0_rgba(255,245,226,0.2)] md:inset-[0.65rem]"
+    />
+    <div className="relative">{children}</div>
   </div>
 );
 

@@ -157,39 +157,68 @@
   .bg-atelier-cloth {
     background-color: var(--color-base);
     background-image:
-      repeating-linear-gradient(0deg, rgba(43, 35, 32, 0.052) 0 1px, transparent 1px 6px),
-      repeating-linear-gradient(90deg, rgba(43, 35, 32, 0.047) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(0deg, rgba(43, 35, 32, 0.064) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(90deg, rgba(43, 35, 32, 0.052) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(27deg, transparent 0 11px, rgba(255, 255, 255, 0.17) 12px, transparent 13px),
+      repeating-linear-gradient(117deg, transparent 0 16px, rgba(112, 70, 52, 0.035) 17px, transparent 19px),
       radial-gradient(ellipse 72% 48% at 18% 0%, rgba(194, 94, 76, 0.08), transparent 62%),
       radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.07), transparent 64%);
+    background-size: 5px 5px, 5px 5px, 38px 38px, 46px 46px, 100% 100%, 100% 100%;
   }
 
   .atelier-felt {
     background-color: var(--color-surface);
     background-image:
-      radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.9), transparent 28%),
-      linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 240, 0.9)),
-      repeating-linear-gradient(115deg, transparent 0 10px, rgba(194, 94, 76, 0.045) 11px, transparent 13px),
-      repeating-linear-gradient(18deg, transparent 0 13px, rgba(43, 35, 32, 0.035) 14px, transparent 16px);
+      radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.9), transparent 27%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 248, 240, 0.91)),
+      repeating-linear-gradient(102deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(114deg, transparent 0 9px, rgba(194, 94, 76, 0.05) 10px, transparent 12px),
+      repeating-linear-gradient(21deg, transparent 0 11px, rgba(43, 35, 32, 0.038) 12px, transparent 14px),
+      radial-gradient(circle at 70% 78%, rgba(43, 35, 32, 0.035) 0 1px, transparent 1.5px);
+    background-size: 100% 100%, 100% 100%, 11px 11px, 36px 36px, 44px 44px, 7px 7px;
+  }
+
+  .atelier-stitch::before {
+    content: '';
+    position: absolute;
+    inset: 0.58rem;
+    border-radius: 1.65rem;
+    pointer-events: none;
+    background:
+      radial-gradient(circle, rgba(112,70,52,0.12) 0 1px, transparent 1.5px) top left / 18px 18px repeat-x,
+      radial-gradient(circle, rgba(255,255,255,0.58) 0 1px, transparent 1.5px) left 1px top 1px / 18px 18px repeat-x,
+      radial-gradient(circle, rgba(112,70,52,0.11) 0 1px, transparent 1.5px) bottom left / 18px 18px repeat-x,
+      radial-gradient(circle, rgba(112,70,52,0.10) 0 1px, transparent 1.5px) left top / 18px 18px repeat-y,
+      radial-gradient(circle, rgba(112,70,52,0.13) 0 1px, transparent 1.5px) right top / 18px 18px repeat-y;
+    opacity: 0.72;
   }
 
   .atelier-stitch::after {
     content: '';
     position: absolute;
     inset: 0.72rem;
-    border: 1.5px dashed color-mix(in srgb, var(--color-accent) 46%, transparent);
+    border: 1.5px dashed color-mix(in srgb, var(--color-accent) 48%, transparent);
     border-radius: 1.45rem;
+    filter: drop-shadow(0.7px 1px 0 rgba(112,70,52,0.13)) drop-shadow(-0.5px -0.5px 0 rgba(255,255,255,0.62));
     pointer-events: none;
   }
 
   .atelier-tag {
     background-image:
-      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.42), transparent 30%),
-      repeating-linear-gradient(115deg, transparent 0 8px, rgba(253,249,243,0.18) 9px, transparent 11px),
+      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.44), transparent 29%),
+      repeating-linear-gradient(102deg, rgba(253,249,243,0.2) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(115deg, transparent 0 8px, rgba(253,249,243,0.22) 9px, transparent 11px),
       linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 92%, #ffffff), var(--color-accent));
   }
 
   .atelier-thread-rule {
-    border-top: 1.5px dashed color-mix(in srgb, var(--color-accent) 42%, transparent);
+    height: 0.42rem;
+    border: 0;
+    background:
+      radial-gradient(ellipse at 50% 80%, rgba(43,35,32,0.14) 0 44%, transparent 64%) 0 0.18rem / 1.35rem 0.28rem repeat-x,
+      repeating-linear-gradient(115deg, var(--color-accent) 0 0.32rem, color-mix(in srgb, var(--color-accent) 70%, var(--color-surface)) 0.34rem 0.54rem, var(--color-accent) 0.56rem 0.9rem);
+    border-radius: 9999px;
+    filter: drop-shadow(1px 2px 2px rgba(43,35,32,0.14)) drop-shadow(-0.6px -0.6px 0 rgba(255,255,255,0.52));
   }
 
   [data-theme='tufting'] .atelier-contact-cta a {

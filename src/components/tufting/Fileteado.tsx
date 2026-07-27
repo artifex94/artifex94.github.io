@@ -21,6 +21,7 @@ type TextureIds = {
   felt: string;
   feltGrain: string;
   tuftEdge: string;
+  twist: string;
 };
 
 const TextureContext = createContext<TextureIds | null>(null);
@@ -47,34 +48,44 @@ const useTextureIds = (name: string): TextureIds => {
     felt: `${prefix}-${name}-felt-body`,
     feltGrain: `${prefix}-${name}-felt-grain`,
     tuftEdge: `${prefix}-${name}-tuft-edge`,
+    twist: `${prefix}-${name}-wool-twist`,
   };
 };
 
 const FileteadoTextureDefs: React.FC<{ ids: TextureIds }> = ({ ids }) => (
   <defs>
-    <filter id={ids.pile} x="-18%" y="-26%" width="136%" height="152%" colorInterpolationFilters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="4" seed="17" result="fiberNoise" />
-      <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.35" xChannelSelector="R" yChannelSelector="G" result="fuzzyCord" />
-      <feGaussianBlur in="SourceAlpha" stdDeviation="1.45" result="softPile" />
-      <feOffset in="softPile" dx="0" dy="1.5" result="raisedShadow" />
-      <feColorMatrix in="raisedShadow" type="matrix" values="0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.24 0" result="pileShadow" />
-      <feGaussianBlur in="fuzzyCord" stdDeviation="0.28" result="matteBloom" />
+    <filter id={ids.pile} x="-20%" y="-30%" width="140%" height="160%" colorInterpolationFilters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78 1.18" numOctaves="4" seed="17" result="fiberNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.65" xChannelSelector="R" yChannelSelector="G" result="fuzzyCord" />
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.55" result="softPile" />
+      <feOffset in="softPile" dx="1.2" dy="2" result="raisedShadow" />
+      <feColorMatrix in="raisedShadow" type="matrix" values="0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.28 0" result="pileShadow" />
+      <feOffset in="SourceAlpha" dx="-0.8" dy="-0.8" result="topCatch" />
+      <feColorMatrix in="topCatch" type="matrix" values="0 0 0 0 0.93 0 0 0 0 0.76 0 0 0 0 0.64 0 0 0 0.08 0" result="pileLight" />
+      <feGaussianBlur in="fuzzyCord" stdDeviation="0.22" result="matteBloom" />
       <feMerge>
         <feMergeNode in="pileShadow" />
         <feMergeNode in="matteBloom" />
         <feMergeNode in="fuzzyCord" />
+        <feMergeNode in="pileLight" />
       </feMerge>
     </filter>
 
-    <filter id={ids.halo} x="-22%" y="-34%" width="144%" height="168%" colorInterpolationFilters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="1.25" numOctaves="3" seed="41" result="hairNoise" />
-      <feDisplacementMap in="SourceGraphic" in2="hairNoise" scale="3.1" result="woolHairs" />
-      <feGaussianBlur in="woolHairs" stdDeviation="1.05" />
+    <filter id={ids.halo} x="-24%" y="-38%" width="148%" height="176%" colorInterpolationFilters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.12 1.48" numOctaves="3" seed="41" result="hairNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="hairNoise" scale="3.5" result="woolHairs" />
+      <feGaussianBlur in="woolHairs" stdDeviation="1.08" />
+    </filter>
+
+    <filter id={ids.twist} x="-8%" y="-18%" width="116%" height="136%" colorInterpolationFilters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.9 2.8" numOctaves="2" seed="53" result="twistFiber" />
+      <feDisplacementMap in="SourceGraphic" in2="twistFiber" scale="0.45" result="softTwist" />
+      <feGaussianBlur in="softTwist" stdDeviation="0.42" />
     </filter>
 
     <filter id={ids.felt} x="-8%" y="-8%" width="116%" height="116%" colorInterpolationFilters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="1.08" numOctaves="5" seed="29" result="feltNoise" />
-      <feDisplacementMap in="SourceGraphic" in2="feltNoise" scale="1.65" result="rumpledFelt" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.82 1.24" numOctaves="5" seed="29" result="feltNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="feltNoise" scale="1.45" result="rumpledFelt" />
       <feComponentTransfer in="feltNoise" result="grainContrast">
         <feFuncA type="table" tableValues="0 0.18" />
       </feComponentTransfer>
@@ -128,17 +139,18 @@ const YarnStroke: React.FC<{
   flag?: boolean;
   shadow?: boolean;
   highlight?: 'surface' | 'gilt' | 'flag';
-}> = ({ d, className, width = 7, delay = 0, gilt, flag, shadow = true, highlight = 'surface' }) => {
+}> = ({ d, className, width = 7, delay = 0, gilt, flag, shadow = true }) => {
   const reduce = useReducedMotion();
   const texture = useContext(TextureContext);
   const color = gilt ? 'var(--color-gilt)' : flag ? 'var(--color-flag)' : 'currentColor';
-  const highlightColor =
-    highlight === 'gilt' ? 'var(--color-gilt)' : highlight === 'flag' ? 'var(--color-flag)' : 'var(--color-surface)';
-  const groove = Math.max(2.5, width * 0.42);
-  const twist = Math.max(1.6, width * 0.28);
-  const dash = `${Math.max(1.6, width * 0.62)} ${Math.max(4.2, width * 1.35)}`;
+  const highlightBase = gilt ? 'var(--color-gilt)' : flag ? 'var(--color-flag)' : 'currentColor';
+  const highlightColor = `color-mix(in srgb, ${highlightBase} 76%, #f5d6c7)`;
+  const groove = Math.max(1.75, width * 0.28);
+  const twist = Math.max(0.95, width * 0.17);
+  const dash = `${Math.max(1.05, width * 0.34)} ${Math.max(2.35, width * 0.54)}`;
   const filter = texture ? `url(#${texture.pile})` : undefined;
   const haloFilter = texture ? `url(#${texture.halo})` : undefined;
+  const twistFilter = texture ? `url(#${texture.twist})` : undefined;
 
   return (
     <>
@@ -150,8 +162,9 @@ const YarnStroke: React.FC<{
           strokeWidth={width + 8}
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.18"
+          opacity="0.2"
           filter={haloFilter}
+          transform="translate(1.4 2.2)"
           {...draw(Boolean(reduce), delay)}
         />
       ) : null}
@@ -186,7 +199,7 @@ const YarnStroke: React.FC<{
         strokeLinejoin="round"
         strokeDasharray={dash}
         strokeDashoffset={width * 0.9}
-        opacity="0.12"
+        opacity="0.1"
         filter={filter}
         {...draw(Boolean(reduce), delay + 0.03, 1.15)}
       />
@@ -198,8 +211,8 @@ const YarnStroke: React.FC<{
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={dash}
-        opacity="0.72"
-        filter={filter}
+        opacity="0.34"
+        filter={twistFilter}
         {...draw(Boolean(reduce), delay + 0.05, 1.15)}
       />
     </>

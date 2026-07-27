@@ -22,21 +22,29 @@ export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => {
       preserveAspectRatio="none"
     >
       <defs>
-        <filter id={pileFilterId} x="-18%" y="-42%" width="136%" height="184%" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="1.05" numOctaves="4" seed="73" result="fiberNoise" />
-          <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.3" result="fuzzyStitch" />
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.25" result="pileLift" />
-          <feOffset in="pileLift" dx="0" dy="1.3" result="pileShadow" />
-          <feColorMatrix in="pileShadow" type="matrix" values="0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.2 0" />
+        <filter id={pileFilterId} x="-20%" y="-48%" width="140%" height="196%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.86 1.22" numOctaves="4" seed="73" result="fiberNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.65" result="fuzzyStitch" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.35" result="pileLift" />
+          <feOffset in="pileLift" dx="1.1" dy="1.9" result="pileShadow" />
+          <feColorMatrix in="pileShadow" type="matrix" values="0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.25 0" result="contactShadow" />
+          <feOffset in="SourceAlpha" dx="-0.7" dy="-0.7" result="topCatch" />
+          <feColorMatrix in="topCatch" type="matrix" values="0 0 0 0 0.93 0 0 0 0 0.76 0 0 0 0 0.64 0 0 0 0.07 0" result="topLight" />
           <feMerge>
-            <feMergeNode />
+            <feMergeNode in="contactShadow" />
             <feMergeNode in="fuzzyStitch" />
+            <feMergeNode in="topLight" />
           </feMerge>
         </filter>
-        <filter id={haloFilterId} x="-22%" y="-56%" width="144%" height="212%" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="1.32" numOctaves="3" seed="91" result="hairNoise" />
-          <feDisplacementMap in="SourceGraphic" in2="hairNoise" scale="3" />
-          <feGaussianBlur stdDeviation="1" />
+        <filter id={haloFilterId} x="-24%" y="-60%" width="148%" height="220%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.1 1.46" numOctaves="3" seed="91" result="hairNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="hairNoise" scale="3.4" />
+          <feGaussianBlur stdDeviation="1.05" />
+        </filter>
+        <filter id={`${id}-wool-stitch-twist`} x="-8%" y="-26%" width="116%" height="152%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.9 2.7" numOctaves="2" seed="97" result="twistFiber" />
+          <feDisplacementMap in="SourceGraphic" in2="twistFiber" scale="0.45" result="softTwist" />
+          <feGaussianBlur in="softTwist" stdDeviation="0.42" />
         </filter>
       </defs>
       <path
@@ -46,8 +54,9 @@ export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => {
         strokeWidth="16"
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity="0.16"
+        opacity="0.2"
         filter={`url(#${haloFilterId})`}
+        transform="translate(1.4 2.1)"
       />
       <path
         d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
@@ -76,21 +85,21 @@ export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => {
         strokeWidth="3.2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray="4 10"
-        strokeDashoffset="4"
-        opacity="0.12"
+        strokeDasharray="3 5"
+        strokeDashoffset="3"
+        opacity="0.1"
         filter={`url(#${pileFilterId})`}
       />
       <path
         d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
         fill="none"
-        stroke="var(--color-surface)"
-        strokeWidth="2.4"
+        stroke="color-mix(in srgb, currentColor 76%, #f5d6c7)"
+        strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray="4 10"
-        opacity="0.72"
-        filter={`url(#${pileFilterId})`}
+        strokeDasharray="3 5"
+        opacity="0.34"
+        filter={`url(#${id}-wool-stitch-twist)`}
       />
     </svg>
   );
@@ -107,7 +116,7 @@ export const WoolPlaceholder: React.FC<WoolPlaceholderProps> = ({
 }) => (
   <div
     className={cn(
-      'relative flex aspect-square items-center justify-center overflow-hidden rounded-[2rem] border border-line bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.95),rgba(255,255,255,0)_34%),linear-gradient(135deg,rgba(194,94,76,0.18),rgba(245,239,230,0.95)_45%,rgba(194,94,76,0.12))] shadow-[inset_0_2px_14px_rgba(255,255,255,0.9),inset_0_-16px_34px_rgba(43,35,32,0.08)]',
+      'atelier-felt relative flex aspect-square items-center justify-center overflow-hidden rounded-[2rem] border border-line shadow-[0_18px_40px_rgba(112,70,52,0.12),inset_0_2px_14px_rgba(255,255,255,0.9),inset_0_-16px_34px_rgba(43,35,32,0.08)]',
       className,
     )}
   >
@@ -119,7 +128,7 @@ export const WoolPlaceholder: React.FC<WoolPlaceholderProps> = ({
 );
 
 export const puffyCardClass =
-  'relative overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.88))] shadow-[0_20px_50px_rgba(112,70,52,0.14),0_5px_14px_rgba(112,70,52,0.08),inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-18px_34px_rgba(194,94,76,0.06)]';
+  'atelier-felt relative overflow-hidden rounded-[2rem] border border-white/70 shadow-[0_22px_54px_rgba(112,70,52,0.15),4px_8px_18px_rgba(112,70,52,0.09),-2px_-2px_10px_rgba(255,255,255,0.55),inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-18px_34px_rgba(194,94,76,0.06)]';
 
 export const puffyInteractiveClass =
   'transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_60px_rgba(112,70,52,0.18),0_8px_18px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-18px_34px_rgba(194,94,76,0.08)]';
