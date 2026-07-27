@@ -266,101 +266,86 @@ const DIVIDER_SVG = fileteadoSvg(
   ${pileTrail([[210, 39]], { radius: 7.2, tone: 'gilt', id: 'divider' })}`,
 );
 
-const mirrorRows = (rows: Point[][]): Point[][] => rows.map((row) => row.map(([x, y]) => [240 - x, y] as const));
-
-const fleurDeLisCentralPetalPath = 'M120 28 C132 48 137 72 136 96 C135 119 130 137 126 150 L114 150 C110 137 105 119 104 96 C103 72 108 48 120 28 Z';
-const fleurDeLisLeftPetalPath = 'M104 150 C94 148 87 138 86 126 C85 113 89 100 95 91 C83 92 70 99 60 110 C51 121 49 131 52 136 C45 128 47 111 60 98 C75 83 93 76 104 82 C99 86 95 93 92 101 C86 116 78 131 84 142 C88 150 97 153 104 150 Z';
-const fleurDeLisRightPetalPath = 'M136 150 C146 148 153 138 154 126 C155 113 151 100 145 91 C157 92 170 99 180 110 C189 121 191 131 188 136 C195 128 193 111 180 98 C165 83 147 76 136 82 C141 86 145 93 148 101 C154 116 162 131 156 142 C152 150 143 153 136 150 Z';
-const fleurDeLisBandPath = 'M87 149 H153 C158 149 162 153 162 158 C162 163 158 167 153 167 H87 C82 167 78 163 78 158 C78 153 82 149 87 149 Z';
-const fleurDeLisBasePath = 'M113 168 H127 C126 182 124 198 120 212 C116 198 114 182 113 168 Z M94 168 H106 C103 181 94 194 82 202 C82 188 87 177 94 168 Z M134 168 H146 C153 177 158 188 158 202 C146 194 137 181 134 168 Z';
-
-const fleurDeLisCentralPetalRows: Point[][] = [
-  [[120, 36]],
-  [[116, 50], [120, 46], [124, 50]],
-  [[112, 66], [120, 61], [128, 66]],
-  [[108, 84], [116, 79], [124, 79], [132, 84]],
-  [[108, 102], [116, 98], [124, 98], [132, 102]],
-  [[110, 120], [117, 117], [123, 117], [130, 120]],
-  [[113, 138], [120, 136], [127, 138]],
-  [[116, 148], [120, 147], [124, 148]],
-];
-
-const fleurDeLisLeftPetalRows: Point[][] = [
-  [[98, 88], [91, 92]],
-  [[98, 99], [88, 102], [77, 109], [66, 119]],
-  [[96, 110], [85, 114], [74, 122], [63, 131], [55, 135]],
-  [[91, 122], [80, 128], [69, 135], [58, 137]],
-  [[87, 135], [77, 141], [67, 141]],
-  [[91, 145], [100, 149]],
-];
-const fleurDeLisRightPetalRows = mirrorRows(fleurDeLisLeftPetalRows);
-
-const fleurDeLisBandRows: Point[][] = [
-  [[86, 153], [103, 153], [120, 153], [137, 153], [154, 153]],
-  [[82, 158], [101, 158], [120, 158], [139, 158], [158, 158]],
-  [[86, 163], [103, 163], [120, 163], [137, 163], [154, 163]],
-];
-
-const fleurDeLisBaseRows: Point[][] = [
-  [[97, 172], [92, 181], [86, 193]],
-  [[104, 173], [99, 186], [88, 198]],
-  [[116, 174], [120, 188], [124, 174]],
-  [[113, 185], [120, 199], [127, 185]],
-  [[136, 173], [141, 186], [152, 198]],
-  [[143, 172], [148, 181], [154, 193]],
-  [[116, 199], [120, 209], [124, 199]],
-];
+const fleurDeLisCentralPetalPath = 'M120 24 C104 48 100 70 106 96 C109 110 113 123 113 140 H127 C127 123 131 110 134 96 C140 70 136 48 120 24 Z';
+const fleurDeLisLeftPetalPath = 'M108 140 C99 130 95 120 96 108 C85 124 71 134 53 139 C61 128 64 118 61 107 C57 94 47 86 34 82 C52 69 72 72 87 84 C101 96 106 114 108 140 Z';
+const fleurDeLisCentralBasePath = 'M108 159 H132 C130 181 126 199 120 218 C114 199 110 181 108 159 Z';
+const fleurDeLisLeftBasePath = 'M86 159 H112 C109 177 99 195 78 210 C80 188 82 174 86 159 Z';
+const fleurDeLisBandPath = 'M87 138 H153 C159 138 163 142 163 148 V154 C163 160 159 164 153 164 H87 C81 164 77 160 77 154 V148 C77 142 81 138 87 138 Z';
 
 const ORNAMENT_SVG = fileteadoSvg(
   '0 0 240 240',
   `<defs>
-    <radialGradient id="ornament-wool-glow" cx="50%" cy="38%" r="62%">
-      <stop offset="0%" stop-color="${COLORS.surface}" stop-opacity="0.98" />
-      <stop offset="68%" stop-color="${COLORS.base}" stop-opacity="0.5" />
-      <stop offset="100%" stop-color="${COLORS.accent}" stop-opacity="0.08" />
+    <radialGradient id="ornament-wool-glow" cx="46%" cy="38%" r="64%">
+      <stop offset="0%" stop-color="${COLORS.surface}" />
+      <stop offset="72%" stop-color="#f8eee2" stop-opacity="0.92" />
+      <stop offset="100%" stop-color="${COLORS.accent}" stop-opacity="0.12" />
     </radialGradient>
+    <linearGradient id="ornament-petal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e19a87" />
+      <stop offset="42%" stop-color="${COLORS.accentTwist}" />
+      <stop offset="100%" stop-color="#a94d41" />
+    </linearGradient>
+    <linearGradient id="ornament-gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e3c47d" />
+      <stop offset="52%" stop-color="${COLORS.giltTwist}" />
+      <stop offset="100%" stop-color="#a98238" />
+    </linearGradient>
+    <pattern id="ornament-fleur-pile" width="11" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
+      <path d="M1 8 C3 4.5 6 4.5 9 7" fill="none" stroke="#7d352f" stroke-width="0.85" stroke-linecap="round" opacity="0.24" />
+      <path d="M3 2 C5 0.6 7 1.2 9 3" fill="none" stroke="#f4c1b3" stroke-width="0.9" stroke-linecap="round" opacity="0.46" />
+      <path d="M0 5 L2.4 3.8 M8.8 9.4 L11 8" fill="none" stroke="#fff5ea" stroke-width="0.65" stroke-linecap="round" opacity="0.34" />
+    </pattern>
+    <pattern id="ornament-gold-pile" width="10" height="8" patternUnits="userSpaceOnUse">
+      <path d="M0 6 C2 3 5 3 7 5 M6 1 C8 0 9 1 10 2.5" fill="none" stroke="#775b24" stroke-width="0.72" stroke-linecap="round" opacity="0.24" />
+      <path d="M1 2.5 C3 1 5 1.5 6 3" fill="none" stroke="#f6dfa8" stroke-width="0.76" stroke-linecap="round" opacity="0.5" />
+    </pattern>
+    <path id="ornament-central-petal" d="${fleurDeLisCentralPetalPath}" />
+    <path id="ornament-side-petal" d="${fleurDeLisLeftPetalPath}" />
+    <path id="ornament-central-base" d="${fleurDeLisCentralBasePath}" />
+    <path id="ornament-side-base" d="${fleurDeLisLeftBasePath}" />
   </defs>
-  ${pileGradientDefs('ornament')}
   ${textureDefs('ornament')}
-  <circle cx="120" cy="120" r="88" fill="url(#ornament-wool-glow)" opacity="0.86" style="mix-blend-mode:multiply" />
-  <circle cx="120" cy="120" r="84" fill="url(#ornament-felt-grain)" opacity="0.6" />
-  <defs>
-    <clipPath id="ornament-central-petal-clip"><path d="${fleurDeLisCentralPetalPath}" /></clipPath>
-    <clipPath id="ornament-left-petal-clip"><path d="${fleurDeLisLeftPetalPath}" /></clipPath>
-    <clipPath id="ornament-right-petal-clip"><path d="${fleurDeLisRightPetalPath}" /></clipPath>
-    <clipPath id="ornament-band-clip"><path d="${fleurDeLisBandPath}" /></clipPath>
-    <clipPath id="ornament-base-clip"><path d="${fleurDeLisBasePath}" /></clipPath>
-  </defs>
-  <g style="mix-blend-mode:multiply">
-    <path d="${fleurDeLisCentralPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
-    <path d="${fleurDeLisLeftPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
-    <path d="${fleurDeLisRightPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
-    <path d="${fleurDeLisBasePath}" fill="${COLORS.accent}" opacity="0.88" />
-    <path d="${fleurDeLisBandPath}" fill="${COLORS.gilt}" opacity="0.94" />
-    <g clip-path="url(#ornament-central-petal-clip)">
-      <path d="${fleurDeLisCentralPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
-      ${fleurDeLisCentralPetalRows.map((row) => pileTrail(row, { radius: 5.65, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
-    </g>
-    <g clip-path="url(#ornament-left-petal-clip)">
-      <path d="${fleurDeLisLeftPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
-      <path d="${fleurDeLisLeftPetalPath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3.2" stroke-linejoin="round" opacity="0.24" />
-      ${fleurDeLisLeftPetalRows.map((row) => pileTrail(row, { radius: 6.45, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
-    </g>
-    <g clip-path="url(#ornament-right-petal-clip)">
-      <path d="${fleurDeLisRightPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
-      <path d="${fleurDeLisRightPetalPath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3.2" stroke-linejoin="round" opacity="0.24" />
-      ${fleurDeLisRightPetalRows.map((row) => pileTrail(row, { radius: 6.45, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
-    </g>
-    <g clip-path="url(#ornament-base-clip)">
-      <path d="${fleurDeLisBasePath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
-      <path d="${fleurDeLisBasePath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3" stroke-linejoin="round" opacity="0.22" />
-      ${fleurDeLisBaseRows.map((row) => pileTrail(row, { radius: 5.65, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
-    </g>
-    <g clip-path="url(#ornament-band-clip)">
-      <path d="${fleurDeLisBandPath}" fill="url(#ornament-felt-grain)" opacity="0.18" />
-      <path d="${fleurDeLisBandPath}" fill="none" stroke="url(#ornament-pile-gilt)" stroke-width="2.8" stroke-linejoin="round" opacity="0.28" />
-      ${fleurDeLisBandRows.map((row) => pileTrail(row, { radius: 5.3, tone: 'gilt', id: 'ornament', dentEvery: 1 })).join('')}
-    </g>
+  <circle cx="120" cy="121" r="99" fill="url(#ornament-wool-glow)" opacity="0.96" />
+  <circle cx="120" cy="121" r="95" fill="url(#ornament-felt-grain)" opacity="0.48" />
+  <circle cx="120" cy="121" r="96" fill="none" stroke="${COLORS.gilt}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1.2 7" opacity="0.72" />
+  <circle cx="120" cy="121" r="89" fill="none" stroke="${COLORS.flag}" stroke-width="1.2" stroke-dasharray="10 7" opacity="0.28" />
+  <g transform="translate(0 3)" fill="${COLORS.primary}" opacity="0.15">
+    <use href="#ornament-central-petal" />
+    <use href="#ornament-side-petal" />
+    <use href="#ornament-side-petal" transform="translate(240 0) scale(-1 1)" />
+    <use href="#ornament-central-base" />
+    <use href="#ornament-side-base" />
+    <use href="#ornament-side-base" transform="translate(240 0) scale(-1 1)" />
+  </g>
+  <g fill="url(#ornament-petal)" stroke="#934139" stroke-width="2" stroke-linejoin="round">
+    <use href="#ornament-central-petal" />
+    <use href="#ornament-side-petal" />
+    <use href="#ornament-side-petal" transform="translate(240 0) scale(-1 1)" />
+    <use href="#ornament-central-base" />
+    <use href="#ornament-side-base" />
+    <use href="#ornament-side-base" transform="translate(240 0) scale(-1 1)" />
+  </g>
+  <g fill="url(#ornament-fleur-pile)" opacity="0.86">
+    <use href="#ornament-central-petal" />
+    <use href="#ornament-side-petal" />
+    <use href="#ornament-side-petal" transform="translate(240 0) scale(-1 1)" />
+    <use href="#ornament-central-base" />
+    <use href="#ornament-side-base" />
+    <use href="#ornament-side-base" transform="translate(240 0) scale(-1 1)" />
+  </g>
+  <g fill="none" stroke="#f6c5b7" stroke-width="1.25" stroke-linecap="round" opacity="0.5">
+    <path d="M120 35 C111 56 110 78 116 99" />
+    <path d="M48 82 C69 79 87 94 96 116" />
+    <path d="M192 82 C171 79 153 94 144 116" />
+    <path d="M87 197 C96 187 103 175 105 164" />
+    <path d="M153 197 C144 187 137 175 135 164" />
+  </g>
+  <path d="${fleurDeLisBandPath}" fill="url(#ornament-gold)" stroke="#876a2d" stroke-width="2" />
+  <path d="${fleurDeLisBandPath}" fill="url(#ornament-gold-pile)" opacity="0.82" />
+  <path d="M85 151 C105 148 135 154 155 150" fill="none" stroke="#f8e5b8" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="2 4" opacity="0.76" />
+  <g fill="none" stroke="${COLORS.base}" stroke-width="4.4" stroke-linecap="round" opacity="0.9">
+    <path d="M107 88 C99 101 96 119 103 136" />
+    <path d="M133 88 C141 101 144 119 137 136" />
   </g>`,
 );
 
