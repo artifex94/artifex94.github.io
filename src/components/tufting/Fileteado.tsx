@@ -364,9 +364,6 @@ const BANNER_SVG = fileteadoSvg(
       <path d="M0 16 C10 20, 18 12, 28 17 M12 3 C20 9, 28 0, 38 6 M15 36 C21 31, 28 35, 35 29" stroke="#fffaf1" stroke-width="0.85" stroke-linecap="round" opacity="0.32" />
       <path d="M19 10 l8 -3 M6 29 l7 2 M30 32 l6 -4" stroke="#bf8062" stroke-width="0.7" stroke-linecap="round" opacity="0.22" />
     </pattern>
-    <pattern id="banner-letter-pile" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-11)">
-      <path d="M1 7 C5 3, 9 10, 15 5 M0 14 C5 9, 10 16, 16 11" stroke="#fff6e6" stroke-width="1" stroke-linecap="round" opacity="0.22" />
-    </pattern>
   </defs>
   ${pileGradientDefs('banner')}
   <path d="M168 92 C252 66, 348 74, 480 70 C612 66, 708 68, 790 92" fill="none" stroke="${COLORS.primary}" stroke-width="8" stroke-linecap="round" opacity="0.18" />
@@ -386,17 +383,6 @@ const BANNER_SVG = fileteadoSvg(
   ${bannerStitches('left')}
   ${bannerStitches('right')}
   <path d="M150 166 C268 151, 690 151, 808 167 M160 374 C320 389, 637 389, 798 374" fill="none" stroke="${COLORS.surface}" stroke-width="2" stroke-linecap="round" opacity="0.35" />
-  <g aria-hidden="true" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle" font-weight="900" letter-spacing="0.5">
-    <text x="484" y="242" font-size="70" fill="none" stroke="${COLORS.primary}" stroke-width="22" stroke-linejoin="round" opacity="0.23" transform="rotate(-0.7 484 242) translate(5 8)">Lo que se hace</text>
-    <text x="480" y="240" font-size="70" fill="none" stroke="#7f473b" stroke-width="12" stroke-linejoin="round" transform="rotate(-0.7 480 240)">Lo que se hace</text>
-    <text x="480" y="240" font-size="70" fill="${COLORS.primary}" stroke="url(#banner-letter-pile)" stroke-width="3" stroke-linejoin="round" transform="rotate(-0.7 480 240)">Lo que se hace</text>
-    <text x="482" y="326" font-size="74" fill="none" stroke="${COLORS.primary}" stroke-width="23" stroke-linejoin="round" opacity="0.24" transform="rotate(0.55 482 326) translate(6 9)">a mano no se olvida</text>
-    <text x="478" y="323" font-size="74" fill="none" stroke="#7f473b" stroke-width="13" stroke-linejoin="round" transform="rotate(0.55 478 323)">a mano no se olvida</text>
-    <text x="478" y="323" font-size="74" fill="${COLORS.primary}" stroke="url(#banner-letter-pile)" stroke-width="3.2" stroke-linejoin="round" transform="rotate(0.55 478 323)">a mano no se olvida</text>
-    <path d="M188 281 C262 267, 323 271, 370 285" fill="none" stroke="${COLORS.accentTwist}" stroke-width="7" stroke-linecap="round" opacity="0.88" />
-    <path d="M590 284 C642 268, 706 268, 774 281" fill="none" stroke="${COLORS.accentTwist}" stroke-width="7" stroke-linecap="round" opacity="0.88" />
-    <path d="M203 279 C265 271, 316 274, 356 284 M606 282 C654 273, 707 273, 760 281" fill="none" stroke="#fff1d6" stroke-width="1.4" stroke-linecap="round" opacity="0.36" />
-  </g>
   ${bannerFringes()}`,
 );
 
@@ -455,8 +441,7 @@ export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) 
 
   return (
     <motion.figure
-      className={cn('relative mx-auto w-full max-w-[min(92vw,38rem)] overflow-hidden text-center', className)}
-      role="img"
+      className={cn('relative mx-auto w-full max-w-[min(92vw,38rem)] overflow-hidden text-center [container-type:inline-size]', className)}
       aria-label={label}
       initial={reduce ? false : { opacity: 0, y: 10, scale: 0.98 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -471,7 +456,11 @@ export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) 
         draggable={false}
         decoding="async"
       />
-      <figcaption className="sr-only">{label}</figcaption>
+      <div className="absolute bottom-[26%] left-[12%] right-[12%] top-[22%] flex items-center justify-center px-[2%]">
+        <p className="tuft-lettering max-w-[12.5em] text-balance text-center text-[clamp(1.25rem,7.2cqw,2.75rem)]">
+          {children}
+        </p>
+      </div>
     </motion.figure>
   );
 };

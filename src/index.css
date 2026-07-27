@@ -16,6 +16,7 @@
   /* Serif display para las páginas artísticas (fotografía/tufting).
      El CSS de la fuente se importa dentro de esas páginas: solo pesa en sus chunks. */
   --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-tuft: 'Baloo 2', 'Baloo 2 Variable', system-ui, sans-serif;
 }
 
 @layer base {
@@ -197,6 +198,48 @@
       radial-gradient(circle at 42% 34%, color-mix(in srgb, var(--color-accent) 74%, #ffffff) 0 18%, color-mix(in srgb, var(--color-accent) 90%, #ffffff) 42%, var(--color-accent) 78%, color-mix(in srgb, var(--color-accent) 86%, #2b2320) 100%) 0.45rem 0.08rem / 0.78rem 0.78rem repeat-x,
       radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-surface) 76%, var(--color-accent)) 0 16%, transparent 42%) 0.26rem 0 / 0.58rem 0.58rem repeat-x;
     border-radius: 9999px;
+  }
+
+
+  .yarn-pompon-number {
+    background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--color-accent) 42%, #fff3df) 0 18%, color-mix(in srgb, var(--color-accent) 82%, #f2c7ae) 42%, var(--color-accent) 72%, color-mix(in srgb, var(--color-accent) 78%, #5c3029) 100%);
+    box-shadow: 0 12px 20px rgba(112,70,52,0.18), 0 3px 8px rgba(43,35,32,0.08), inset 0 2px 4px rgba(255,246,225,0.42);
+  }
+
+  .yarn-pompon-number::before,
+  .yarn-pompon-number::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .yarn-pompon-number::before {
+    opacity: 0.82;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cpath d='M8 25 C15 18 22 22 28 15' fill='none' stroke='%23fff2de' stroke-width='1.4' stroke-linecap='round' opacity='.46'/%3E%3Cpath d='M30 10 C25 18 38 21 33 30' fill='none' stroke='%238b4339' stroke-width='1.25' stroke-linecap='round' opacity='.34'/%3E%3Cpath d='M13 39 C21 33 28 46 37 38' fill='none' stroke='%238b4339' stroke-width='1.15' stroke-linecap='round' opacity='.28'/%3E%3Cpath d='M38 48 C43 39 51 41 50 30' fill='none' stroke='%23ffe7cf' stroke-width='1.25' stroke-linecap='round' opacity='.42'/%3E%3Cpath d='M5 32 C12 34 17 29 22 35' fill='none' stroke='%23d98472' stroke-width='1.1' stroke-linecap='round' opacity='.42'/%3E%3Cpath d='M41 17 C47 20 48 28 53 32' fill='none' stroke='%23d98472' stroke-width='1.1' stroke-linecap='round' opacity='.36'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+  }
+
+  .yarn-pompon-number::after {
+    box-shadow: inset 1px 1px 0 rgba(255, 246, 225, 0.22), inset -5px -6px 10px rgba(43,35,32,0.12);
+  }
+
+
+  .tuft-lettering {
+    font-family: var(--font-tuft);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0.015em;
+    color: #7f473b;
+    text-shadow:
+      -1px -1px 0 rgba(255, 246, 225, 0.72),
+      1px 1px 0 rgba(43, 35, 32, 0.18),
+      2px 2px 1px rgba(43, 35, 32, 0.14),
+      3px 4px 3px rgba(43, 35, 32, 0.12),
+      0 0 7px rgba(245, 239, 230, 0.72);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
   }
 
   [data-theme='tufting'] .atelier-contact-cta a {

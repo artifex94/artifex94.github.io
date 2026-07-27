@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
 import { buildWhatsAppUrl } from '../data/contact';
 import { usePageMeta } from '../hooks/usePageMeta';
 

@@ -5,6 +5,8 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
 // emite solo en este chunk (no pesa en home/desarrollo/portfolio).
 import '@fontsource-variable/fraunces/index.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
 import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import {

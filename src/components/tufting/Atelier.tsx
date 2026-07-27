@@ -62,15 +62,12 @@ export const AtelierIconBadge: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
 export const YarnBallNumber: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
   <span
     className={cn(
-      'relative mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent font-display text-2xl font-bold text-on-accent shadow-[0_10px_18px_rgba(194,94,76,0.2),inset_0_1px_3px_rgba(255,255,255,0.34)] after:pointer-events-none after:absolute after:inset-1 after:rounded-full after:border after:border-dashed after:border-[color:rgba(253,249,243,0.58)]',
+      'yarn-pompon-number relative mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-2xl',
       className,
     )}
-    style={{
-      background:
-        'radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-accent) 48%, #fdf9f3), var(--color-accent) 72%)',
-    }}
   >
-    <span aria-hidden="true" className="absolute inset-0 rounded-full opacity-35 [background-image:repeating-linear-gradient(115deg,transparent_0_4px,rgba(253,249,243,0.55)_5px,transparent_7px)]" />
-    <span className="relative">{value}</span>
+    <span aria-hidden="true" className="absolute -inset-1 rounded-full opacity-70 [background-image:radial-gradient(circle_at_22%_18%,rgba(255,248,232,.45)_0_5%,transparent_16%),radial-gradient(circle_at_72%_76%,rgba(43,35,32,.18)_0_8%,transparent_24%),repeating-radial-gradient(circle_at_50%_50%,transparent_0_5px,rgba(255,240,215,.18)_6px,transparent_9px)]" />
+    <span className="tuft-lettering relative text-[1.45rem] leading-none text-[#fff3df]">{value}</span>
   </span>
 );
+

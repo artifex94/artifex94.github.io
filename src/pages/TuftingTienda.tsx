@@ -3,6 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Loader2, MessageCircle, RefreshCw, ShoppingBag } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
 import { WoolPlaceholder } from '../components/tufting/PuffySurface';
 import { AtelierFeltPanel, AtelierIconBadge, AtelierWoodFrame } from '../components/tufting/Atelier';
 import {

@@ -5,6 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 // Misma fuente display que el resto de las páginas artesanales. Al importarse
 // acá, Vite la emite en este chunk y no pesa en el resto del sitio.
 import '@fontsource-variable/fraunces/index.css';
+import '@fontsource/baloo-2/700.css';
+import '@fontsource/baloo-2/800.css';
 import { CalculatorStepper } from '../components/tufting/CalculatorStepper';
 import { AtelierFeltPanel, AtelierWoodFrame } from '../components/tufting/Atelier';
 import { atelierFeltPanelClass, atelierPillClass } from '../components/tufting/atelierMaterials';
