@@ -80,6 +80,34 @@ const pileFiberTone = (tone: PileTone) => {
   return { dark: '#98463b', light: '#e49a8b' };
 };
 
+const seededUnit = (seed: number) => {
+  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+const closedBlobPath = (cx: number, cy: number, radius: number, seed: number, scale = 1) => {
+  const count = 6 + Math.floor(seededUnit(seed + 0.17) * 4);
+  const points = Array.from({ length: count }, (_, index): Point => {
+    const baseAngle = (Math.PI * 2 * index) / count;
+    const angle = baseAngle + (seededUnit(seed + index * 5.31) - 0.5) * 0.18;
+    const jitter = 0.82 + seededUnit(seed + index * 9.73) * 0.36;
+    const rx = radius * scale * jitter * (0.97 + seededUnit(seed + 31 + index) * 0.07);
+    const ry = radius * scale * jitter * (0.95 + seededUnit(seed + 47 + index) * 0.1);
+    return [cx + Math.cos(angle) * rx, cy + Math.sin(angle) * ry];
+  });
+
+  return points
+    .map((point, index) => {
+      const previous = points[(index - 1 + count) % count];
+      const next = points[(index + 1) % count];
+      const nextNext = points[(index + 2) % count];
+      const cp1: Point = [point[0] + (next[0] - previous[0]) / 6, point[1] + (next[1] - previous[1]) / 6];
+      const cp2: Point = [next[0] - (nextNext[0] - point[0]) / 6, next[1] - (nextNext[1] - point[1]) / 6];
+      return `${index === 0 ? `M${point[0].toFixed(2)} ${point[1].toFixed(2)}` : ''} C${cp1[0].toFixed(2)} ${cp1[1].toFixed(2)}, ${cp2[0].toFixed(2)} ${cp2[1].toFixed(2)}, ${next[0].toFixed(2)} ${next[1].toFixed(2)}`;
+    })
+    .join(' ') + ' Z';
+};
+
 const cubicPoint = (p0: Point, p1: Point, p2: Point, p3: Point, t: number): Point => {
   const mt = 1 - t;
   const mt2 = mt * mt;
@@ -93,16 +121,6 @@ const cubicPoint = (p0: Point, p1: Point, p2: Point, p3: Point, t: number): Poin
 const sampleCubic = (p0: Point, p1: Point, p2: Point, p3: Point, steps: number, skipFirst = false): Point[] =>
   Array.from({ length: steps + 1 - (skipFirst ? 1 : 0) }, (_, index) => cubicPoint(p0, p1, p2, p3, (index + (skipFirst ? 1 : 0)) / steps));
 
-const mirrorX = (points: Point[], axis = 120): Point[] => points.map(([x, y]) => [axis * 2 - x, y]);
-
-const heartPileRows = (): Point[][] => [
-  [[113, 91], [120, 88], [127, 91]],
-  [[104, 99], [112, 98], [120, 101], [128, 98], [136, 99]],
-  [[99, 108], [107, 109], [115, 110], [123, 110], [131, 109], [139, 108]],
-  [[101, 118], [109, 120], [117, 121], [125, 121], [133, 120], [141, 118]],
-  [[106, 128], [114, 130], [122, 131], [130, 130], [138, 128]],
-  [[112, 138], [120, 142], [128, 138]],
-];
 
 const bannerPompon = (id: string, x: number, y: number, radius: number, tone: PileTone) =>
   pileTrail([[x, y]], { radius, tone, id, dentEvery: 1 });
@@ -120,32 +138,42 @@ const pileTrail = (
     const length = Math.hypot(dx, dy) || 1;
     const nx = -dy / length;
     const ny = dx / length;
-    const wobble = Math.sin(index * 1.73 + radius) * radius * 0.1;
-    const r = radius * (1 + Math.sin(index * 2.21 + 0.4) * 0.12);
+    const wobble = Math.sin(index * 1.73 + radius) * radius * 0.16;
+    const r = radius * (1 + Math.sin(index * 2.21 + 0.4) * 0.1 + (seededUnit(index + radius * 19) - 0.5) * 0.08);
     return { x, y, cx: x + nx * wobble, cy: y + ny * wobble, r, nx, ny, dx: dx / length, dy: dy / length, index };
   });
 
   const contact = settled
-    .map(({ cx, cy, r, index }) => `<circle cx="${(cx + 1.2).toFixed(2)}" cy="${(cy + 1.9).toFixed(2)}" r="${(r * 0.92).toFixed(2)}" fill="${COLORS.primary}" opacity="${(0.095 + (index % 2) * 0.018).toFixed(3)}" />`)
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx + 1.2, cy + 1.9, r * 0.96, index + radius * 101, 1)}" fill="${COLORS.primary}" opacity="${(0.09 + (index % 2) * 0.018).toFixed(3)}" />`)
     .join('');
 
   const halo = settled
-    .map(({ cx, cy, r, index }) => `<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${(r * (1.18 + Math.sin(index * 1.91) * 0.05)).toFixed(2)}" fill="${COLORS.base}" opacity="0.16" />`)
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx, cy, r, index + radius * 137, 1.3 + Math.sin(index * 1.91) * 0.04)}" fill="${COLORS.base}" opacity="0.16" />`)
+    .join('');
+
+  const velvetRing = settled
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx, cy, r, index + radius * 173, 1.16 + seededUnit(index + 13) * 0.08)}" fill="url(#${id}-pile-${tone})" opacity="${(0.25 + seededUnit(index + 29) * 0.1).toFixed(2)}" />`)
     .join('');
 
   const fuzz = settled
-    .filter((_, index) => index % 2 === 0)
-    .map(({ cx, cy, r, nx, ny, dx, dy, index }) => {
-      const side = index % 4 < 2 ? 1 : -1;
-      const fringe = r * (1.03 + (index % 3) * 0.11);
-      const tangent = ((index % 5) - 2) * r * 0.18;
-      const fx = cx + nx * fringe * side + dx * tangent;
-      const fy = cy + ny * fringe * side + dy * tangent;
-      const rr = 0.62 + (index % 4) * 0.16;
-      const color = index % 3 === 0 ? COLORS.surface : `url(#${id}-pile-${tone})`;
-      const opacity = index % 3 === 0 ? 0.2 : 0.32 + (index % 2) * 0.06;
-      return `<circle cx="${fx.toFixed(2)}" cy="${fy.toFixed(2)}" r="${rr.toFixed(2)}" fill="${color}" opacity="${opacity.toFixed(2)}" />`;
-    })
+    .flatMap(({ cx, cy, r, nx, ny, dx, dy, index }) =>
+      Array.from({ length: 5 }, (_, fuzzIndex) => {
+        const side = (fuzzIndex + index) % 5 < 3 ? 1 : -1;
+        const spread = (fuzzIndex - 2) * r * 0.34 + (seededUnit(index * 17 + fuzzIndex) - 0.5) * r * 0.28;
+        const out = r * (1.02 + seededUnit(index * 23 + fuzzIndex) * 0.34);
+        const fx = cx + nx * out * side + dx * spread;
+        const fy = cy + ny * out * side + dy * spread;
+        const len = 1 + seededUnit(index * 41 + fuzzIndex) * 1.5;
+        const lean = (seededUnit(index * 53 + fuzzIndex) - 0.5) * 0.9;
+        const ex = fx + (nx * side + dx * lean) * len;
+        const ey = fy + (ny * side + dy * lean) * len;
+        const mx = (fx + ex) / 2 + dx * (seededUnit(index * 61 + fuzzIndex) - 0.5) * len;
+        const my = (fy + ey) / 2 + dy * (seededUnit(index * 67 + fuzzIndex) - 0.5) * len;
+        const stroke = (index + fuzzIndex) % 4 === 0 ? COLORS.surface : fiberTone.light;
+        const opacity = 0.2 + seededUnit(index * 71 + fuzzIndex) * 0.25;
+        return `<path d="M${fx.toFixed(2)} ${fy.toFixed(2)} Q${mx.toFixed(2)} ${my.toFixed(2)} ${ex.toFixed(2)} ${ey.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${(0.42 + seededUnit(index * 79 + fuzzIndex) * 0.42).toFixed(2)}" stroke-linecap="round" opacity="${opacity.toFixed(2)}" />`;
+      }),
+    )
     .join('');
 
   const tuft = settled
@@ -166,7 +194,7 @@ const pileTrail = (
         return `<path d="M${sx.toFixed(2)} ${sy.toFixed(2)} C${mx.toFixed(2)} ${my.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}, ${ex.toFixed(2)} ${ey.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${Math.max(0.48, r * 0.085).toFixed(2)}" stroke-linecap="round" opacity="${opacity}" />`;
       }).join('');
 
-      return `<g><circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${r.toFixed(2)}" fill="url(#${id}-pile-${tone})" />${fibers}</g>`;
+      return `<g><path d="${closedBlobPath(cx, cy, r, index + radius * 211)}" fill="url(#${id}-pile-${tone})" />${fibers}</g>`;
     })
     .join('');
 
@@ -185,7 +213,7 @@ const pileTrail = (
     })
     .join('');
 
-  return `<g aria-hidden="true">${contact}</g><g aria-hidden="true">${halo}${fuzz}</g><g aria-hidden="true">${tuft}</g><g aria-hidden="true">${dents}</g>`;
+  return `<g aria-hidden="true">${contact}</g><g aria-hidden="true">${halo}${velvetRing}${fuzz}</g><g aria-hidden="true">${tuft}</g><g aria-hidden="true">${dents}</g>`;
 };
 
 const fileteadoSvg = (viewBox: string, content: string, preserveAspectRatio = 'xMidYMid meet') =>
@@ -238,27 +266,50 @@ const DIVIDER_SVG = fileteadoSvg(
   ${pileTrail([[210, 39]], { radius: 7.2, tone: 'gilt', id: 'divider' })}`,
 );
 
-const ornamentTopLeftPoints = [
-  ...sampleCubic([120, 39], [82, 40], [58, 66], [68, 92], 15),
-  ...sampleCubic([68, 92], [76, 114], [108, 110], [104, 88], 10, true),
-  ...sampleCubic([104, 88], [101, 72], [78, 76], [82, 94], 9, true),
+const mirrorRows = (rows: Point[][]): Point[][] => rows.map((row) => row.map(([x, y]) => [240 - x, y] as const));
+
+const fleurDeLisCentralPetalPath = 'M120 28 C132 48 137 72 136 96 C135 119 130 137 126 150 L114 150 C110 137 105 119 104 96 C103 72 108 48 120 28 Z';
+const fleurDeLisLeftPetalPath = 'M104 150 C94 148 87 138 86 126 C85 113 89 100 95 91 C83 92 70 99 60 110 C51 121 49 131 52 136 C45 128 47 111 60 98 C75 83 93 76 104 82 C99 86 95 93 92 101 C86 116 78 131 84 142 C88 150 97 153 104 150 Z';
+const fleurDeLisRightPetalPath = 'M136 150 C146 148 153 138 154 126 C155 113 151 100 145 91 C157 92 170 99 180 110 C189 121 191 131 188 136 C195 128 193 111 180 98 C165 83 147 76 136 82 C141 86 145 93 148 101 C154 116 162 131 156 142 C152 150 143 153 136 150 Z';
+const fleurDeLisBandPath = 'M87 149 H153 C158 149 162 153 162 158 C162 163 158 167 153 167 H87 C82 167 78 163 78 158 C78 153 82 149 87 149 Z';
+const fleurDeLisBasePath = 'M113 168 H127 C126 182 124 198 120 212 C116 198 114 182 113 168 Z M94 168 H106 C103 181 94 194 82 202 C82 188 87 177 94 168 Z M134 168 H146 C153 177 158 188 158 202 C146 194 137 181 134 168 Z';
+
+const fleurDeLisCentralPetalRows: Point[][] = [
+  [[120, 36]],
+  [[116, 50], [120, 46], [124, 50]],
+  [[112, 66], [120, 61], [128, 66]],
+  [[108, 84], [116, 79], [124, 79], [132, 84]],
+  [[108, 102], [116, 98], [124, 98], [132, 102]],
+  [[110, 120], [117, 117], [123, 117], [130, 120]],
+  [[113, 138], [120, 136], [127, 138]],
+  [[116, 148], [120, 147], [124, 148]],
 ];
 
-const ornamentLowerLeftPoints = [
-  ...sampleCubic([66, 132], [38, 138], [38, 178], [70, 182], 15),
-  ...sampleCubic([70, 182], [104, 186], [112, 148], [88, 142], 12, true),
-  ...sampleCubic([88, 142], [72, 138], [62, 152], [72, 164], 8, true),
+const fleurDeLisLeftPetalRows: Point[][] = [
+  [[98, 88], [91, 92]],
+  [[98, 99], [88, 102], [77, 109], [66, 119]],
+  [[96, 110], [85, 114], [74, 122], [63, 131], [55, 135]],
+  [[91, 122], [80, 128], [69, 135], [58, 137]],
+  [[87, 135], [77, 141], [67, 141]],
+  [[91, 145], [100, 149]],
+];
+const fleurDeLisRightPetalRows = mirrorRows(fleurDeLisLeftPetalRows);
+
+const fleurDeLisBandRows: Point[][] = [
+  [[86, 153], [103, 153], [120, 153], [137, 153], [154, 153]],
+  [[82, 158], [101, 158], [120, 158], [139, 158], [158, 158]],
+  [[86, 163], [103, 163], [120, 163], [137, 163], [154, 163]],
 ];
 
-const ornamentGarlandPoints = sampleCubic([54, 116], [82, 100], [102, 110], [120, 140], 14).concat(
-  sampleCubic([120, 140], [138, 110], [158, 100], [186, 116], 14, true),
-);
-
-const ornamentFlagPoints = sampleCubic([82, 118], [98, 126], [109, 136], [120, 154], 10).concat(
-  sampleCubic([120, 154], [131, 136], [142, 126], [158, 118], 10, true),
-);
-
-const ornamentBottomPoints = sampleCubic([92, 204], [108, 188], [132, 188], [148, 204], 12);
+const fleurDeLisBaseRows: Point[][] = [
+  [[97, 172], [92, 181], [86, 193]],
+  [[104, 173], [99, 186], [88, 198]],
+  [[116, 174], [120, 188], [124, 174]],
+  [[113, 185], [120, 199], [127, 185]],
+  [[136, 173], [141, 186], [152, 198]],
+  [[143, 172], [148, 181], [154, 193]],
+  [[116, 199], [120, 209], [124, 199]],
+];
 
 const ORNAMENT_SVG = fileteadoSvg(
   '0 0 240 240',
@@ -273,19 +324,44 @@ const ORNAMENT_SVG = fileteadoSvg(
   ${textureDefs('ornament')}
   <circle cx="120" cy="120" r="88" fill="url(#ornament-wool-glow)" opacity="0.86" style="mix-blend-mode:multiply" />
   <circle cx="120" cy="120" r="84" fill="url(#ornament-felt-grain)" opacity="0.6" />
-  ${pileTrail(ornamentTopLeftPoints, { radius: 6.9, tone: 'accent', id: 'ornament' })}
-  ${pileTrail(mirrorX(ornamentTopLeftPoints), { radius: 6.9, tone: 'accent', id: 'ornament' })}
-  ${pileTrail(ornamentLowerLeftPoints, { radius: 6.5, tone: 'accent', id: 'ornament' })}
-  ${pileTrail(mirrorX(ornamentLowerLeftPoints), { radius: 6.5, tone: 'accent', id: 'ornament' })}
-  ${pileTrail(ornamentGarlandPoints, { radius: 5.65, tone: 'gilt', id: 'ornament' })}
-  ${pileTrail(ornamentFlagPoints, { radius: 4.45, tone: 'flag', id: 'ornament' })}
+  <defs>
+    <clipPath id="ornament-central-petal-clip"><path d="${fleurDeLisCentralPetalPath}" /></clipPath>
+    <clipPath id="ornament-left-petal-clip"><path d="${fleurDeLisLeftPetalPath}" /></clipPath>
+    <clipPath id="ornament-right-petal-clip"><path d="${fleurDeLisRightPetalPath}" /></clipPath>
+    <clipPath id="ornament-band-clip"><path d="${fleurDeLisBandPath}" /></clipPath>
+    <clipPath id="ornament-base-clip"><path d="${fleurDeLisBasePath}" /></clipPath>
+  </defs>
   <g style="mix-blend-mode:multiply">
-    ${heartPileRows().map((row) => pileTrail(row, { radius: 6.35, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
-    ${pileTrail([[120, 119]], { radius: 5.1, tone: 'gilt', id: 'ornament' })}
-    ${pileTrail([[109, 112], [116, 109], [124, 109], [131, 112]], { radius: 2.25, tone: 'gilt', id: 'ornament' })}
-    ${pileTrail([[118, 122], [122, 122]], { radius: 1.75, tone: 'flag', id: 'ornament' })}
-  </g>
-  ${pileTrail(ornamentBottomPoints, { radius: 5.5, tone: 'accent', id: 'ornament' })}`,
+    <path d="${fleurDeLisCentralPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
+    <path d="${fleurDeLisLeftPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
+    <path d="${fleurDeLisRightPetalPath}" fill="${COLORS.accent}" opacity="0.88" />
+    <path d="${fleurDeLisBasePath}" fill="${COLORS.accent}" opacity="0.88" />
+    <path d="${fleurDeLisBandPath}" fill="${COLORS.gilt}" opacity="0.94" />
+    <g clip-path="url(#ornament-central-petal-clip)">
+      <path d="${fleurDeLisCentralPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
+      ${fleurDeLisCentralPetalRows.map((row) => pileTrail(row, { radius: 5.65, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
+    </g>
+    <g clip-path="url(#ornament-left-petal-clip)">
+      <path d="${fleurDeLisLeftPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
+      <path d="${fleurDeLisLeftPetalPath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3.2" stroke-linejoin="round" opacity="0.24" />
+      ${fleurDeLisLeftPetalRows.map((row) => pileTrail(row, { radius: 6.45, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
+    </g>
+    <g clip-path="url(#ornament-right-petal-clip)">
+      <path d="${fleurDeLisRightPetalPath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
+      <path d="${fleurDeLisRightPetalPath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3.2" stroke-linejoin="round" opacity="0.24" />
+      ${fleurDeLisRightPetalRows.map((row) => pileTrail(row, { radius: 6.45, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
+    </g>
+    <g clip-path="url(#ornament-base-clip)">
+      <path d="${fleurDeLisBasePath}" fill="url(#ornament-felt-grain)" opacity="0.22" />
+      <path d="${fleurDeLisBasePath}" fill="none" stroke="url(#ornament-pile-accent)" stroke-width="3" stroke-linejoin="round" opacity="0.22" />
+      ${fleurDeLisBaseRows.map((row) => pileTrail(row, { radius: 5.65, tone: 'accent', id: 'ornament', dentEvery: 1 })).join('')}
+    </g>
+    <g clip-path="url(#ornament-band-clip)">
+      <path d="${fleurDeLisBandPath}" fill="url(#ornament-felt-grain)" opacity="0.18" />
+      <path d="${fleurDeLisBandPath}" fill="none" stroke="url(#ornament-pile-gilt)" stroke-width="2.8" stroke-linejoin="round" opacity="0.28" />
+      ${fleurDeLisBandRows.map((row) => pileTrail(row, { radius: 5.3, tone: 'gilt', id: 'ornament', dentEvery: 1 })).join('')}
+    </g>
+  </g>`,
 );
 
 

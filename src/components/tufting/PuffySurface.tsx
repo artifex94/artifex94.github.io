@@ -10,6 +10,32 @@ type Point = readonly [number, number];
 
 const encodeSvg = (svg: string) => `data:image/svg+xml,${encodeURIComponent(svg)}`;
 
+const seededUnit = (seed: number) => {
+  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+const closedBlobPath = (cx: number, cy: number, radius: number, seed: number, scale = 1) => {
+  const count = 6 + Math.floor(seededUnit(seed + 0.17) * 4);
+  const points = Array.from({ length: count }, (_, index): Point => {
+    const baseAngle = (Math.PI * 2 * index) / count;
+    const angle = baseAngle + (seededUnit(seed + index * 5.31) - 0.5) * 0.18;
+    const jitter = 0.82 + seededUnit(seed + index * 9.73) * 0.36;
+    return [cx + Math.cos(angle) * radius * scale * jitter, cy + Math.sin(angle) * radius * scale * jitter];
+  });
+
+  return points
+    .map((point, index) => {
+      const previous = points[(index - 1 + count) % count];
+      const next = points[(index + 1) % count];
+      const nextNext = points[(index + 2) % count];
+      const cp1: Point = [point[0] + (next[0] - previous[0]) / 6, point[1] + (next[1] - previous[1]) / 6];
+      const cp2: Point = [next[0] - (nextNext[0] - point[0]) / 6, next[1] - (nextNext[1] - point[1]) / 6];
+      return `${index === 0 ? `M${point[0].toFixed(2)} ${point[1].toFixed(2)}` : ''} C${cp1[0].toFixed(2)} ${cp1[1].toFixed(2)}, ${cp2[0].toFixed(2)} ${cp2[1].toFixed(2)}, ${next[0].toFixed(2)} ${next[1].toFixed(2)}`;
+    })
+    .join(' ') + ' Z';
+};
+
 const cubicPoint = (p0: Point, p1: Point, p2: Point, p3: Point, t: number): Point => {
   const mt = 1 - t;
   const mt2 = mt * mt;
@@ -32,30 +58,42 @@ const pileTrail = (points: Point[], radius = 5.7) => {
     const length = Math.hypot(dx, dy) || 1;
     const nx = -dy / length;
     const ny = dx / length;
-    const wobble = Math.sin(index * 1.73 + radius) * radius * 0.1;
-    const r = radius * (1 + Math.sin(index * 2.17 + 0.35) * 0.12);
+    const wobble = Math.sin(index * 1.73 + radius) * radius * 0.16;
+    const r = radius * (1 + Math.sin(index * 2.17 + 0.35) * 0.1 + (seededUnit(index + radius * 19) - 0.5) * 0.08);
     return { cx: x + nx * wobble, cy: y + ny * wobble, r, nx, ny, dx: dx / length, dy: dy / length, index };
   });
 
   const contact = settled
-    .map(({ cx, cy, r, index }) => `<circle cx="${(cx + 1.15).toFixed(2)}" cy="${(cy + 1.85).toFixed(2)}" r="${(r * 0.92).toFixed(2)}" fill="#2b2320" opacity="${(0.1 + (index % 2) * 0.018).toFixed(3)}" />`)
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx + 1.15, cy + 1.85, r * 0.96, index + radius * 101)}" fill="#2b2320" opacity="${(0.1 + (index % 2) * 0.018).toFixed(3)}" />`)
     .join('');
 
   const halo = settled
-    .map(({ cx, cy, r, index }) => `<circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${(r * (1.18 + Math.sin(index * 1.8) * 0.05)).toFixed(2)}" fill="#f5efe6" opacity="0.16" />`)
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx, cy, r, index + radius * 137, 1.3 + Math.sin(index * 1.8) * 0.04)}" fill="#f5efe6" opacity="0.16" />`)
+    .join('');
+
+  const velvetRing = settled
+    .map(({ cx, cy, r, index }) => `<path d="${closedBlobPath(cx, cy, r, index + radius * 173, 1.16 + seededUnit(index + 13) * 0.08)}" fill="url(#stitch-pile)" opacity="${(0.25 + seededUnit(index + 29) * 0.1).toFixed(2)}" />`)
     .join('');
 
   const fuzz = settled
-    .filter((_, index) => index % 2 === 0)
-    .map(({ cx, cy, r, nx, ny, dx, dy, index }) => {
-      const side = index % 4 < 2 ? 1 : -1;
-      const fx = cx + nx * r * (1.04 + (index % 3) * 0.1) * side + dx * ((index % 5) - 2) * r * 0.18;
-      const fy = cy + ny * r * (1.04 + (index % 3) * 0.1) * side + dy * ((index % 5) - 2) * r * 0.18;
-      const rr = 0.62 + (index % 4) * 0.16;
-      const fill = index % 3 === 0 ? '#fffaf2' : 'url(#stitch-pile)';
-      const opacity = index % 3 === 0 ? 0.2 : 0.34;
-      return `<circle cx="${fx.toFixed(2)}" cy="${fy.toFixed(2)}" r="${rr.toFixed(2)}" fill="${fill}" opacity="${opacity}" />`;
-    })
+    .flatMap(({ cx, cy, r, nx, ny, dx, dy, index }) =>
+      Array.from({ length: 5 }, (_, fuzzIndex) => {
+        const side = (fuzzIndex + index) % 5 < 3 ? 1 : -1;
+        const spread = (fuzzIndex - 2) * r * 0.34 + (seededUnit(index * 17 + fuzzIndex) - 0.5) * r * 0.28;
+        const out = r * (1.02 + seededUnit(index * 23 + fuzzIndex) * 0.34);
+        const fx = cx + nx * out * side + dx * spread;
+        const fy = cy + ny * out * side + dy * spread;
+        const len = 1 + seededUnit(index * 41 + fuzzIndex) * 1.5;
+        const lean = (seededUnit(index * 53 + fuzzIndex) - 0.5) * 0.9;
+        const ex = fx + (nx * side + dx * lean) * len;
+        const ey = fy + (ny * side + dy * lean) * len;
+        const mx = (fx + ex) / 2 + dx * (seededUnit(index * 61 + fuzzIndex) - 0.5) * len;
+        const my = (fy + ey) / 2 + dy * (seededUnit(index * 67 + fuzzIndex) - 0.5) * len;
+        const stroke = (index + fuzzIndex) % 4 === 0 ? '#fffaf2' : '#e49a8b';
+        const opacity = 0.2 + seededUnit(index * 71 + fuzzIndex) * 0.25;
+        return `<path d="M${fx.toFixed(2)} ${fy.toFixed(2)} Q${mx.toFixed(2)} ${my.toFixed(2)} ${ex.toFixed(2)} ${ey.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${(0.42 + seededUnit(index * 79 + fuzzIndex) * 0.42).toFixed(2)}" stroke-linecap="round" opacity="${opacity.toFixed(2)}" />`;
+      }),
+    )
     .join('');
 
   const tufts = settled
@@ -74,7 +112,7 @@ const pileTrail = (points: Point[], radius = 5.7) => {
         const opacity = (fiberIndex + index) % 2 === 0 ? 0.18 : 0.14;
         return `<path d="M${sx.toFixed(2)} ${sy.toFixed(2)} C${mx.toFixed(2)} ${my.toFixed(2)}, ${mx.toFixed(2)} ${my.toFixed(2)}, ${ex.toFixed(2)} ${ey.toFixed(2)}" fill="none" stroke="${stroke}" stroke-width="${Math.max(0.48, r * 0.085).toFixed(2)}" stroke-linecap="round" opacity="${opacity}" />`;
       }).join('');
-      return `<g><circle cx="${cx.toFixed(2)}" cy="${cy.toFixed(2)}" r="${r.toFixed(2)}" fill="url(#stitch-pile)" />${fibers}</g>`;
+      return `<g><path d="${closedBlobPath(cx, cy, r, index + radius * 211)}" fill="url(#stitch-pile)" />${fibers}</g>`;
     })
     .join('');
 
@@ -92,7 +130,7 @@ const pileTrail = (points: Point[], radius = 5.7) => {
     })
     .join('');
 
-  return `${contact}${halo}${fuzz}${tufts}${dents}`;
+  return `${contact}${halo}${velvetRing}${fuzz}${tufts}${dents}`;
 };
 
 const woolStitchPoints = [
