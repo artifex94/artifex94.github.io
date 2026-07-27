@@ -7,7 +7,9 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
 import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
-import { puffyCardClass, puffyInteractiveClass, WoolStitch } from '../components/tufting/PuffySurface';
+import { puffyCardClass, puffyInteractiveClass } from '../components/tufting/PuffySurface';
+import { FileteadoBanner, FileteadoCorner, FileteadoDivider, FileteadoOrnament } from '../components/tufting/Fileteado';
+import { MagazineText } from '../components/tufting/MagazineText';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { breadcrumb } from '../data/structuredData';
@@ -33,7 +35,7 @@ export const Tufting: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
+      className="min-h-screen w-full bg-tufting-warm bg-fileteado-hebras py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-16 md:gap-20">
         {/* Hero */}
@@ -49,7 +51,31 @@ export const Tufting: React.FC = () => {
             Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
             traé tu obra de artista o llevate una que ya está esperando pared.
           </p>
-          <WoolStitch className="mx-auto mt-8 max-w-sm" />
+          <FileteadoDivider className="mx-auto mt-8 max-w-md" />
+          <FileteadoBanner className="mt-4" label="Frase fileteada: Lo que se hace a mano no se olvida">
+            Lo que se hace a mano no se olvida
+          </FileteadoBanner>
+        </section>
+
+        {/* Manifiesto */}
+        <section className={cn(puffyCardClass, 'p-7 text-left ring-1 ring-white/45 md:p-10')}>
+          <FileteadoCorner className="pointer-events-none absolute -left-4 -top-4 h-24 w-24 opacity-55" />
+          <FileteadoCorner className="pointer-events-none absolute -bottom-4 -right-4 h-24 w-24 opacity-45" flip="both" />
+          <div className="relative mx-auto max-w-4xl">
+            <span className="mb-3 inline-flex rounded-full border border-[color:var(--color-gilt)]/40 bg-[color:var(--color-gilt)]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-secondary">
+              de acá, a mano
+            </span>
+            <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
+              Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
+            </h2>
+            <MagazineText
+              text="Cada alfombra nace de un dibujo y de miles de pasadas de lana, una por una, en un taller de acá. No hay dos iguales porque no hay dos manos iguales: lo que encargás se teje para vos, con oficio local y sin apuro. Una pieza que abriga la casa y también la historia de quien la hizo."
+              ornament={<FileteadoOrnament className="w-full" />}
+              ornamentSide="right"
+              ornamentClassName="w-36 md:w-48"
+              className="font-display text-lg md:text-xl leading-relaxed text-primary"
+            />
+          </div>
         </section>
 
         {/* Líneas accionables */}
@@ -87,7 +113,11 @@ export const Tufting: React.FC = () => {
                     )}
                   >
                     <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent/10 blur-2xl" />
-                    <div className="relative mb-7 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-accent text-on-accent shadow-[0_16px_30px_rgba(194,94,76,0.24),inset_0_2px_4px_rgba(255,255,255,0.35)]">
+                    <FileteadoCorner className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 opacity-45" flip="x" />
+                    <span className="absolute left-7 top-7 rounded-full border border-[color:var(--color-gilt)]/30 bg-[color:var(--color-gilt)]/10 px-3 py-1 font-display text-xs italic text-secondary">
+                      {['hilo por hilo', 'hecho sin apuro', 'una sola en el mundo'][index]}
+                    </span>
+                    <div className="relative mb-7 mt-9 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-accent text-on-accent shadow-[0_16px_30px_rgba(194,94,76,0.24),inset_0_2px_4px_rgba(255,255,255,0.35)]">
                       <Icon size={26} aria-hidden="true" />
                     </div>
                     <h3 className="relative font-display text-2xl font-semibold mb-3">
@@ -97,7 +127,7 @@ export const Tufting: React.FC = () => {
                       {line.desc}
                     </p>
                     <div className="relative mt-7">
-                      <WoolStitch className="mb-4 opacity-80" />
+                      <FileteadoDivider className="mb-4 h-9 opacity-80" />
                       <span className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-on-accent transition-colors group-hover:bg-accent">
                         {line.cta}
                         <ArrowRight size={16} aria-hidden="true" />
@@ -144,6 +174,7 @@ export const Tufting: React.FC = () => {
                   />
                 )}
                 <div className="p-5">
+                  <div aria-hidden="true" className="mb-3 h-1 w-16 rounded-full bg-[linear-gradient(90deg,var(--color-gilt),var(--color-flag))] opacity-70" />
                   <h3 className="font-display text-lg font-semibold mb-2">{category.title}</h3>
                   <p className="text-sm text-secondary leading-relaxed">{category.desc}</p>
                 </div>
@@ -153,7 +184,8 @@ export const Tufting: React.FC = () => {
         </section>
 
         {/* Proceso breve */}
-        <section className={cn(puffyCardClass, 'p-8 md:p-12')}>
+        <section className={cn(puffyCardClass, 'p-8 ring-1 ring-white/35 md:p-12')}>
+          <FileteadoDivider className="mx-auto mb-4 max-w-xs opacity-75" />
           <h2 className="font-display text-2xl font-semibold mb-8 text-center">
             Si es por encargo, el camino es corto
           </h2>
@@ -177,7 +209,7 @@ export const Tufting: React.FC = () => {
         <section className="mb-16 text-center">
           <h2 className="font-display text-3xl font-semibold mb-3">¿Tejemos algo juntos?</h2>
           <p className="text-secondary mb-8">
-            Escribime y lo charlamos: encargo, colaboración o una pieza que ya está lista. El primer hilo siempre es un mensaje.
+            Contanos qué imaginás: el bastidor ya está listo.
           </p>
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded />
           <p className="text-sm text-secondary mt-6">

@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 // acá, Vite la emite en este chunk y no pesa en el resto del sitio.
 import '@fontsource-variable/fraunces/index.css';
 import { CalculatorStepper } from '../components/tufting/CalculatorStepper';
+import { FileteadoDivider } from '../components/tufting/Fileteado';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { breadcrumb } from '../data/structuredData';
 
@@ -28,7 +29,7 @@ export const TuftingCalculadora: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full bg-tufting-warm px-4 py-8 text-primary sm:px-6 sm:py-12 lg:px-8"
+      className="min-h-screen w-full bg-tufting-warm bg-fileteado-hebras px-4 py-8 text-primary sm:px-6 sm:py-12 lg:px-8"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-7 lg:gap-10">
         <header className="text-center">
@@ -49,6 +50,7 @@ export const TuftingCalculadora: React.FC = () => {
             Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
             solo. Sin esperas y sin compromiso.
           </p>
+          <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
         </header>
 
         <CalculatorStepper />

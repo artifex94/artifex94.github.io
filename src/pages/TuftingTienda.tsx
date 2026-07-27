@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Loader2, MessageCircle, RefreshCw, ShoppingBag } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
-import { puffyCardClass, puffyInteractiveClass, WoolPlaceholder, WoolStitch } from '../components/tufting/PuffySurface';
+import { puffyCardClass, puffyInteractiveClass, WoolPlaceholder } from '../components/tufting/PuffySurface';
+import { FileteadoCorner, FileteadoDivider } from '../components/tufting/Fileteado';
 import { WHATSAPP_NUMBER } from '../data/contact';
 import { breadcrumb } from '../data/structuredData';
 import {
@@ -97,7 +98,7 @@ export const TuftingTienda: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
+      className="min-h-screen w-full bg-tufting-warm bg-fileteado-hebras py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-10">
         <header className="text-center">
@@ -118,7 +119,7 @@ export const TuftingTienda: React.FC = () => {
             Piezas únicas, ya tejidas, suaves y terminadas. Ninguna se repite: cuando una encuentra
             dueño, esa historia se cierra y en el bastidor empieza otra.
           </p>
-          <WoolStitch className="mx-auto mt-7 max-w-sm" />
+          <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
         </header>
 
         {notice && (
@@ -178,6 +179,7 @@ export const TuftingTienda: React.FC = () => {
                   transition={{ duration: 0.5, delay: index * 0.06 }}
                   className={cn(puffyCardClass, puffyInteractiveClass, 'flex flex-col p-3 ring-1 ring-white/35')}
                 >
+                  <FileteadoCorner className="pointer-events-none absolute -right-5 -top-5 z-10 h-16 w-16 opacity-35" flip="x" />
                   {product.imageUrl ? (
                     <img
                       src={product.imageUrl}
@@ -190,6 +192,7 @@ export const TuftingTienda: React.FC = () => {
                     <WoolPlaceholder label="Foto muy pronto" className="rounded-[1.6rem]" />
                   )}
                   <div className="flex flex-1 flex-col p-5">
+                    <div aria-hidden="true" className="mb-3 h-1 w-14 rounded-full bg-[color:var(--color-gilt)] opacity-60" />
                     <h2 className="font-display text-xl font-semibold mb-2">{product.name}</h2>
                     <p className="text-sm text-secondary leading-relaxed flex-1">{product.description}</p>
                     <p className="mt-5 font-display text-2xl font-semibold text-accent">

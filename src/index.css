@@ -56,6 +56,8 @@
     --color-primary: #2b2320;
     --color-secondary: #7a6f66;
     --color-accent: #c25e4c; /* terracota */
+    --color-flag: #6da9c9; /* celeste apagado, solo detalles */
+    --color-gilt: #c9a34e; /* oro viejo para filetes y remates */
     --color-on-accent: #fdf9f3;
   }
 
@@ -137,6 +139,14 @@
   .bg-tufting-warm {
     background-color: var(--color-base);
     background-image:
+      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(194, 94, 76, 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
+  }
+
+  .bg-fileteado-hebras {
+    background-image:
+      linear-gradient(120deg, rgba(201, 163, 78, 0.07) 0 1px, transparent 1px 18px),
+      linear-gradient(64deg, rgba(109, 169, 201, 0.055) 0 1px, transparent 1px 22px),
       radial-gradient(ellipse 70% 50% at 20% 0%, rgba(194, 94, 76, 0.08), transparent 60%),
       radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
   }

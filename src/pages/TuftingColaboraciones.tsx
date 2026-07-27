@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Loader2, MessageCircle, Send, Sparkles } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
-import { puffyCardClass, WoolStitch } from '../components/tufting/PuffySurface';
+import { puffyCardClass } from '../components/tufting/PuffySurface';
+import { FileteadoCorner, FileteadoDivider } from '../components/tufting/Fileteado';
 import { sendTuftingCollaboration } from '../data/tuftingStore';
 import { WHATSAPP_NUMBER } from '../data/contact';
 import { breadcrumb } from '../data/structuredData';
@@ -78,7 +79,7 @@ export const TuftingColaboraciones: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full bg-tufting-warm py-12 px-4 sm:px-6 lg:px-8 text-primary"
+      className="min-h-screen w-full bg-tufting-warm bg-fileteado-hebras py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
       <div className="max-w-4xl mx-auto flex flex-col gap-10">
         <header className="text-center">
@@ -100,10 +101,12 @@ export const TuftingColaboraciones: React.FC = () => {
             encuentre. Si la tuya te anda dando vueltas, contame por acá: la buscamos juntos, con
             criterio artesanal y cariño por el detalle.
           </p>
-          <WoolStitch className="mx-auto mt-7 max-w-sm" />
+          <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
         </header>
 
         <section className={cn(puffyCardClass, 'p-5 ring-1 ring-white/35 md:p-9')} aria-labelledby="collab-form-title">
+          <FileteadoCorner className="pointer-events-none absolute -left-5 -top-5 h-20 w-20 opacity-35" />
+          <FileteadoCorner className="pointer-events-none absolute -bottom-5 -right-5 h-20 w-20 opacity-30" flip="both" />
           {sent ? (
             <div className="text-center">
               <Sparkles size={34} className="mx-auto mb-4 text-accent" aria-hidden="true" />
