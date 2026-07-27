@@ -54,7 +54,7 @@ export const Tufting: React.FC = () => {
             traé tu obra de artista o llevate una que ya está esperando pared.
           </p>
           <FileteadoDivider className="mx-auto mt-8 max-w-md" />
-          <FileteadoBanner className="mt-5">
+          <FileteadoBanner className="mt-4 max-w-[34rem]">
             Lo que se hace a mano no se olvida
           </FileteadoBanner>
         </section>
@@ -65,7 +65,7 @@ export const Tufting: React.FC = () => {
           <FileteadoCorner className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 opacity-30 md:h-24 md:w-24" flip="both" />
           <div className="relative mx-auto max-w-4xl">
             <FileteadoCardRule className="mx-auto mb-4 max-w-sm opacity-80" />
-            <span className="mb-3 inline-flex rounded-full border border-[color:var(--color-gilt)]/40 bg-[color:var(--color-gilt)]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-secondary">
+            <span className="mb-3 inline-flex rounded-full border border-accent/35 bg-[color:var(--color-base)]/90 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary shadow-[0_6px_18px_rgba(43,35,32,0.06)]">
               de acá, a mano
             </span>
             <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
@@ -117,7 +117,7 @@ export const Tufting: React.FC = () => {
                   >
                     <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
                     <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
-                    <span className="absolute left-7 top-7 rounded-full border border-[color:var(--color-gilt)]/30 bg-[color:var(--color-gilt)]/10 px-3 py-1 font-display text-xs italic text-secondary">
+                    <span className="absolute left-7 top-7 rounded-full border border-accent/25 bg-[color:var(--color-base)]/90 px-3 py-1 font-display text-xs font-semibold italic text-primary shadow-[0_5px_14px_rgba(43,35,32,0.06)]">
                       {['hilo por hilo', 'hecho sin apuro', 'una sola en el mundo'][index]}
                     </span>
                     <div className="relative mb-7 mt-9 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-accent text-on-accent shadow-[0_16px_30px_rgba(194,94,76,0.24),inset_0_2px_4px_rgba(255,255,255,0.35)]">

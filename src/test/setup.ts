@@ -69,6 +69,67 @@ vi.mock('framer-motion', async () => {
   };
 });
 
+if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
+
+if (typeof ImageData === 'undefined') {
+  vi.stubGlobal(
+    'ImageData',
+    class ImageData {
+      data: Uint8ClampedArray;
+      width: number;
+      height: number;
+
+      constructor(data: Uint8ClampedArray, width: number, height: number) {
+        this.data = data;
+        this.width = width;
+        this.height = height;
+      }
+    },
+  );
+}
+
+if (typeof HTMLCanvasElement !== 'undefined') {
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    writable: true,
+    value: vi.fn(() => ({
+      clearRect: vi.fn(),
+      drawImage: vi.fn(),
+      fillRect: vi.fn(),
+      getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 })),
+      putImageData: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      scale: vi.fn(),
+      translate: vi.fn(),
+      beginPath: vi.fn(),
+      closePath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      arc: vi.fn(),
+      rect: vi.fn(),
+      clip: vi.fn(),
+      stroke: vi.fn(),
+      fill: vi.fn(),
+      measureText: vi.fn(() => ({ width: 0 })),
+    })),
+  });
+}
+
 // Suppress expected console.error from ErrorBoundary tests
 const origConsoleError = console.error;
 vi.stubGlobal('console', {

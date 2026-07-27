@@ -148,10 +148,13 @@ export const FileteadoOrnament: React.FC<FileteadoProps> = ({ className, label }
 
 export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) => {
   const reduce = useReducedMotion();
+  const label = typeof children === 'string' ? children.trim() : undefined;
 
   return (
     <motion.div
-      className={cn('relative mx-auto w-full max-w-2xl text-center', className)}
+      className={cn('relative mx-auto w-full max-w-[min(90vw,34rem)] overflow-hidden text-center', className)}
+      role={label ? 'img' : undefined}
+      aria-label={label}
       initial={reduce ? false : { opacity: 0, y: 10, scale: 0.98 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-24px' }}
@@ -162,25 +165,36 @@ export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) 
         animate={reduce ? undefined : { y: [0, -2, 0], rotate: [0, -0.18, 0.18, 0] }}
         transition={reduce ? { duration: 0 } : { duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <svg viewBox="0 0 640 168" className="w-full text-accent" preserveAspectRatio="xMidYMid meet">
-          <path d="M78 62 L170 34 L160 126 L70 106 L102 84Z" fill="var(--color-accent)" opacity="0.24" />
-          <path d="M562 62 L470 34 L480 126 L570 106 L538 84Z" fill="var(--color-accent)" opacity="0.24" />
-          <path d="M102 70 C82 44, 130 22, 160 50 C134 56, 120 68, 112 91Z" fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth="3" strokeLinejoin="round" />
-          <path d="M538 70 C558 44, 510 22, 480 50 C506 56, 520 68, 528 91Z" fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth="3" strokeLinejoin="round" />
-          <path d="M134 46 C236 24, 404 24, 506 46 L486 128 C392 111, 248 111, 154 128Z" fill="var(--color-surface)" />
-          <path d="M134 46 C236 24, 404 24, 506 46 L486 128 C392 111, 248 111, 154 128Z" fill="none" stroke="var(--color-primary)" strokeWidth="9" strokeLinejoin="round" opacity="0.08" />
-          <path d="M134 46 C236 24, 404 24, 506 46 L486 128 C392 111, 248 111, 154 128Z" fill="none" stroke="var(--color-accent)" strokeWidth="3.5" strokeLinejoin="round" />
-          <path d="M148 58 C246 42, 394 42, 492 58" fill="none" stroke="var(--color-gilt)" strokeWidth="2.4" strokeLinecap="round" opacity="0.95" />
-          <path d="M156 113 C250 98, 390 98, 484 113" fill="none" stroke="var(--color-flag)" strokeWidth="2" strokeLinecap="round" opacity="0.82" />
-          <YarnStroke d="M112 84 C178 52, 250 56, 320 62 C390 56, 462 52, 528 84" width={4.1} delay={0.05} highlight="gilt" />
-          <YarnStroke d="M102 69 C82 42, 122 28, 143 45 C158 58, 137 76, 124 64" width={3.1} gilt delay={0.2} />
-          <YarnStroke d="M538 69 C558 42, 518 28, 497 45 C482 58, 503 76, 516 64" width={3.1} gilt delay={0.2} />
-          <YarnStroke d="M126 105 C112 124, 78 118, 86 94 C92 78, 114 82, 112 96" width={2.6} flag delay={0.28} highlight="gilt" />
-          <YarnStroke d="M514 105 C528 124, 562 118, 554 94 C548 78, 526 82, 528 96" width={2.6} flag delay={0.28} highlight="gilt" />
+        <svg viewBox="0 0 680 260" className="w-full text-accent" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path d="M78 104 L182 54 L170 206 L68 174 L104 136Z" fill="var(--color-accent)" opacity="0.2" />
+          <path d="M602 104 L498 54 L510 206 L612 174 L576 136Z" fill="var(--color-accent)" opacity="0.2" />
+          <path d="M108 112 C84 72, 136 34, 170 76 C140 84, 124 108, 116 140Z" fill="var(--color-base)" stroke="var(--color-accent)" strokeWidth="3" strokeLinejoin="round" />
+          <path d="M572 112 C596 72, 544 34, 510 76 C540 84, 556 108, 564 140Z" fill="var(--color-base)" stroke="var(--color-accent)" strokeWidth="3" strokeLinejoin="round" />
+
+          <path d="M150 76 C254 48, 426 48, 530 76 L510 206 C410 182, 270 182, 170 206Z" fill="var(--color-surface)" />
+          <path d="M150 76 C254 48, 426 48, 530 76 L510 206 C410 182, 270 182, 170 206Z" fill="none" stroke="var(--color-primary)" strokeWidth="8" strokeLinejoin="round" opacity="0.07" />
+          <path d="M150 76 C254 48, 426 48, 530 76 L510 206 C410 182, 270 182, 170 206Z" fill="none" stroke="var(--color-accent)" strokeWidth="3.1" strokeLinejoin="round" />
+
+          <path d="M168 90 C230 76, 266 75, 294 78" fill="none" stroke="var(--color-gilt)" strokeWidth="2.5" strokeLinecap="round" opacity="0.95" />
+          <path d="M386 78 C414 75, 450 76, 512 90" fill="none" stroke="var(--color-gilt)" strokeWidth="2.5" strokeLinecap="round" opacity="0.95" />
+          <path d="M170 188 C232 174, 266 174, 294 178" fill="none" stroke="var(--color-flag)" strokeWidth="2.3" strokeLinecap="round" opacity="0.86" />
+          <path d="M386 178 C414 174, 448 174, 510 188" fill="none" stroke="var(--color-flag)" strokeWidth="2.3" strokeLinecap="round" opacity="0.86" />
+
+          <YarnStroke d="M116 120 C154 92, 200 78, 294 84" width={3.5} delay={0.05} highlight="gilt" />
+          <YarnStroke d="M386 84 C480 78, 526 92, 564 120" width={3.5} delay={0.05} highlight="gilt" />
+          <YarnStroke d="M122 150 C166 186, 218 184, 294 176" width={3.3} delay={0.09} flag highlight="gilt" />
+          <YarnStroke d="M386 176 C462 184, 514 186, 558 150" width={3.3} delay={0.09} flag highlight="gilt" />
+
+          <YarnStroke d="M108 108 C84 68, 128 45, 152 72 C168 92, 144 118, 130 96" width={3.1} gilt delay={0.2} />
+          <YarnStroke d="M572 108 C596 68, 552 45, 528 72 C512 92, 536 118, 550 96" width={3.1} gilt delay={0.2} />
+          <YarnStroke d="M132 170 C116 204, 80 190, 88 150 C94 126, 118 132, 116 156" width={2.8} flag delay={0.28} highlight="gilt" />
+          <YarnStroke d="M548 170 C564 204, 600 190, 592 150 C586 126, 562 132, 564 156" width={2.8} flag delay={0.28} highlight="gilt" />
         </svg>
       </motion.div>
-      <div className="pointer-events-none absolute inset-x-[15%] top-[51%] -translate-y-1/2 font-display text-[clamp(1rem,3.1vw,1.72rem)] font-semibold italic leading-tight tracking-[0.015em] text-accent [text-shadow:0_1px_0_rgba(255,255,255,0.9),0_2px_0_rgba(201,163,78,0.22)]">
-        {children}
+      <div className="pointer-events-none absolute inset-x-[14%] top-1/2 z-10 -translate-y-1/2 sm:inset-x-[16%]">
+        <span className="mx-auto flex min-h-[4.5rem] items-center justify-center rounded-[1.35rem] border border-gilt/60 bg-[color:var(--color-base)] px-5 py-4 font-display text-[clamp(1rem,3.25vw,1.38rem)] font-semibold leading-relaxed tracking-[0.01em] text-primary sm:min-h-[4.15rem] sm:px-7 sm:py-4 sm:whitespace-nowrap">
+          {children}
+        </span>
       </div>
     </motion.div>
   );
