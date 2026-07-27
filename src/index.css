@@ -151,3 +151,67 @@
       radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
   }
 }
+
+@layer utilities {
+  /* Atelier tufting: lienzo grande en CSS, barato y sin filtros full-bleed. */
+  .bg-atelier-cloth {
+    background-color: var(--color-base);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(43, 35, 32, 0.052) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(90deg, rgba(43, 35, 32, 0.047) 0 1px, transparent 1px 6px),
+      radial-gradient(ellipse 72% 48% at 18% 0%, rgba(194, 94, 76, 0.08), transparent 62%),
+      radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.07), transparent 64%);
+  }
+
+  .atelier-felt {
+    background-color: var(--color-surface);
+    background-image:
+      radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.9), transparent 28%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 240, 0.9)),
+      repeating-linear-gradient(115deg, transparent 0 10px, rgba(194, 94, 76, 0.045) 11px, transparent 13px),
+      repeating-linear-gradient(18deg, transparent 0 13px, rgba(43, 35, 32, 0.035) 14px, transparent 16px);
+  }
+
+  .atelier-stitch::after {
+    content: '';
+    position: absolute;
+    inset: 0.72rem;
+    border: 1.5px dashed color-mix(in srgb, var(--color-accent) 46%, transparent);
+    border-radius: 1.45rem;
+    pointer-events: none;
+  }
+
+  .atelier-tag {
+    background-image:
+      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.42), transparent 30%),
+      repeating-linear-gradient(115deg, transparent 0 8px, rgba(253,249,243,0.18) 9px, transparent 11px),
+      linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 92%, #ffffff), var(--color-accent));
+  }
+
+  .atelier-thread-rule {
+    border-top: 1.5px dashed color-mix(in srgb, var(--color-accent) 42%, transparent);
+  }
+
+  [data-theme='tufting'] .atelier-contact-cta a {
+    position: relative;
+    border-radius: 9999px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 14px 30px rgba(112, 70, 52, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  [data-theme='tufting'] .atelier-contact-cta a::after {
+    content: '';
+    position: absolute;
+    inset: 0.38rem;
+    border: 1px dashed currentColor;
+    border-radius: 9999px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  [data-theme='tufting'] .atelier-contact-cta a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(112, 70, 52, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  }
+}
