@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { cn } from '../../utils/cn';
 
 interface WoolStitchProps {
@@ -6,43 +6,95 @@ interface WoolStitchProps {
   label?: string;
 }
 
-// Detalle decorativo de lana: una puntada ondulada con torsión clara encima.
-export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => (
-  <svg
-    viewBox="0 0 220 34"
-    className={cn('h-8 w-full text-accent', className)}
-    role={label ? 'img' : undefined}
-    aria-label={label}
-    aria-hidden={label ? undefined : true}
-    preserveAspectRatio="none"
-  >
-    <path
-      d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="8"
-      strokeLinecap="round"
-      opacity="0.24"
-    />
-    <path
-      d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="4"
-      strokeLinecap="round"
-      opacity="0.9"
-    />
-    <path
-      d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-      fill="none"
-      stroke="var(--color-surface)"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeDasharray="1 8"
-      opacity="0.8"
-    />
-  </svg>
-);
+// Detalle decorativo de lana: cordón grueso de tufting con borde afelpado, grano mate y torsión visible.
+export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => {
+  const id = useId().replace(/:/g, '-');
+  const pileFilterId = `${id}-wool-stitch-pile`;
+  const haloFilterId = `${id}-wool-stitch-halo`;
+
+  return (
+    <svg
+      viewBox="0 0 220 34"
+      className={cn('h-8 w-full text-accent', className)}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <filter id={pileFilterId} x="-18%" y="-42%" width="136%" height="184%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.05" numOctaves="4" seed="73" result="fiberNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.3" result="fuzzyStitch" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.25" result="pileLift" />
+          <feOffset in="pileLift" dx="0" dy="1.3" result="pileShadow" />
+          <feColorMatrix in="pileShadow" type="matrix" values="0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 0 0.09 0 0 0 0.2 0" />
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="fuzzyStitch" />
+          </feMerge>
+        </filter>
+        <filter id={haloFilterId} x="-22%" y="-56%" width="144%" height="212%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.32" numOctaves="3" seed="91" result="hairNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="hairNoise" scale="3" />
+          <feGaussianBlur stdDeviation="1" />
+        </filter>
+      </defs>
+      <path
+        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+        fill="none"
+        stroke="var(--color-primary)"
+        strokeWidth="16"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.16"
+        filter={`url(#${haloFilterId})`}
+      />
+      <path
+        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="12"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.28"
+        filter={`url(#${haloFilterId})`}
+      />
+      <path
+        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="8.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.9"
+        filter={`url(#${pileFilterId})`}
+      />
+      <path
+        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+        fill="none"
+        stroke="var(--color-primary)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 10"
+        strokeDashoffset="4"
+        opacity="0.12"
+        filter={`url(#${pileFilterId})`}
+      />
+      <path
+        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+        fill="none"
+        stroke="var(--color-surface)"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 10"
+        opacity="0.72"
+        filter={`url(#${pileFilterId})`}
+      />
+    </svg>
+  );
+};
 
 interface WoolPlaceholderProps {
   label?: string;
