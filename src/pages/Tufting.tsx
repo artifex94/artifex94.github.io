@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
@@ -8,7 +8,7 @@ import '@fontsource-variable/fraunces/index.css';
 import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import { puffyCardClass, puffyInteractiveClass } from '../components/tufting/PuffySurface';
-import { FileteadoBanner, FileteadoCorner, FileteadoDivider, FileteadoOrnament } from '../components/tufting/Fileteado';
+import { FileteadoBanner, FileteadoCardRule, FileteadoCorner, FileteadoDivider, FileteadoOrnament } from '../components/tufting/Fileteado';
 import { MagazineText } from '../components/tufting/MagazineText';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -16,6 +16,8 @@ import { breadcrumb } from '../data/structuredData';
 import { cn } from '../utils/cn';
 
 export const Tufting: React.FC = () => {
+  const reduceMotion = useReducedMotion();
+
   usePageMeta({
     title: 'Tufting: Alfombras Artesanales en Victoria | Artifex',
     description:
@@ -31,15 +33,15 @@ export const Tufting: React.FC = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={reduceMotion ? { duration: 0 } : { duration: 0.5 }}
       data-theme="tufting"
       className="min-h-screen w-full bg-tufting-warm bg-fileteado-hebras py-12 px-4 sm:px-6 lg:px-8 text-primary"
     >
-      <div className="max-w-6xl mx-auto flex flex-col gap-16 md:gap-20">
+      <div className="mx-auto flex max-w-6xl flex-col gap-14 md:gap-[4.5rem] lg:gap-20">
         {/* Hero */}
-        <section className="py-12 md:py-20 text-center max-w-3xl mx-auto">
+        <section className="mx-auto max-w-3xl py-10 text-center md:py-[4.5rem] lg:py-20">
           <span className="text-accent uppercase tracking-widest text-sm font-bold mb-4 block">
             Tufting · Alfombras y tapices artesanales · Victoria, Entre Ríos
           </span>
@@ -52,16 +54,17 @@ export const Tufting: React.FC = () => {
             traé tu obra de artista o llevate una que ya está esperando pared.
           </p>
           <FileteadoDivider className="mx-auto mt-8 max-w-md" />
-          <FileteadoBanner className="mt-4" label="Frase fileteada: Lo que se hace a mano no se olvida">
+          <FileteadoBanner className="mt-5">
             Lo que se hace a mano no se olvida
           </FileteadoBanner>
         </section>
 
         {/* Manifiesto */}
         <section className={cn(puffyCardClass, 'p-7 text-left ring-1 ring-white/45 md:p-10')}>
-          <FileteadoCorner className="pointer-events-none absolute -left-4 -top-4 h-24 w-24 opacity-55" />
-          <FileteadoCorner className="pointer-events-none absolute -bottom-4 -right-4 h-24 w-24 opacity-45" flip="both" />
+          <FileteadoCorner className="pointer-events-none absolute left-4 top-4 h-20 w-20 opacity-35 md:h-24 md:w-24" />
+          <FileteadoCorner className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 opacity-30 md:h-24 md:w-24" flip="both" />
           <div className="relative mx-auto max-w-4xl">
+            <FileteadoCardRule className="mx-auto mb-4 max-w-sm opacity-80" />
             <span className="mb-3 inline-flex rounded-full border border-[color:var(--color-gilt)]/40 bg-[color:var(--color-gilt)]/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-secondary">
               de acá, a mano
             </span>
@@ -73,7 +76,7 @@ export const Tufting: React.FC = () => {
               ornament={<FileteadoOrnament className="w-full" />}
               ornamentSide="right"
               ornamentClassName="w-36 md:w-48"
-              className="font-display text-lg md:text-xl leading-relaxed text-primary"
+              className="font-display text-lg leading-relaxed text-primary first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-accent md:text-xl"
             />
           </div>
         </section>
@@ -99,10 +102,10 @@ export const Tufting: React.FC = () => {
               return (
                 <motion.div
                   key={line.title}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-30px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={reduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 }}
                 >
                   <Link
                     to={line.href}
@@ -112,8 +115,8 @@ export const Tufting: React.FC = () => {
                       'group flex h-full min-h-[20rem] flex-col p-7 focus-visible:rounded-[2rem]',
                     )}
                   >
-                    <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent/10 blur-2xl" />
-                    <FileteadoCorner className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 opacity-45" flip="x" />
+                    <div className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
+                    <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
                     <span className="absolute left-7 top-7 rounded-full border border-[color:var(--color-gilt)]/30 bg-[color:var(--color-gilt)]/10 px-3 py-1 font-display text-xs italic text-secondary">
                       {['hilo por hilo', 'hecho sin apuro', 'una sola en el mundo'][index]}
                     </span>
@@ -152,10 +155,10 @@ export const Tufting: React.FC = () => {
             {tuftingCategories.map((category, index) => (
               <motion.div
                 key={category.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 }}
                 className={cn(puffyCardClass, 'p-3')}
               >
                 {category.image ? (
@@ -174,7 +177,7 @@ export const Tufting: React.FC = () => {
                   />
                 )}
                 <div className="p-5">
-                  <div aria-hidden="true" className="mb-3 h-1 w-16 rounded-full bg-[linear-gradient(90deg,var(--color-gilt),var(--color-flag))] opacity-70" />
+                  <FileteadoCardRule className="mb-2 max-w-36 opacity-55" />
                   <h3 className="font-display text-lg font-semibold mb-2">{category.title}</h3>
                   <p className="text-sm text-secondary leading-relaxed">{category.desc}</p>
                 </div>
