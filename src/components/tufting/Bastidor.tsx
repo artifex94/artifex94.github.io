@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Maximize2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { clothBackground, woodFrame, woodGrain } from './atelierMaterials';
 import { PreviewCanvas } from './PreviewCanvas';
 import { ShapeDesignCanvas } from './ShapeDesignCanvas';
 import { FeretTape } from './FeretTape';
@@ -37,42 +38,6 @@ interface BastidorProps {
 // desaparece detrás de un paso: queda prendida acá y va tomando forma — primero
 // el diseño crudo, después el contorno o la cinta métrica, al final la pieza
 // remapeada a lanas reales. El juego es mirar cómo evoluciona.
-
-// Materialidad del marco. Locales a este componente: no son tokens del tema.
-//
-// Un gradiente solo se lee como "div pintado". La madera creíble necesita tres
-// capas: el tono base con dirección de luz, la veta (bandas irregulares casi
-// imperceptibles) y el bisel — luz arriba, sombra abajo — que es lo que hace
-// que el marco tenga espesor en vez de ser una calcomanía.
-const woodFrame: React.CSSProperties = {
-  background:
-    'linear-gradient(150deg, #bd9573 0%, #ab8260 42%, #916f55 78%, #82624c 100%)',
-  boxShadow:
-    '0 24px 48px -20px rgba(43, 35, 32, 0.45),' + // apoyo sobre la mesa
-    'inset 0 2px 3px rgba(255, 246, 235, 0.55),' + // luz del bisel superior
-    'inset 0 -3px 6px rgba(60, 42, 30, 0.4)', // sombra del bisel inferior
-};
-
-/** Veta: bandas finas a un ángulo apenas distinto del horizontal. */
-const woodGrain: React.CSSProperties = {
-  backgroundImage:
-    'repeating-linear-gradient(93deg, rgba(43,35,32,0.09) 0 2px, transparent 2px 6px,' +
-    ' rgba(255,246,235,0.05) 6px 8px, transparent 8px 13px)',
-};
-
-/**
- * La tela de monje: trama fina y un viñeteado hacia los bordes.
- *
- * El viñeteado es lo que vende la ilusión: una tela tensada sobre un marco
- * siempre oscurece apenas contra el borde interior, donde dobla.
- */
-const clothBackground: React.CSSProperties = {
-  backgroundImage:
-    'repeating-linear-gradient(0deg, rgba(43,35,32,0.055) 0 1px, transparent 1px 5px),' +
-    'repeating-linear-gradient(90deg, rgba(43,35,32,0.055) 0 1px, transparent 1px 5px)',
-  boxShadow:
-    'inset 0 0 28px rgba(43, 35, 32, 0.16), inset 0 0 3px rgba(43, 35, 32, 0.3)',
-};
 
 export const Bastidor: React.FC<BastidorProps> = ({
   upload,
