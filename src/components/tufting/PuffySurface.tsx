@@ -6,47 +6,52 @@ interface WoolStitchProps {
   label?: string;
 }
 
-// Detalle decorativo de lana: cordón grueso de tufting con borde afelpado, grano mate y torsión visible.
+// Detalle decorativo de lana: cordón grueso de tufting rasterizado como imagen para evitar repintar paths durante el scroll.
+const woolStitchSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 34" preserveAspectRatio="none">
+  <path
+    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+    fill="none"
+    stroke="#2b2320"
+    stroke-width="16"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.2"
+    transform="translate(1.4 2.1)"
+  />
+  <path
+    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+    fill="none"
+    stroke="#c25e4c"
+    stroke-width="8.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.9"
+  />
+  <path
+    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
+    fill="none"
+    stroke="#ce7b6a"
+    stroke-width="1.35"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-dasharray="3 5"
+    opacity="0.34"
+  />
+</svg>`;
+
+const woolStitchSrc = `data:image/svg+xml,${encodeURIComponent(woolStitchSvg)}`;
+
 export const WoolStitch: React.FC<WoolStitchProps> = ({ className, label }) => {
   return (
-    <svg
-      viewBox="0 0 220 34"
-      className={cn('h-8 w-full text-accent', className)}
-      role={label ? 'img' : undefined}
-      aria-label={label}
+    <img
+      src={woolStitchSrc}
+      className={cn('h-8 w-full', className)}
+      alt={label ?? ''}
       aria-hidden={label ? undefined : true}
-      preserveAspectRatio="none"
-    >
-      <path
-        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-        fill="none"
-        stroke="var(--color-primary)"
-        strokeWidth="16"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.2"
-        transform="translate(1.4 2.1)"
-      />
-      <path
-        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="8.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.9"
-      />
-      <path
-        d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-        fill="none"
-        stroke="color-mix(in srgb, currentColor 76%, #f5d6c7)"
-        strokeWidth="1.35"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray="3 5"
-        opacity="0.34"
-      />
-    </svg>
+      draggable={false}
+      decoding="async"
+    />
   );
 };
 
