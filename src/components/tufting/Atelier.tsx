@@ -22,11 +22,11 @@ export const AtelierWoodFrame: React.FC<WoodFrameProps> = ({ children, className
     />
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(72,45,29,0.34),inset_0_7px_8px_rgba(255,245,226,0.34),inset_7px_0_9px_rgba(255,245,226,0.18),inset_-8px_-10px_14px_rgba(43,28,19,0.36)]"
+      className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_3px_rgba(255,245,226,0.38)]"
     />
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-[0.48rem] rounded-[1.75rem] border border-[rgba(62,39,25,0.26)] shadow-[inset_0_2px_3px_rgba(43,28,19,0.22),0_1px_0_rgba(255,245,226,0.2)] md:inset-[0.65rem]"
+      className="pointer-events-none absolute inset-[0.48rem] rounded-[1.75rem] border border-[rgba(62,39,25,0.26)] shadow-[inset_0_1px_2px_rgba(43,28,19,0.2)] md:inset-[0.65rem]"
     />
     <div className="relative">{children}</div>
   </div>
@@ -50,7 +50,7 @@ export const AtelierFeltPanel: React.FC<FeltPanelProps> = ({ children, className
 export const AtelierIconBadge: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, className, ...props }) => (
   <div
     className={cn(
-      'atelier-felt relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-accent/30 text-accent shadow-[0_16px_30px_rgba(112,70,52,0.13),inset_0_1px_0_rgba(255,255,255,0.9)] before:pointer-events-none before:absolute before:inset-1.5 before:rounded-[1rem] before:border before:border-dashed before:border-accent/45',
+      'atelier-felt relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-accent/30 text-accent shadow-[0_12px_20px_rgba(112,70,52,0.12),inset_0_1px_0_rgba(255,255,255,0.86)] before:pointer-events-none before:absolute before:inset-1.5 before:rounded-[1rem] before:border before:border-dashed before:border-accent/45',
       className,
     )}
     {...props}
@@ -62,7 +62,7 @@ export const AtelierIconBadge: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
 export const YarnBallNumber: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
   <span
     className={cn(
-      'relative mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent font-display text-2xl font-bold text-on-accent shadow-[0_12px_24px_rgba(194,94,76,0.22),inset_0_2px_5px_rgba(255,255,255,0.45),inset_0_-7px_12px_rgba(43,35,32,0.16)] after:pointer-events-none after:absolute after:inset-1 after:rounded-full after:border after:border-dashed after:border-[color:rgba(253,249,243,0.58)]',
+      'relative mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-accent font-display text-2xl font-bold text-on-accent shadow-[0_10px_18px_rgba(194,94,76,0.2),inset_0_1px_3px_rgba(255,255,255,0.34)] after:pointer-events-none after:absolute after:inset-1 after:rounded-full after:border after:border-dashed after:border-[color:rgba(253,249,243,0.58)]',
       className,
     )}
     style={{

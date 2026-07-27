@@ -104,7 +104,10 @@ export const Tufting: React.FC = () => {
         </AtelierFeltPanel>
 
         {/* Líneas accionables */}
-        <section aria-labelledby="tufting-caminos" className="relative">
+        <section
+          aria-labelledby="tufting-caminos"
+          className="relative [content-visibility:auto] [contain-intrinsic-size:auto_1000px]"
+        >
           <div aria-hidden="true" className="absolute inset-x-3 top-[8.5rem] hidden atelier-thread-rule md:block" />
           <div className="mb-10 text-center">
             <span className={cn(atelierPillClass, 'text-xs uppercase tracking-widest text-accent')}>
@@ -167,7 +170,7 @@ export const Tufting: React.FC = () => {
         </section>
 
         {/* Categorías */}
-        <section>
+        <section className="[content-visibility:auto] [contain-intrinsic-size:auto_1400px]">
           <div className="mb-12 text-center">
             <span className={cn(atelierPillClass, 'mb-4 min-h-0 px-4 py-2 text-xs uppercase tracking-widest')}>
               muestrario de lana

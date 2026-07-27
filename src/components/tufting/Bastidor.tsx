@@ -234,7 +234,7 @@ export const Bastidor: React.FC<BastidorProps> = ({
 
       {/* La ficha al pie: la etiqueta de taller de la pieza, siempre visible.
           El borde punteado interior es la costura de la etiqueta. */}
-      <div className="min-w-0 flex-1 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.9))] p-1.5 shadow-[0_10px_26px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.95)] sm:w-full" aria-live="polite">
+      <div className="min-w-0 flex-1 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(255,248,240,0.9))] p-1.5 shadow-[0_8px_18px_rgba(112,70,52,0.10),inset_0_1px_0_rgba(255,255,255,0.88)] sm:w-full" aria-live="polite">
         <div className="rounded-lg border border-dashed border-accent/35 px-3 py-2 text-xs sm:px-3.5 sm:py-2.5 sm:text-sm">
           <p className="font-medium">{statusText}</p>
           {areaM2 !== null && (

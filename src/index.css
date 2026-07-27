@@ -138,17 +138,11 @@
 
   .bg-tufting-warm {
     background-color: var(--color-base);
-    background-image:
-      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(194, 94, 76, 0.08), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
+    background-image: radial-gradient(ellipse 82% 58% at 18% 0%, rgba(194, 94, 76, 0.08), transparent 64%);
   }
 
   .bg-fileteado-hebras {
-    background-image:
-      linear-gradient(120deg, rgba(201, 163, 78, 0.07) 0 1px, transparent 1px 18px),
-      linear-gradient(64deg, rgba(109, 169, 201, 0.055) 0 1px, transparent 1px 22px),
-      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(194, 94, 76, 0.08), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(194, 94, 76, 0.06), transparent 60%);
+    background-image: linear-gradient(120deg, rgba(201, 163, 78, 0.055) 0 1px, transparent 1px 26px);
   }
 }
 
@@ -157,25 +151,15 @@
   .bg-atelier-cloth {
     background-color: var(--color-base);
     background-image:
-      repeating-linear-gradient(0deg, rgba(43, 35, 32, 0.064) 0 1px, transparent 1px 5px),
-      repeating-linear-gradient(90deg, rgba(43, 35, 32, 0.052) 0 1px, transparent 1px 5px),
-      repeating-linear-gradient(27deg, transparent 0 11px, rgba(255, 255, 255, 0.17) 12px, transparent 13px),
-      repeating-linear-gradient(117deg, transparent 0 16px, rgba(112, 70, 52, 0.035) 17px, transparent 19px),
-      radial-gradient(ellipse 72% 48% at 18% 0%, rgba(194, 94, 76, 0.08), transparent 62%),
-      radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.07), transparent 64%);
-    background-size: 5px 5px, 5px 5px, 38px 38px, 46px 46px, 100% 100%, 100% 100%;
+      url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACwklEQVR42i2T104YMRBF99myLGtkWf6sSGkkQCgJvfcOIfTee4fQO6T3/FnOoDxYu3IZ33vuOLs/3bMluY+lv63ON1UU2S9XR/byYCOW5j0xNa9zfV9LjTndWfE/789jb3N1Yk2Kcx6577encWqgS7KWqteeH8vmWPsmL0wPdktZ/tN0tLlo50ff2pPtZbk72Q3ne2v+x92ZZc2P9LRYCuu6ZJvz46G1+k2YGerxny8Phcr2+nDLUcAzn3QTKv3X6+NQUfDcoywsTQxIZWGOP9tdDVlPU1VaHH+XmiuLBQv+7+drYcSL/fU4O9yrthLqTH3pK4cSR6F49X7TLoz16zdlhxsLgkzDgmXIh7P9wGZZmxlxqDO/PlzI/uqsY1gKPKjBtqo2FAjZ7vK0Vg9jfW1eJSLLVhe/TEh0jeWFieJuoKMholRBCvLD+uxoaigr8EC1GQANZL0O6FpAGQWkXquKXvihrqbEYYeSRFJpeXLQA9t+ungf4RYzJtLvj5dG40NB5D/UleT7zvpyD8gEg9hRVyZbCxOegqrIlr969hBxW01JVAt6Q+Swg7gBjuBdVqeHk0ZMZGrNAFZTMMBNyoR/S2GbKVFu93iz+PdsMLfHO3ZlaijgXaMNb1trhaScxqyxo8TwtWoxo5oAK2iucyN9otkfby3JzdG20QN4tdgQQFtUuMHORqFPFGjobqwULZDetderpwgwA8hAwYdC+I20saZkv92cOAobLnEaMR0p9InJtAPJX6VapYp8h2TXXlsaeSPuz6eroOS5Wftf29dsL076roaKpG2fEZlnozIIKLCMQDNFuATmLRwcXIRYLbwihwIKtBO9Ks/IPSLbIyfCIaAgqO//HSgoixP9HZHbtWMd8Uad4wIHJ8m42Yz2tgpAtP8DeSc6zR+szSXkOy023N0cNHcOCd3neTdGXyVW7D8vZKwp5uPB+AAAAABJRU5ErkJggg=="),
+      radial-gradient(ellipse 72% 48% at 18% 0%, rgba(194, 94, 76, 0.075), transparent 62%),
+      radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.06), transparent 64%);
+    background-size: 16px 16px, 100% 100%, 100% 100%;
   }
 
   .atelier-felt {
     background-color: var(--color-surface);
-    background-image:
-      radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.9), transparent 27%),
-      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 248, 240, 0.91)),
-      repeating-linear-gradient(102deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 5px),
-      repeating-linear-gradient(114deg, transparent 0 9px, rgba(194, 94, 76, 0.05) 10px, transparent 12px),
-      repeating-linear-gradient(21deg, transparent 0 11px, rgba(43, 35, 32, 0.038) 12px, transparent 14px),
-      radial-gradient(circle at 70% 78%, rgba(43, 35, 32, 0.035) 0 1px, transparent 1.5px);
-    background-size: 100% 100%, 100% 100%, 11px 11px, 36px 36px, 44px 44px, 7px 7px;
+    background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 240, 0.9));
   }
 
   .atelier-stitch::before {
@@ -184,13 +168,7 @@
     inset: 0.58rem;
     border-radius: 1.65rem;
     pointer-events: none;
-    background:
-      radial-gradient(circle, rgba(112,70,52,0.12) 0 1px, transparent 1.5px) top left / 18px 18px repeat-x,
-      radial-gradient(circle, rgba(255,255,255,0.58) 0 1px, transparent 1.5px) left 1px top 1px / 18px 18px repeat-x,
-      radial-gradient(circle, rgba(112,70,52,0.11) 0 1px, transparent 1.5px) bottom left / 18px 18px repeat-x,
-      radial-gradient(circle, rgba(112,70,52,0.10) 0 1px, transparent 1.5px) left top / 18px 18px repeat-y,
-      radial-gradient(circle, rgba(112,70,52,0.13) 0 1px, transparent 1.5px) right top / 18px 18px repeat-y;
-    opacity: 0.72;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.34);
   }
 
   .atelier-stitch::after {
@@ -199,16 +177,12 @@
     inset: 0.72rem;
     border: 1.5px dashed color-mix(in srgb, var(--color-accent) 48%, transparent);
     border-radius: 1.45rem;
-    filter: drop-shadow(0.7px 1px 0 rgba(112,70,52,0.13)) drop-shadow(-0.5px -0.5px 0 rgba(255,255,255,0.62));
+    box-shadow: 0.7px 1px 0 rgba(112,70,52,0.13);
     pointer-events: none;
   }
 
   .atelier-tag {
-    background-image:
-      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.44), transparent 29%),
-      repeating-linear-gradient(102deg, rgba(253,249,243,0.2) 0 1px, transparent 1px 5px),
-      repeating-linear-gradient(115deg, transparent 0 8px, rgba(253,249,243,0.22) 9px, transparent 11px),
-      linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 92%, #ffffff), var(--color-accent));
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 92%, #ffffff), var(--color-accent));
   }
 
   .atelier-thread-rule {
@@ -218,7 +192,7 @@
       radial-gradient(ellipse at 50% 80%, rgba(43,35,32,0.14) 0 44%, transparent 64%) 0 0.18rem / 1.35rem 0.28rem repeat-x,
       repeating-linear-gradient(115deg, var(--color-accent) 0 0.32rem, color-mix(in srgb, var(--color-accent) 70%, var(--color-surface)) 0.34rem 0.54rem, var(--color-accent) 0.56rem 0.9rem);
     border-radius: 9999px;
-    filter: drop-shadow(1px 2px 2px rgba(43,35,32,0.14)) drop-shadow(-0.6px -0.6px 0 rgba(255,255,255,0.52));
+    box-shadow: 1px 2px 2px rgba(43,35,32,0.14);
   }
 
   [data-theme='tufting'] .atelier-contact-cta a {
@@ -226,7 +200,7 @@
     border-radius: 9999px;
     border-style: solid;
     border-width: 1px;
-    box-shadow: 0 14px 30px rgba(112, 70, 52, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    box-shadow: 0 12px 22px rgba(112, 70, 52, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.62);
   }
 
   [data-theme='tufting'] .atelier-contact-cta a::after {
@@ -241,6 +215,6 @@
 
   [data-theme='tufting'] .atelier-contact-cta a:hover {
     transform: translateY(-2px);
-    box-shadow: 0 20px 40px rgba(112, 70, 52, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    box-shadow: 0 14px 22px rgba(112, 70, 52, 0.18);
   }
 }
