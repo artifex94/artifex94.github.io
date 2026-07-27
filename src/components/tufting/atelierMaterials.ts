@@ -33,13 +33,13 @@ export const clothBackground: React.CSSProperties = {
 };
 
 export const atelierFeltPanelClass =
-  'atelier-felt atelier-stitch relative overflow-hidden rounded-[2rem] border border-white/70 text-primary shadow-[0_18px_24px_rgba(112,70,52,0.13),inset_0_1px_0_rgba(255,255,255,0.9)]';
+  'atelier-felt atelier-stitch relative overflow-hidden rounded-[2rem] border border-white/70 text-primary shadow-[0_20px_28px_rgba(112,70,52,0.16),0_3px_8px_rgba(43,35,32,0.06),inset_0_1px_0_rgba(255,255,255,0.92)]';
 
 export const atelierInteractiveClass =
-  'transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_20px_24px_rgba(112,70,52,0.16)]';
+  'transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_22px_28px_rgba(112,70,52,0.18),0_4px_10px_rgba(43,35,32,0.07)]';
 
 export const atelierPillClass =
-  'atelier-felt relative inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-accent/25 px-5 py-3 text-sm font-bold text-primary shadow-[0_10px_18px_rgba(112,70,52,0.12),inset_0_1px_0_rgba(255,255,255,0.88)] transition-all duration-300 before:pointer-events-none before:absolute before:inset-1.5 before:rounded-full before:border before:border-dashed before:border-accent/45 hover:-translate-y-0.5 hover:border-accent/55 hover:bg-[color:var(--color-base)] hover:text-accent hover:shadow-[0_12px_20px_rgba(112,70,52,0.14)]';
+  'atelier-felt relative inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-accent/25 px-5 py-3 text-sm font-bold text-primary shadow-[0_12px_22px_rgba(112,70,52,0.15),0_2px_6px_rgba(43,35,32,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] transition-all duration-300 before:pointer-events-none before:absolute before:inset-1.5 before:rounded-full before:border before:border-dashed before:border-accent/45 hover:-translate-y-0.5 hover:border-accent/55 hover:bg-[color:var(--color-base)] hover:text-accent hover:shadow-[0_12px_20px_rgba(112,70,52,0.14)]';
 
 export const atelierPrimaryTagClass =
   'atelier-tag relative inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-extrabold text-on-accent shadow-[0_12px_22px_rgba(194,94,76,0.22),inset_0_1px_3px_rgba(255,255,255,0.3)] transition-all duration-300 before:pointer-events-none before:absolute before:inset-1.5 before:rounded-full before:border before:border-dashed before:border-[color:rgba(253,249,243,0.72)] hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_14px_22px_rgba(194,94,76,0.28)]';

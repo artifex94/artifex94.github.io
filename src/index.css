@@ -159,7 +159,8 @@
 
   .atelier-felt {
     background-color: var(--color-surface);
-    background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 240, 0.9));
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2242%22%20height%3D%2242%22%20viewBox%3D%220%200%2042%2042%22%3E%3Crect%20width%3D%2242%22%20height%3D%2242%22%20fill%3D%22%23fff8ef%22%2F%3E%3Cpath%20d%3D%22M2%208%20C10%203%2016%2011%2026%206%20M4%2025%20C12%2018%2020%2029%2033%2021%20M0%2017%20C10%2024%2020%2012%2032%2018%20M14%2038%20C22%2032%2030%2039%2040%2031%22%20fill%3D%22none%22%20stroke%3D%22%236f5145%22%20stroke-width%3D%22.7%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.13%22%2F%3E%3Cpath%20d%3D%22M5%2014%20l9%20-4%20M18%203%20l8%203%20M24%2028%20l12%20-4%20M2%2038%20l8%20-3%20M31%2010%20l8%20-5%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%22.8%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.48%22%2F%3E%3Cpath%20d%3D%22M8%205%20l5%202%20M12%2020%20l7%20-2%20M28%2035%20l6%203%20M34%2018%20l5%202%20M20%2040%20l6%20-3%22%20fill%3D%22none%22%20stroke%3D%22%23c98a74%22%20stroke-width%3D%22.56%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.18%22%2F%3E%3Cpath%20d%3D%22M1%2032%20C7%2028%2012%2035%2020%2030%20M22%2014%20C27%2010%2033%2016%2041%2011%22%20fill%3D%22none%22%20stroke%3D%22%23d8b98a%22%20stroke-width%3D%22.55%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.16%22%2F%3E%3C%2Fsvg%3E");
+    background-size: 42px 42px;
   }
 
   .atelier-stitch::before {

@@ -50,7 +50,7 @@ export const AtelierFeltPanel: React.FC<FeltPanelProps> = ({ children, className
 export const AtelierIconBadge: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, className, ...props }) => (
   <div
     className={cn(
-      'atelier-felt relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-accent/30 text-accent shadow-[0_12px_20px_rgba(112,70,52,0.12),inset_0_1px_0_rgba(255,255,255,0.86)] before:pointer-events-none before:absolute before:inset-1.5 before:rounded-[1rem] before:border before:border-dashed before:border-accent/45',
+      'atelier-felt relative flex h-16 w-16 items-center justify-center rounded-[1.35rem] border border-accent/30 text-accent shadow-[0_14px_24px_rgba(112,70,52,0.15),0_2px_7px_rgba(43,35,32,0.06),inset_0_1px_0_rgba(255,255,255,0.88)] before:pointer-events-none before:absolute before:inset-1.5 before:rounded-[1rem] before:border before:border-dashed before:border-accent/45',
       className,
     )}
     {...props}

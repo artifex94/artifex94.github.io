@@ -7,37 +7,16 @@ interface WoolStitchProps {
 }
 
 // Detalle decorativo de lana: cordón grueso de tufting rasterizado como imagen para evitar repintar paths durante el scroll.
+const woolPath = 'M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12';
 const woolStitchSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 34" preserveAspectRatio="none">
-  <path
-    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-    fill="none"
-    stroke="#2b2320"
-    stroke-width="16"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    opacity="0.2"
-    transform="translate(1.4 2.1)"
-  />
-  <path
-    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-    fill="none"
-    stroke="#c25e4c"
-    stroke-width="8.8"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    opacity="0.9"
-  />
-  <path
-    d="M4 18 C 28 2, 48 32, 72 16 S 118 1, 142 17 S 188 31, 216 12"
-    fill="none"
-    stroke="#ce7b6a"
-    stroke-width="1.35"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-dasharray="3 5"
-    opacity="0.34"
-  />
+  <path d="${woolPath}" fill="none" stroke="#2b2320" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.2" transform="translate(1.4 2.1)" />
+  <path d="${woolPath}" fill="none" stroke="#2b2320" stroke-width="11.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.09" transform="translate(0.4 0.7)" />
+  <path d="${woolPath}" fill="none" stroke="#fffaf2" stroke-width="12.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.15" />
+  <path d="${woolPath}" fill="none" stroke="#c25e4c" stroke-width="8.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.92" />
+  <path d="${woolPath}" fill="none" stroke="#7f3e35" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 5.4" stroke-dashoffset="1.1" opacity="0.16" />
+  <path d="${woolPath}" fill="none" stroke="#ce7b6a" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2.7 4.8" opacity="0.5" />
+  <path d="${woolPath}" fill="none" stroke="#fff4e8" stroke-width="0.72" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1.3 6.2" stroke-dashoffset="2.4" opacity="0.34" />
 </svg>`;
 
 const woolStitchSrc = `data:image/svg+xml,${encodeURIComponent(woolStitchSvg)}`;
@@ -66,7 +45,7 @@ export const WoolPlaceholder: React.FC<WoolPlaceholderProps> = ({
 }) => (
   <div
     className={cn(
-      'atelier-felt relative flex aspect-square items-center justify-center overflow-hidden rounded-[2rem] border border-line shadow-[0_14px_22px_rgba(112,70,52,0.11),inset_0_1px_0_rgba(255,255,255,0.86)]',
+      'atelier-felt relative flex aspect-square items-center justify-center overflow-hidden rounded-[2rem] border border-line shadow-[0_16px_26px_rgba(112,70,52,0.14),0_2px_7px_rgba(43,35,32,0.06),inset_0_1px_0_rgba(255,255,255,0.88)]',
       className,
     )}
   >
@@ -77,7 +56,7 @@ export const WoolPlaceholder: React.FC<WoolPlaceholderProps> = ({
 );
 
 export const puffyCardClass =
-  'atelier-felt relative overflow-hidden rounded-[2rem] border border-white/70 shadow-[0_18px_24px_rgba(112,70,52,0.13),inset_0_1px_0_rgba(255,255,255,0.9)]';
+  'atelier-felt relative overflow-hidden rounded-[2rem] border border-white/70 shadow-[0_20px_28px_rgba(112,70,52,0.16),0_3px_8px_rgba(43,35,32,0.06),inset_0_1px_0_rgba(255,255,255,0.92)]';
 
 export const puffyInteractiveClass =
-  'transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_24px_rgba(112,70,52,0.16)]';
+  'transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_28px_rgba(112,70,52,0.18),0_4px_10px_rgba(43,35,32,0.07)]';
