@@ -70,24 +70,15 @@ export const Tufting: React.FC = () => {
             </span>
           </span>
           <FileteadoBanner className="max-w-3xl">
-            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 h-[9cqw] w-[9cqw] opacity-55" />
-            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 h-[9cqw] w-[9cqw] opacity-50" flip="both" />
-            <FileteadoCardRule className="mx-auto h-3.5 w-44 shrink-0 sm:h-[3.5cqw] sm:w-[34cqw]" />
-            <h1 className="font-display text-[clamp(1.1rem,5cqw,2.9rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] my-[1.4cqw]">
+            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 h-[9cqw] w-[9cqw]" />
+            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 h-[9cqw] w-[9cqw]" flip="both" />
+            <FileteadoCardRule className="mx-auto h-4 w-48 shrink-0 sm:h-[4.5cqw] sm:w-[40cqw]" />
+            <h1 className="my-[2cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
-            <p className="mx-auto hidden max-w-[36em] text-[clamp(0.78rem,1.9cqw,1rem)] leading-relaxed text-primary/85 [text-shadow:0_1px_0_rgba(255,250,240,0.75)] sm:block">
-              Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
-              traé tu obra de artista o llevate una que ya está esperando pared.
-            </p>
-            <FileteadoDivider className="mx-auto mt-[1.2cqw] h-5 w-40 shrink-0 sm:h-[5cqw] sm:w-[28cqw]" />
+            <FileteadoDivider className="mx-auto h-6 w-44 shrink-0 sm:h-[6.5cqw] sm:w-[36cqw]" />
           </FileteadoBanner>
-          {/* En mobile el campo del tapiz solo da para el titular: el párrafo baja acá. */}
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary/85 sm:hidden">
-            Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
-            traé tu obra de artista o llevate una que ya está esperando pared.
-          </p>
         </section>
 
         {/* Manifiesto */}
