@@ -47,4 +47,46 @@ describe('insetForLine', () => {
     expect(box.width).toBe(0);
     expect(box.x).toBe(0);
   });
+
+  describe('con silueta (intrusionAt)', () => {
+    it('reserva solo la intrusión real de esa banda, no la caja completa', () => {
+      const contoured: Obstacle = {
+        side: 'right',
+        top: 0,
+        bottom: 96,
+        width: 200,
+        gap: 20,
+        intrusionAt: () => 80,
+      };
+      const box = insetForLine(0, LINE_H, CONTAINER, contoured);
+      expect(box.width).toBe(CONTAINER - (80 + 20));
+    });
+
+    it('banda transparente dentro de la caja ⇒ ancho completo, sin gap', () => {
+      const contoured: Obstacle = {
+        side: 'right',
+        top: 0,
+        bottom: 96,
+        width: 200,
+        gap: 20,
+        intrusionAt: () => 0,
+      };
+      expect(insetForLine(0, LINE_H, CONTAINER, contoured)).toEqual({ x: 0, width: CONTAINER });
+    });
+
+    it('acota la intrusión al ancho de la caja y nunca es negativa', () => {
+      const overflowing: Obstacle = {
+        side: 'left',
+        top: 0,
+        bottom: 96,
+        width: 180,
+        gap: 20,
+        intrusionAt: () => 999,
+      };
+      expect(insetForLine(0, LINE_H, CONTAINER, overflowing)).toEqual({ x: 200, width: CONTAINER - 200 });
+
+      const negative: Obstacle = { ...overflowing, intrusionAt: () => -50 };
+      expect(insetForLine(0, LINE_H, CONTAINER, negative)).toEqual({ x: 0, width: CONTAINER });
+    });
+  });
 });

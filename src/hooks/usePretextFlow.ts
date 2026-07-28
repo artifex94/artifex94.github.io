@@ -19,6 +19,10 @@ export interface Obstacle {
   width: number;
   /** Aire entre el obstáculo y el texto. */
   gap: number;
+  /** Intrusión real (px CSS) de la silueta del obstáculo dentro de la banda
+      [lineTop, lineBottom), medida desde el borde que enfrenta al texto. Si no
+      está, el obstáculo se trata como rectángulo lleno. */
+  intrusionAt?: (lineTop: number, lineBottom: number) => number;
 }
 
 export interface LineBox {
@@ -52,7 +56,12 @@ export function insetForLine(
   const overlaps = lineBottom > obstacle.top && lineTop < obstacle.bottom;
   if (!overlaps) return { x: 0, width: containerWidth };
 
-  const reserved = Math.min(obstacle.width + obstacle.gap, containerWidth);
+  const intrusion = obstacle.intrusionAt
+    ? Math.min(Math.max(obstacle.intrusionAt(lineTop, lineBottom), 0), obstacle.width)
+    : obstacle.width;
+  if (intrusion === 0) return { x: 0, width: containerWidth };
+
+  const reserved = Math.min(intrusion + obstacle.gap, containerWidth);
   const width = Math.max(containerWidth - reserved, 0);
   const x = obstacle.side === 'left' ? reserved : 0;
   return { x, width };
@@ -105,10 +114,75 @@ const readFont = (el: HTMLElement): { font: string; lineHeight: number } => {
   return { font, lineHeight };
 };
 
+// Silueta de una imagen con transparencia: primer y último píxel opaco por fila.
+// Se calcula una sola vez por `src` (canvas fuera del DOM) y permite que el texto
+// siga el contorno real del ornamento en vez de su caja rectangular.
+interface AlphaProfile {
+  width: number;
+  height: number;
+  /** minX === width ⇒ fila completamente transparente. */
+  minX: Int32Array;
+  maxX: Int32Array;
+}
+
+const ALPHA_OPAQUE = 24;
+const profileCache = new Map<string, Promise<AlphaProfile | null>>();
+
+const buildAlphaProfile = async (img: HTMLImageElement): Promise<AlphaProfile | null> => {
+  try {
+    if (!img.complete) await img.decode();
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    if (!width || !height) return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0);
+    const { data } = ctx.getImageData(0, 0, width, height);
+    const minX = new Int32Array(height).fill(width);
+    const maxX = new Int32Array(height).fill(-1);
+    for (let row = 0; row < height; row += 1) {
+      const offset = row * width * 4;
+      for (let x = 0; x < width; x += 1) {
+        if (data[offset + x * 4 + 3] >= ALPHA_OPAQUE) {
+          minX[row] = x;
+          break;
+        }
+      }
+      if (minX[row] === width) continue;
+      for (let x = width - 1; x >= 0; x -= 1) {
+        if (data[offset + x * 4 + 3] >= ALPHA_OPAQUE) {
+          maxX[row] = x;
+          break;
+        }
+      }
+    }
+    return { width, height, minX, maxX };
+  } catch {
+    // Imagen no decodificable o canvas tainted (CORS): sin silueta, el obstáculo
+    // queda rectangular como siempre.
+    return null;
+  }
+};
+
+const alphaProfileFor = (img: HTMLImageElement): Promise<AlphaProfile | null> => {
+  const src = img.currentSrc || img.src;
+  if (!src) return Promise.resolve(null);
+  let promise = profileCache.get(src);
+  if (!promise) {
+    promise = buildAlphaProfile(img);
+    profileCache.set(src, promise);
+  }
+  return promise;
+};
+
 const measureObstacle = (
   container: HTMLElement,
   obstacleEl: HTMLElement | null,
   gap: number,
+  silhouette?: { img: HTMLImageElement; profile: AlphaProfile },
 ): Obstacle | null => {
   if (!obstacleEl) return null;
   const c = container.getBoundingClientRect();
@@ -116,13 +190,40 @@ const measureObstacle = (
   if (o.width <= 0 || o.height <= 0) return null;
   const top = o.top - c.top;
   const centerX = o.left + o.width / 2 - c.left;
-  return {
+  const obstacle: Obstacle = {
     side: centerX > c.width / 2 ? 'right' : 'left',
     top,
     bottom: top + o.height,
     width: o.width,
     gap,
   };
+
+  if (silhouette) {
+    const { img, profile } = silhouette;
+    // Medidas de layout del <img> (offsetWidth/Height ignoran el transform de la
+    // animación de entrada). El img arranca en el tope del float.
+    const imgWidth = img.offsetWidth || o.width;
+    const imgHeight = img.offsetHeight || (imgWidth * profile.height) / profile.width;
+    if (imgWidth > 0 && imgHeight > 0) {
+      const scaleX = imgWidth / profile.width;
+      const rowsPerCssPx = profile.height / imgHeight;
+      obstacle.intrusionAt = (lineTop, lineBottom) => {
+        const first = Math.max(0, Math.floor((lineTop - top) * rowsPerCssPx));
+        const last = Math.min(profile.height - 1, Math.ceil((lineBottom - top) * rowsPerCssPx) - 1);
+        if (last < first) return 0;
+        let min = profile.width;
+        let max = -1;
+        for (let row = first; row <= last; row += 1) {
+          if (profile.minX[row] < min) min = profile.minX[row];
+          if (profile.maxX[row] > max) max = profile.maxX[row];
+        }
+        if (max < 0) return 0;
+        return obstacle.side === 'right' ? obstacle.width - min * scaleX : (max + 1) * scaleX;
+      };
+    }
+  }
+
+  return obstacle;
 };
 
 const flow = (
@@ -189,7 +290,16 @@ export function usePretextFlow({
         if (cancelled) return;
         const { font, lineHeight } = readFont(measure);
         const prepared = pretext.prepareWithSegments(text, font);
-        const obstacle = measureObstacle(container, obstacleRef?.current ?? null, gap);
+        const obstacleEl = obstacleRef?.current ?? null;
+        const obstacleImg = obstacleEl?.querySelector('img') ?? null;
+        const profile = obstacleImg ? await alphaProfileFor(obstacleImg) : null;
+        if (cancelled) return;
+        const obstacle = measureObstacle(
+          container,
+          obstacleEl,
+          gap,
+          obstacleImg && profile ? { img: obstacleImg, profile } : undefined,
+        );
         const lines = flow(pretext, prepared, container.clientWidth, lineHeight, obstacle);
         if (cancelled) return;
         if (lines.length === 0) {
