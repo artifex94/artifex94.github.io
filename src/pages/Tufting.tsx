@@ -131,29 +131,18 @@ export const Tufting: React.FC = () => {
                   >
                     <div aria-hidden="true" className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
                     <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
-                    <h3 className="relative mt-9 font-display text-2xl font-semibold mb-3">
-                      {line.title}
-                    </h3>
-                    <div className="relative flex-1">
-                      <MagazineText
-                        text={line.desc}
-                        ornament={
-                          <img
-                            src={line.pictogram}
-                            alt=""
-                            aria-hidden="true"
-                            loading="lazy"
-                            decoding="async"
-                            draggable={false}
-                            className="w-full object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
-                          />
-                        }
-                        ornamentSide="right"
-                        ornamentClassName="w-16"
-                        minWidth={240}
-                        gap={12}
-                        className="text-sm leading-relaxed text-secondary"
+                    <div className="relative mt-9 flex-1">
+                      <img
+                        src={line.pictogram}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                        className="float-right mb-2 ml-3 mt-1 w-16 object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
                       />
+                      <h3 className="mb-3 font-display text-2xl font-semibold">{line.title}</h3>
+                      <p className="text-sm leading-relaxed text-secondary">{line.desc}</p>
                     </div>
                     <div className="relative mt-7">
                       <FileteadoDivider className="mb-4 h-9 opacity-80" />
