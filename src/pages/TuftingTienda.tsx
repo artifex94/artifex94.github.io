@@ -216,7 +216,7 @@ export const TuftingTienda: React.FC = () => {
                     </div>
                   </AtelierWoodFrame>
                   <div className="flex flex-1 flex-col p-5">
-                    <FileteadoCardRule className="mb-2 max-w-36 opacity-55" />
+                    <FileteadoCardRule className="mb-2 max-w-36" />
                     <h2 className="font-display text-xl font-semibold mb-2">{product.name}</h2>
                     <p className="text-sm text-secondary leading-relaxed flex-1">{product.description}</p>
                     <p className="mt-5 font-display text-2xl font-semibold text-accent">

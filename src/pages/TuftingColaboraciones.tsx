@@ -149,7 +149,7 @@ export const TuftingColaboraciones: React.FC = () => {
           ) : (
             <form onSubmit={submit} className="relative z-10 flex flex-col gap-5">
               <div>
-                <FileteadoCardRule className="mb-3 max-w-44 opacity-65" />
+                <FileteadoCardRule className="mb-3 max-w-44" />
                 <h2 id="collab-form-title" className="font-display text-2xl font-semibold mb-2">
                   Contame la colaboración
                 </h2>

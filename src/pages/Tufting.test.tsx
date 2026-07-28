@@ -15,8 +15,15 @@ describe('Tufting page', () => {
     const banner = screen.getByRole('heading', { name: /Un territorio de lana/i }).closest('figure');
 
     expect(banner).not.toBeNull();
-    expect(banner?.querySelectorAll('img[data-ornament-render="complete"]')).toHaveLength(2);
+    expect(banner?.querySelectorAll('img[data-ornament-render="complete"][data-ornament-kind="horizontal"]')).toHaveLength(2);
     expect(banner?.querySelector('svg[viewBox="0 0 260 52"], svg[viewBox="0 0 420 88"]')).not.toBeInTheDocument();
+  });
+
+  it('renders every repeated ornament without the clipping SVG masks', () => {
+    renderWithProviders(<Tufting />);
+
+    expect(document.querySelector('svg[viewBox="0 0 132 132"], svg[viewBox="0 0 260 52"], svg[viewBox="0 0 420 88"]')).not.toBeInTheDocument();
+    expect(document.querySelectorAll('img[data-ornament-render="complete"]').length).toBeGreaterThan(2);
   });
 
   it('shows every category title', () => {

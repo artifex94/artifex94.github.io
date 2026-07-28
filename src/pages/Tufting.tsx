@@ -175,7 +175,7 @@ export const Tufting: React.FC = () => {
                       <p className="text-sm leading-relaxed text-secondary">{line.desc}</p>
                     </div>
                     <div className="relative mt-7">
-                      <FileteadoDivider className="mb-4 h-9" />
+                      <FileteadoDivider className="mb-4" />
                       <span className={atelierPrimaryTagClass}>
                         {line.cta}
                         <ArrowRight size={16} aria-hidden="true" />
@@ -241,7 +241,7 @@ export const Tufting: React.FC = () => {
                   <FileteadoCardRule className="mx-auto mb-2 max-w-36" />
                   <h3 className="mb-2 font-display text-lg font-semibold">{category.title}</h3>
                   <p className="text-sm leading-relaxed text-secondary">{category.desc}</p>
-                  <FileteadoDivider className="mx-auto mt-3 h-8 max-w-40" />
+                  <FileteadoDivider className="mx-auto mt-3 max-w-40" />
                 </div>
               </motion.div>
             ))}
@@ -266,7 +266,7 @@ export const Tufting: React.FC = () => {
               </div>
             ))}
           </div>
-          <FileteadoDivider className="mx-auto mt-9 h-10 max-w-xs" />
+          <FileteadoDivider className="mx-auto mt-9 max-w-xs" />
         </AtelierFeltPanel>
 
         {/* CTA de cierre */}
@@ -276,7 +276,7 @@ export const Tufting: React.FC = () => {
           <p className="mb-4 text-secondary">
             Contanos qué imaginás: el bastidor ya está listo.
           </p>
-          <FileteadoDivider className="mx-auto mb-6 h-9 max-w-xs" />
+          <FileteadoDivider className="mx-auto mb-6 max-w-xs" />
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded className="atelier-contact-cta" />
           <p className="relative z-10 mt-6 text-sm text-secondary">
             ¿Querés fotos profesionales de tus piezas?{' '}

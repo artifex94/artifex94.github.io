@@ -1,11 +1,11 @@
 import React, { useId } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '../../utils/cn';
-import fleurDeLisTufting from '../../assets/flor-de-lis-tufting.webp';
 import sectionDivider from '../../assets/tufting/section-divider.webp';
 import cornerFlourish from '../../assets/tufting/corner-flourish.webp';
 import cardRule from '../../assets/tufting/card-rule.webp';
 import quoteTapestry from '../../assets/tufting/quote-tapestry.webp';
+import { FleurDeLisReveal } from './FleurDeLisReveal';
 
 type FileteadoProps = {
   className?: string;
@@ -25,24 +25,6 @@ type CornerProps = FileteadoProps & {
   flip?: 'none' | 'x' | 'y' | 'both';
 };
 
-const softRevealIn = (reduce: boolean, delay = 0) => ({
-  initial: reduce ? false : { opacity: 0, scale: 0.97, y: 8 },
-  whileInView: { opacity: 1, scale: 1, y: 0 },
-  viewport: { once: true, margin: '-24px' },
-  transition: reduce ? { duration: 0 } : { duration: 1.8, ease: 'easeOut' as const, delay },
-});
-
-const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }> = ({ className, label, src, animate = false }) => {
-  const reduce = useReducedMotion();
-  const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
-
-  if (animate) {
-    return <motion.img src={src} className={className} draggable={false} decoding="async" {...accessibility} {...softRevealIn(Boolean(reduce))} />;
-  }
-
-  return <img src={src} className={className} draggable={false} decoding="async" {...accessibility} />;
-};
-
 const CenterRevealOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ className, label, src }) => {
   const reduce = useReducedMotion();
   const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
@@ -52,6 +34,7 @@ const CenterRevealOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ c
     <motion.img
       src={src}
       data-ornament-render="complete"
+      data-ornament-kind="horizontal"
       className={cn('block h-auto object-contain', className)}
       style={{
         maskImage: featheredMask,
@@ -67,6 +50,27 @@ const CenterRevealOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ c
       whileInView={{ maskSize: '124% 100%' }}
       viewport={{ once: true, margin: '-24px' }}
       transition={reduce ? { duration: 0 } : { duration: 2.8, ease: 'linear' }}
+      {...accessibility}
+    />
+  );
+};
+
+const SoftRevealOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ className, label, src }) => {
+  const reduce = useReducedMotion();
+  const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
+
+  return (
+    <motion.img
+      src={src}
+      data-ornament-render="complete"
+      data-ornament-kind="corner"
+      className={cn('block object-contain', className)}
+      draggable={false}
+      decoding="async"
+      initial={reduce ? false : { opacity: 0, filter: 'blur(3px)' }}
+      whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+      viewport={{ once: true, margin: '-24px' }}
+      transition={reduce ? { duration: 0 } : { duration: 2.2, ease: 'easeOut' }}
       {...accessibility}
     />
   );
@@ -170,13 +174,7 @@ const CARD_RULE_STROKES: RevealStroke[] = [
   { d: 'M130 32 C139.5 32, 149 30, 156 26 C176 12, 210 10, 248 26', width: 58 },
 ];
 
-const CORNER_VIEWBOX = '0 0 132 132';
-const CORNER_STROKES: RevealStroke[] = [
-  { d: 'M17 115 C18 71, 36 35, 72 17 C89 9, 108 11, 118 24', width: 76 },
-  { d: 'M35 100 C42 70, 66 54, 94 60 C76 42, 84 26, 112 24', width: 54, delay: 0.45 },
-];
-
-export const FileteadoDivider: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
+export const FileteadoDivider: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'center' }) =>
   reveal === 'center' ? (
     <CenterRevealOrnamentImg src={sectionDivider} className={cn('w-full', className)} label={label} />
   ) : (
@@ -191,7 +189,7 @@ export const FileteadoDivider: React.FC<HorizontalOrnamentProps> = ({ className,
   );
 
 export const FileteadoOrnament: React.FC<FileteadoProps> = ({ className, label }) => (
-  <FileteadoImg src={fleurDeLisTufting} className={cn('w-full', className)} label={label} animate />
+  <FleurDeLisReveal className={cn('w-full', className)} label={label} />
 );
 
 // Tapiz tufteado como contenedor: los children se renderizan tal cual dentro del
@@ -225,18 +223,10 @@ export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) 
 export const FileteadoCorner: React.FC<CornerProps> = ({ className, label, flip = 'none' }) => {
   const scale = flip === 'both' ? '-scale-x-100 -scale-y-100' : flip === 'x' ? '-scale-x-100' : flip === 'y' ? '-scale-y-100' : '';
 
-  return (
-    <TuftReveal
-      src={cornerFlourish}
-      viewBox={CORNER_VIEWBOX}
-      strokes={CORNER_STROKES}
-      className={cn('h-24 w-24 origin-center', scale, className)}
-      label={label}
-    />
-  );
+  return <SoftRevealOrnamentImg src={cornerFlourish} className={cn('h-24 w-24 origin-center', scale, className)} label={label} />;
 };
 
-export const FileteadoCardRule: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
+export const FileteadoCardRule: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'center' }) =>
   reveal === 'center' ? (
     <CenterRevealOrnamentImg src={cardRule} className={cn('w-full', className)} label={label} />
   ) : (
