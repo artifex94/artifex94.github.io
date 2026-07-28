@@ -74,12 +74,12 @@ export const Tufting: React.FC = () => {
             <FileteadoCorner className="pointer-events-none absolute right-[1.2cqw] top-[0.7cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="x" />
             <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] left-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="y" />
             <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] right-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="both" />
-            <FileteadoCardRule reveal="fade" className="mx-auto w-[clamp(12rem,68cqw,26rem)] shrink-0" />
+            <FileteadoCardRule reveal="center" className="mx-auto w-[clamp(10rem,52cqw,22.5rem)] shrink-0" />
             <h1 className="my-[0.75cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
-            <FileteadoDivider reveal="fade" className="mx-auto w-[clamp(12rem,68cqw,26rem)] shrink-0" />
+            <FileteadoDivider reveal="center" className="mx-auto w-[clamp(10rem,52cqw,22.5rem)] shrink-0 -translate-y-1" />
           </FileteadoBanner>
         </section>
 

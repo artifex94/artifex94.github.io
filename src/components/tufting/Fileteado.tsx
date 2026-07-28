@@ -13,8 +13,8 @@ type FileteadoProps = {
 };
 
 type HorizontalOrnamentProps = FileteadoProps & {
-  /** `fade` renders the complete bitmap without the SVG drawing mask. */
-  reveal?: 'draw' | 'fade';
+  /** `center` reveals the complete bitmap horizontally, without clipping its height. */
+  reveal?: 'draw' | 'center';
 };
 
 type BannerProps = FileteadoProps & {
@@ -43,21 +43,30 @@ const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }
   return <img src={src} className={className} draggable={false} decoding="async" {...accessibility} />;
 };
 
-const CompleteOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ className, label, src }) => {
+const CenterRevealOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ className, label, src }) => {
   const reduce = useReducedMotion();
   const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
+  const featheredMask = 'linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%)';
 
   return (
     <motion.img
       src={src}
       data-ornament-render="complete"
       className={cn('block h-auto object-contain', className)}
+      style={{
+        maskImage: featheredMask,
+        WebkitMaskImage: featheredMask,
+        maskPosition: 'center',
+        WebkitMaskPosition: 'center',
+        maskRepeat: 'no-repeat',
+        WebkitMaskRepeat: 'no-repeat',
+      }}
       draggable={false}
       decoding="async"
-      initial={reduce ? false : { opacity: 0 }}
-      whileInView={{ opacity: 1 }}
+      initial={reduce ? false : { maskSize: '0% 100%' }}
+      whileInView={{ maskSize: '124% 100%' }}
       viewport={{ once: true, margin: '-24px' }}
-      transition={reduce ? { duration: 0 } : { duration: 2.4, ease: 'linear' }}
+      transition={reduce ? { duration: 0 } : { duration: 2.8, ease: 'linear' }}
       {...accessibility}
     />
   );
@@ -168,8 +177,8 @@ const CORNER_STROKES: RevealStroke[] = [
 ];
 
 export const FileteadoDivider: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
-  reveal === 'fade' ? (
-    <CompleteOrnamentImg src={sectionDivider} className={cn('w-full', className)} label={label} />
+  reveal === 'center' ? (
+    <CenterRevealOrnamentImg src={sectionDivider} className={cn('w-full', className)} label={label} />
   ) : (
     <TuftReveal
       src={sectionDivider}
@@ -228,8 +237,8 @@ export const FileteadoCorner: React.FC<CornerProps> = ({ className, label, flip 
 };
 
 export const FileteadoCardRule: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
-  reveal === 'fade' ? (
-    <CompleteOrnamentImg src={cardRule} className={cn('w-full', className)} label={label} />
+  reveal === 'center' ? (
+    <CenterRevealOrnamentImg src={cardRule} className={cn('w-full', className)} label={label} />
   ) : (
     <TuftReveal
       src={cardRule}
