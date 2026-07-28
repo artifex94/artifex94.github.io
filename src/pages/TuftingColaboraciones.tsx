@@ -91,7 +91,6 @@ export const TuftingColaboraciones: React.FC = () => {
     >
       <div className="max-w-4xl mx-auto flex flex-col gap-10">
         <header className="relative text-center">
-          <div aria-hidden="true" className="absolute inset-x-5 top-9 atelier-thread-rule md:inset-x-20" />
           <AtelierWoodFrame className="mx-auto max-w-3xl rounded-[2.6rem] p-2.5 sm:p-3.5">
             <div className={cn(atelierFeltPanelClass, 'px-5 py-8 sm:px-10 md:py-10')}>
               <div className="relative z-10">

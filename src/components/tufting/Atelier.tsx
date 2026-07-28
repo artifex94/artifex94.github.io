@@ -6,6 +6,7 @@ import {
   woodFrame,
   woodGrain,
 } from './atelierMaterials';
+import stepPompon from '../../assets/tufting/step-pompon.webp';
 
 interface WoodFrameProps {
   children: React.ReactNode;
@@ -59,15 +60,21 @@ export const AtelierIconBadge: React.FC<React.HTMLAttributes<HTMLDivElement>> = 
   </div>
 );
 
+// Pompón tufteado raster como base; el número queda en HTML encima (nunca
+// rasterizado) para accesibilidad y nitidez.
 export const YarnBallNumber: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
-  <span
-    className={cn(
-      'yarn-pompon-number relative mx-auto flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-2xl',
-      className,
-    )}
-  >
-    <span aria-hidden="true" className="absolute -inset-1 rounded-full opacity-70 [background-image:radial-gradient(circle_at_22%_18%,rgba(255,248,232,.45)_0_5%,transparent_16%),radial-gradient(circle_at_72%_76%,rgba(43,35,32,.18)_0_8%,transparent_24%),repeating-radial-gradient(circle_at_50%_50%,transparent_0_5px,rgba(255,240,215,.18)_6px,transparent_9px)]" />
-    <span className="tuft-lettering relative text-[1.45rem] leading-none text-[#fff3df]">{value}</span>
+  <span className={cn('relative mx-auto flex h-14 w-14 items-center justify-center', className)}>
+    <img
+      src={stepPompon}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      decoding="async"
+      className="absolute inset-0 h-full w-full drop-shadow-[0_8px_12px_rgba(112,70,52,0.24)]"
+    />
+    <span className="relative text-[1.45rem] font-extrabold leading-none text-[#fff6e5] [font-family:var(--font-tuft)] [text-shadow:0_1px_0_rgba(43,35,32,0.4),0_2px_6px_rgba(43,35,32,0.35)]">
+      {value}
+    </span>
   </span>
 );
 

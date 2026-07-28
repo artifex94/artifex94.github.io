@@ -141,10 +141,6 @@
     background-color: var(--color-base);
     background-image: radial-gradient(ellipse 82% 58% at 18% 0%, rgba(194, 94, 76, 0.08), transparent 64%);
   }
-
-  .bg-fileteado-hebras {
-    background-image: linear-gradient(120deg, rgba(201, 163, 78, 0.055) 0 1px, transparent 1px 26px);
-  }
 }
 
 @layer utilities {
@@ -152,16 +148,16 @@
   .bg-atelier-cloth {
     background-color: var(--color-base);
     background-image:
-      url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACwklEQVR42i2T104YMRBF99myLGtkWf6sSGkkQCgJvfcOIfTee4fQO6T3/FnOoDxYu3IZ33vuOLs/3bMluY+lv63ON1UU2S9XR/byYCOW5j0xNa9zfV9LjTndWfE/789jb3N1Yk2Kcx6577encWqgS7KWqteeH8vmWPsmL0wPdktZ/tN0tLlo50ff2pPtZbk72Q3ne2v+x92ZZc2P9LRYCuu6ZJvz46G1+k2YGerxny8Phcr2+nDLUcAzn3QTKv3X6+NQUfDcoywsTQxIZWGOP9tdDVlPU1VaHH+XmiuLBQv+7+drYcSL/fU4O9yrthLqTH3pK4cSR6F49X7TLoz16zdlhxsLgkzDgmXIh7P9wGZZmxlxqDO/PlzI/uqsY1gKPKjBtqo2FAjZ7vK0Vg9jfW1eJSLLVhe/TEh0jeWFieJuoKMholRBCvLD+uxoaigr8EC1GQANZL0O6FpAGQWkXquKXvihrqbEYYeSRFJpeXLQA9t+ungf4RYzJtLvj5dG40NB5D/UleT7zvpyD8gEg9hRVyZbCxOegqrIlr969hBxW01JVAt6Q+Swg7gBjuBdVqeHk0ZMZGrNAFZTMMBNyoR/S2GbKVFu93iz+PdsMLfHO3ZlaijgXaMNb1trhaScxqyxo8TwtWoxo5oAK2iucyN9otkfby3JzdG20QN4tdgQQFtUuMHORqFPFGjobqwULZDetderpwgwA8hAwYdC+I20saZkv92cOAobLnEaMR0p9InJtAPJX6VapYp8h2TXXlsaeSPuz6eroOS5Wftf29dsL076roaKpG2fEZlnozIIKLCMQDNFuATmLRwcXIRYLbwihwIKtBO9Ks/IPSLbIyfCIaAgqO//HSgoixP9HZHbtWMd8Uad4wIHJ8m42Yz2tgpAtP8DeSc6zR+szSXkOy023N0cNHcOCd3neTdGXyVW7D8vZKwp5uPB+AAAAABJRU5ErkJggg=="),
       radial-gradient(ellipse 72% 48% at 18% 0%, rgba(194, 94, 76, 0.075), transparent 62%),
-      radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.06), transparent 64%);
-    background-size: 16px 16px, 100% 100%, 100% 100%;
+      radial-gradient(ellipse 58% 42% at 92% 100%, rgba(201, 163, 78, 0.06), transparent 64%),
+      url('./assets/tufting/texture-atelier-cloth.webp');
+    background-size: 100% 100%, 100% 100%, 320px 320px;
   }
 
   .atelier-felt {
     background-color: var(--color-surface);
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2242%22%20height%3D%2242%22%20viewBox%3D%220%200%2042%2042%22%3E%3Crect%20width%3D%2242%22%20height%3D%2242%22%20fill%3D%22%23fff8ef%22%2F%3E%3Cpath%20d%3D%22M2%208%20C10%203%2016%2011%2026%206%20M4%2025%20C12%2018%2020%2029%2033%2021%20M0%2017%20C10%2024%2020%2012%2032%2018%20M14%2038%20C22%2032%2030%2039%2040%2031%22%20fill%3D%22none%22%20stroke%3D%22%236f5145%22%20stroke-width%3D%22.7%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.13%22%2F%3E%3Cpath%20d%3D%22M5%2014%20l9%20-4%20M18%203%20l8%203%20M24%2028%20l12%20-4%20M2%2038%20l8%20-3%20M31%2010%20l8%20-5%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%22.8%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.48%22%2F%3E%3Cpath%20d%3D%22M8%205%20l5%202%20M12%2020%20l7%20-2%20M28%2035%20l6%203%20M34%2018%20l5%202%20M20%2040%20l6%20-3%22%20fill%3D%22none%22%20stroke%3D%22%23c98a74%22%20stroke-width%3D%22.56%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.18%22%2F%3E%3Cpath%20d%3D%22M1%2032%20C7%2028%2012%2035%2020%2030%20M22%2014%20C27%2010%2033%2016%2041%2011%22%20fill%3D%22none%22%20stroke%3D%22%23d8b98a%22%20stroke-width%3D%22.55%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.16%22%2F%3E%3C%2Fsvg%3E");
-    background-size: 42px 42px;
+    background-image: url('./assets/tufting/texture-felt-surface.webp');
+    background-size: 260px 260px;
   }
 
   .atelier-stitch::before {
@@ -186,45 +182,6 @@
   .atelier-tag {
     background-image: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 92%, #ffffff), var(--color-accent));
   }
-
-  .atelier-thread-rule {
-    height: 0.82rem;
-    border: 0;
-    background:
-      radial-gradient(circle at 50% 50%, rgba(43,35,32,0.16) 0 14%, transparent 34%) 0.38rem 0.27rem / 0.86rem 0.62rem repeat-x,
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-accent) 55%, #2b2320) 0 18%, transparent 58%) 0.14rem 0.06rem / 1.14rem 0.72rem repeat-x,
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-surface) 76%, var(--color-accent)) 0 26%, transparent 58%) 0.62rem 0.03rem / 1.08rem 0.7rem repeat-x,
-      radial-gradient(circle at 42% 34%, color-mix(in srgb, var(--color-accent) 74%, #ffffff) 0 18%, color-mix(in srgb, var(--color-accent) 90%, #ffffff) 42%, var(--color-accent) 78%, color-mix(in srgb, var(--color-accent) 86%, #2b2320) 100%) 0.02rem 0.04rem / 0.78rem 0.78rem repeat-x,
-      radial-gradient(circle at 42% 34%, color-mix(in srgb, var(--color-accent) 74%, #ffffff) 0 18%, color-mix(in srgb, var(--color-accent) 90%, #ffffff) 42%, var(--color-accent) 78%, color-mix(in srgb, var(--color-accent) 86%, #2b2320) 100%) 0.45rem 0.08rem / 0.78rem 0.78rem repeat-x,
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-surface) 76%, var(--color-accent)) 0 16%, transparent 42%) 0.26rem 0 / 0.58rem 0.58rem repeat-x;
-    border-radius: 9999px;
-  }
-
-
-  .yarn-pompon-number {
-    background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--color-accent) 42%, #fff3df) 0 18%, color-mix(in srgb, var(--color-accent) 82%, #f2c7ae) 42%, var(--color-accent) 72%, color-mix(in srgb, var(--color-accent) 78%, #5c3029) 100%);
-    box-shadow: 0 12px 20px rgba(112,70,52,0.18), 0 3px 8px rgba(43,35,32,0.08), inset 0 2px 4px rgba(255,246,225,0.42);
-  }
-
-  .yarn-pompon-number::before,
-  .yarn-pompon-number::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-  }
-
-  .yarn-pompon-number::before {
-    opacity: 0.82;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cpath d='M8 25 C15 18 22 22 28 15' fill='none' stroke='%23fff2de' stroke-width='1.4' stroke-linecap='round' opacity='.46'/%3E%3Cpath d='M30 10 C25 18 38 21 33 30' fill='none' stroke='%238b4339' stroke-width='1.25' stroke-linecap='round' opacity='.34'/%3E%3Cpath d='M13 39 C21 33 28 46 37 38' fill='none' stroke='%238b4339' stroke-width='1.15' stroke-linecap='round' opacity='.28'/%3E%3Cpath d='M38 48 C43 39 51 41 50 30' fill='none' stroke='%23ffe7cf' stroke-width='1.25' stroke-linecap='round' opacity='.42'/%3E%3Cpath d='M5 32 C12 34 17 29 22 35' fill='none' stroke='%23d98472' stroke-width='1.1' stroke-linecap='round' opacity='.42'/%3E%3Cpath d='M41 17 C47 20 48 28 53 32' fill='none' stroke='%23d98472' stroke-width='1.1' stroke-linecap='round' opacity='.36'/%3E%3C/svg%3E");
-    background-size: 100% 100%;
-  }
-
-  .yarn-pompon-number::after {
-    box-shadow: inset 1px 1px 0 rgba(255, 246, 225, 0.22), inset -5px -6px 10px rgba(43,35,32,0.12);
-  }
-
 
   .tuft-lettering {
     font-family: var(--font-tuft);

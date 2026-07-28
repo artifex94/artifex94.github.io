@@ -1,4 +1,5 @@
 import type React from 'react';
+import clothTexture from '../../assets/tufting/texture-atelier-cloth.webp';
 
 // Materiales base compartidos por el atelier de tufting.
 // Nacen del Bastidor y se exportan para que toda la sección hable el mismo idioma.
@@ -26,8 +27,8 @@ export const woodGrain: React.CSSProperties = {
 
 export const clothBackground: React.CSSProperties = {
   backgroundColor: 'var(--color-base)',
-  backgroundImage:
-    'radial-gradient(ellipse at 18% 0%, rgba(194,94,76,0.065), transparent 58%)',
+  backgroundImage: `radial-gradient(ellipse at 18% 0%, rgba(194,94,76,0.065), transparent 58%), url(${clothTexture})`,
+  backgroundSize: '100% 100%, 320px 320px',
   boxShadow:
     'inset 0 0 20px rgba(43, 35, 32, 0.14), inset 0 1px 2px rgba(255, 255, 255, 0.42)',
 };

@@ -17,9 +17,11 @@ describe('Tufting page', () => {
     }
   });
 
-  it('shows the elegant placeholder label once per category without a photo', () => {
+  it('shows one tufted illustration per category with descriptive alt text', () => {
     renderWithProviders(<Tufting />);
-    expect(screen.getAllByText('Producto en proceso')).toHaveLength(tuftingCategories.length);
+    for (const category of tuftingCategories) {
+      expect(screen.getByAltText(`Ilustración tufteada: ${category.title}`)).toBeInTheDocument();
+    }
   });
 
   it('shows the closing CTA', () => {

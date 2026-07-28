@@ -11,7 +11,6 @@ import { ContactCTA } from '../components/ContactCTA';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import {
   AtelierFeltPanel,
-  AtelierIconBadge,
   AtelierWoodFrame,
   YarnBallNumber,
 } from '../components/tufting/Atelier';
@@ -23,14 +22,11 @@ import {
   clothBackground,
 } from '../components/tufting/atelierMaterials';
 import { FileteadoBanner, FileteadoCardRule, FileteadoCorner, FileteadoDivider, FileteadoOrnament } from '../components/tufting/Fileteado';
-import { WoolStitch } from '../components/tufting/PuffySurface';
 import { MagazineText } from '../components/tufting/MagazineText';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { breadcrumb } from '../data/structuredData';
 import { cn } from '../utils/cn';
-
-const routeTags = ['hilo por hilo', 'hecho sin apuro', 'una sola en el mundo'];
 
 export const Tufting: React.FC = () => {
   const reduceMotion = useReducedMotion();
@@ -58,29 +54,25 @@ export const Tufting: React.FC = () => {
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-14 md:gap-[4.5rem] lg:gap-20">
         {/* Hero */}
-        <section className="relative mx-auto max-w-4xl py-10 text-center md:py-[4.5rem] lg:py-20">
-          <div aria-hidden="true" className="absolute inset-x-6 top-7 atelier-thread-rule md:inset-x-20" />
+        <section className="relative mx-auto w-full max-w-4xl py-10 text-center md:py-[4.5rem] lg:py-20">
           <span className={cn(atelierPillClass, 'mb-5 text-xs uppercase tracking-widest')}>
             Tufting · Alfombras y tapices artesanales · Victoria, Entre Ríos
           </span>
-          <AtelierWoodFrame className="mx-auto max-w-3xl rounded-[2.6rem] p-2.5 sm:p-3.5">
-            <div className={cn(atelierFeltPanelClass, 'px-5 py-9 sm:px-10 md:py-12')}>
-              <div className="relative z-10">
-                <h1 className="mb-6 font-display text-4xl font-semibold leading-tight md:text-6xl">
-                  Un territorio de lana, <br />
-                  <span className="text-accent italic">tejido hilo por hilo.</span>
-                </h1>
-                <p className="mx-auto max-w-2xl text-lg leading-relaxed text-primary/85">
-                  Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
-                  traé tu obra de artista o llevate una que ya está esperando pared.
-                </p>
-                <WoolStitch className="mx-auto mt-7 max-w-sm" />
-              </div>
-            </div>
-          </AtelierWoodFrame>
-          <FileteadoBanner className="mt-5 max-w-[34rem]">
-            Lo que se hace a mano no se olvida
+          <FileteadoBanner className="max-w-3xl">
+            <h1 className="font-display text-[clamp(1.1rem,5.4cqw,3.1rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] sm:mb-[2.5cqw]">
+              Un territorio de lana, <br />
+              <span className="text-accent italic">tejido hilo por hilo.</span>
+            </h1>
+            <p className="mx-auto hidden max-w-[36em] text-[clamp(0.78rem,2cqw,1.05rem)] leading-relaxed text-primary/85 [text-shadow:0_1px_0_rgba(255,250,240,0.75)] sm:block">
+              Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
+              traé tu obra de artista o llevate una que ya está esperando pared.
+            </p>
           </FileteadoBanner>
+          {/* En mobile el campo del tapiz solo da para el titular: el párrafo baja acá. */}
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary/85 sm:hidden">
+            Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
+            traé tu obra de artista o llevate una que ya está esperando pared.
+          </p>
         </section>
 
         {/* Manifiesto */}
@@ -88,10 +80,7 @@ export const Tufting: React.FC = () => {
           <FileteadoCorner className="pointer-events-none absolute left-4 top-4 h-20 w-20 opacity-35 md:h-24 md:w-24" />
           <FileteadoCorner className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 opacity-30 md:h-24 md:w-24" flip="both" />
           <div className="relative z-10 mx-auto max-w-4xl">
-            <FileteadoCardRule className="mx-auto mb-4 max-w-sm opacity-80" />
-            <span className={cn(atelierPillClass, 'mb-3 min-h-0 px-4 py-2 text-xs uppercase tracking-widest')}>
-              de acá, a mano
-            </span>
+            <FileteadoCardRule className="mx-auto mb-5 max-w-sm opacity-80" />
             <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
               Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
             </h2>
@@ -108,9 +97,8 @@ export const Tufting: React.FC = () => {
         {/* Líneas accionables */}
         <section
           aria-labelledby="tufting-caminos"
-          className="relative [content-visibility:auto] [contain-intrinsic-size:auto_1000px]"
+          className="relative"
         >
-          <div aria-hidden="true" className="absolute inset-x-3 top-[8.5rem] hidden atelier-thread-rule md:block" />
           <div className="mb-10 text-center">
             <span className={cn(atelierPillClass, 'text-xs uppercase tracking-widest text-accent')}>
               <Sparkles size={14} aria-hidden="true" /> Elegí por dónde arrancar
@@ -126,7 +114,6 @@ export const Tufting: React.FC = () => {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
             {tuftingLines.map((line, index) => {
-              const Icon = line.icon;
               return (
                 <motion.div
                   key={line.title}
@@ -145,12 +132,15 @@ export const Tufting: React.FC = () => {
                   >
                     <div aria-hidden="true" className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
                     <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
-                    <span className={cn(atelierPillClass, 'absolute left-7 top-7 min-h-0 px-3 py-1 font-display text-xs font-semibold italic')}>
-                      {routeTags[index]}
-                    </span>
-                    <AtelierIconBadge className="relative mb-7 mt-9 transition-colors group-hover:text-primary">
-                      <Icon size={26} aria-hidden="true" strokeWidth={1.9} />
-                    </AtelierIconBadge>
+                    <img
+                      src={line.pictogram}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                      className="relative mb-6 mt-9 h-20 w-20 object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
+                    />
                     <h3 className="relative font-display text-2xl font-semibold mb-3">
                       {line.title}
                     </h3>
@@ -172,7 +162,7 @@ export const Tufting: React.FC = () => {
         </section>
 
         {/* Categorías */}
-        <section className="[content-visibility:auto] [contain-intrinsic-size:auto_1400px]">
+        <section>
           <div className="mb-12 text-center">
             <span className={cn(atelierPillClass, 'mb-4 min-h-0 px-4 py-2 text-xs uppercase tracking-widest')}>
               muestrario de lana
@@ -197,10 +187,17 @@ export const Tufting: React.FC = () => {
                     {category.image ? (
                       <img
                         src={category.image}
-                        alt={`Pieza de tufting: ${category.title}`}
+                        alt={
+                          category.imageIsIllustration
+                            ? `Ilustración tufteada: ${category.title}`
+                            : `Pieza de tufting: ${category.title}`
+                        }
                         loading="lazy"
                         decoding="async"
-                        className="aspect-square w-full rounded-[1.2rem] object-cover"
+                        className={cn(
+                          'aspect-square w-full rounded-[1.2rem]',
+                          category.imageIsIllustration ? 'object-contain p-6' : 'object-cover',
+                        )}
                       />
                     ) : (
                       <ImagePlaceholder
