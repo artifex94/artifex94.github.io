@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, MapPin, Sparkles } from 'lucide-react';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
 // emite solo en este chunk (no pesa en home/desarrollo/portfolio).
 import '@fontsource-variable/fraunces/index.css';
@@ -58,8 +58,15 @@ export const Tufting: React.FC = () => {
       <div className="mx-auto flex max-w-6xl flex-col gap-14 md:gap-[4.5rem] lg:gap-20">
         {/* Hero */}
         <section className="relative mx-auto w-full max-w-4xl py-10 text-center md:py-[4.5rem] lg:py-20">
-          <span className={cn(atelierPillClass, 'mb-5 text-xs uppercase tracking-widest')}>
-            Tufting · Alfombras y tapices artesanales · Victoria, Entre Ríos
+          <span className={cn(atelierPillClass, 'mb-5 flex-col gap-1 text-xs uppercase tracking-widest sm:flex-row sm:gap-2')}>
+            <span>
+              Tufting · Alfombras y tapices artesanales
+              <span className="hidden sm:inline"> · Victoria, Entre Ríos</span>
+            </span>
+            <span className="flex items-center gap-1 text-accent sm:hidden">
+              <MapPin size={13} aria-hidden="true" strokeWidth={2.4} />
+              Victoria, Entre Ríos
+            </span>
           </span>
           <FileteadoBanner className="max-w-3xl">
             <h1 className="font-display text-[clamp(1.1rem,5.4cqw,3.1rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] sm:mb-[2.5cqw]">
@@ -87,8 +94,11 @@ export const Tufting: React.FC = () => {
             <FileteadoCorner className="h-full w-full opacity-30" flip="both" />
           </div>
           <div className="relative z-10 mx-auto max-w-4xl">
-            {/* El pl despeja el esquinero superior: el título no pasa por Pretext. */}
-            <h2 className="mb-5 pl-20 font-display text-3xl font-semibold leading-tight md:text-4xl xl:pl-0">
+            {/* El título no pasa por Pretext: un float espaciador del tamaño del
+                esquinero corre SOLO los renglones que lo tienen al lado; los de
+                abajo vuelven al margen. En xl el centrado ya lo despeja. */}
+            <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
+              <span aria-hidden="true" className="float-left mr-2 h-[4.25rem] w-[4.25rem] md:h-[4.5rem] md:w-[4.5rem] xl:hidden" />
               Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
             </h2>
             <MagazineText
@@ -97,6 +107,7 @@ export const Tufting: React.FC = () => {
               ornamentSide="right"
               ornamentClassName="w-36 md:w-48"
               extraObstacles={manifestoObstacles}
+              gap={14}
               className="font-display text-lg leading-relaxed text-primary first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-accent md:text-xl"
             />
           </div>
