@@ -10,6 +10,15 @@ describe('Tufting page', () => {
     expect(document.body).toBeInTheDocument();
   });
 
+  it('renders both hero rules as complete images without SVG reveal masks', () => {
+    renderWithProviders(<Tufting />);
+    const banner = screen.getByRole('heading', { name: /Un territorio de lana/i }).closest('figure');
+
+    expect(banner).not.toBeNull();
+    expect(banner?.querySelectorAll('img[data-ornament-render="complete"]')).toHaveLength(2);
+    expect(banner?.querySelector('svg[viewBox="0 0 260 52"], svg[viewBox="0 0 420 88"]')).not.toBeInTheDocument();
+  });
+
   it('shows every category title', () => {
     renderWithProviders(<Tufting />);
     for (const category of tuftingCategories) {

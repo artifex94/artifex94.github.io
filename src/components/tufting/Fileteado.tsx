@@ -12,6 +12,11 @@ type FileteadoProps = {
   label?: string;
 };
 
+type HorizontalOrnamentProps = FileteadoProps & {
+  /** `fade` renders the complete bitmap without the SVG drawing mask. */
+  reveal?: 'draw' | 'fade';
+};
+
 type BannerProps = FileteadoProps & {
   children?: React.ReactNode;
 };
@@ -36,6 +41,26 @@ const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }
   }
 
   return <img src={src} className={className} draggable={false} decoding="async" {...accessibility} />;
+};
+
+const CompleteOrnamentImg: React.FC<FileteadoProps & { src: string }> = ({ className, label, src }) => {
+  const reduce = useReducedMotion();
+  const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
+
+  return (
+    <motion.img
+      src={src}
+      data-ornament-render="complete"
+      className={cn('block h-auto object-contain', className)}
+      draggable={false}
+      decoding="async"
+      initial={reduce ? false : { opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: '-24px' }}
+      transition={reduce ? { duration: 0 } : { duration: 2.4, ease: 'linear' }}
+      {...accessibility}
+    />
+  );
 };
 
 // De los fileteados SVG originales sobreviven SOLO los trazos centrales: se usan
@@ -142,16 +167,19 @@ const CORNER_STROKES: RevealStroke[] = [
   { d: 'M35 100 C42 70, 66 54, 94 60 C76 42, 84 26, 112 24', width: 54, delay: 0.45 },
 ];
 
-export const FileteadoDivider: React.FC<FileteadoProps> = ({ className, label }) => (
-  <TuftReveal
-    src={sectionDivider}
-    viewBox={DIVIDER_VIEWBOX}
-    strokes={DIVIDER_STROKES}
-    blur={3.5}
-    className={cn('h-14 w-full', className)}
-    label={label}
-  />
-);
+export const FileteadoDivider: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
+  reveal === 'fade' ? (
+    <CompleteOrnamentImg src={sectionDivider} className={cn('w-full', className)} label={label} />
+  ) : (
+    <TuftReveal
+      src={sectionDivider}
+      viewBox={DIVIDER_VIEWBOX}
+      strokes={DIVIDER_STROKES}
+      blur={3.5}
+      className={cn('h-14 w-full', className)}
+      label={label}
+    />
+  );
 
 export const FileteadoOrnament: React.FC<FileteadoProps> = ({ className, label }) => (
   <FileteadoImg src={fleurDeLisTufting} className={cn('w-full', className)} label={label} animate />
@@ -199,13 +227,16 @@ export const FileteadoCorner: React.FC<CornerProps> = ({ className, label, flip 
   );
 };
 
-export const FileteadoCardRule: React.FC<FileteadoProps> = ({ className, label }) => (
-  <TuftReveal
-    src={cardRule}
-    viewBox={CARD_RULE_VIEWBOX}
-    strokes={CARD_RULE_STROKES}
-    blur={2.5}
-    className={cn('h-10 w-full', className)}
-    label={label}
-  />
-);
+export const FileteadoCardRule: React.FC<HorizontalOrnamentProps> = ({ className, label, reveal = 'draw' }) =>
+  reveal === 'fade' ? (
+    <CompleteOrnamentImg src={cardRule} className={cn('w-full', className)} label={label} />
+  ) : (
+    <TuftReveal
+      src={cardRule}
+      viewBox={CARD_RULE_VIEWBOX}
+      strokes={CARD_RULE_STROKES}
+      blur={2.5}
+      className={cn('h-10 w-full', className)}
+      label={label}
+    />
+  );
