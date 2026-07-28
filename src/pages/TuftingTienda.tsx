@@ -109,7 +109,7 @@ export const TuftingTienda: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth py-12 px-4 sm:px-6 lg:px-8 text-primary"
+      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth pb-12 pt-3 px-4 sm:pt-12 sm:px-6 lg:px-8 text-primary"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-10">
         <header className="relative text-center">
