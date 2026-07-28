@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, Sparkles } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 // Fuente display de las páginas artísticas: al importarse acá, Vite la
 // emite solo en este chunk (no pesa en home/desarrollo/portfolio).
 import '@fontsource-variable/fraunces/index.css';
@@ -129,7 +129,7 @@ export const Tufting: React.FC = () => {
         >
           <div className="mb-10 text-center">
             <span className={cn(atelierPillClass, 'text-xs uppercase tracking-widest text-accent')}>
-              <Sparkles size={14} aria-hidden="true" /> Elegí por dónde arrancar
+              Elegí por dónde arrancar
             </span>
             <h2 id="tufting-caminos" className="mt-5 mb-3 font-display text-3xl font-semibold">
               Tres senderos que llevan a la misma lana

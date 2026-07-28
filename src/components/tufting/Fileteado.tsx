@@ -49,12 +49,19 @@ interface RevealStroke {
   delay?: number;
 }
 
-export const TuftReveal: React.FC<FileteadoProps & { src: string; viewBox: string; strokes: RevealStroke[] }> = ({
+interface TuftRevealOptions {
+  /** Difuminado (px del viewBox) del borde de la máscara: la punta que avanza
+      se ve difusa, como lana creándose. */
+  blur?: number;
+}
+
+export const TuftReveal: React.FC<FileteadoProps & TuftRevealOptions & { src: string; viewBox: string; strokes: RevealStroke[] }> = ({
   className,
   label,
   src,
   viewBox,
   strokes,
+  blur,
 }) => {
   const reduce = useReducedMotion();
   const rawId = useId();
@@ -76,6 +83,11 @@ export const TuftReveal: React.FC<FileteadoProps & { src: string; viewBox: strin
       {...accessibility}
     >
       <defs>
+        {blur !== undefined && (
+          <filter id={`${maskId}-blur`} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation={blur} />
+          </filter>
+        )}
         <mask id={maskId} maskUnits="userSpaceOnUse">
           {strokes.map((stroke, index) => (
             <motion.path
@@ -85,6 +97,7 @@ export const TuftReveal: React.FC<FileteadoProps & { src: string; viewBox: strin
               stroke="#fff"
               strokeWidth={stroke.width}
               strokeLinecap="round"
+              filter={blur !== undefined ? `url(#${maskId}-blur)` : undefined}
               variants={{
                 hidden: { pathLength: 0 },
                 visible: {
@@ -102,16 +115,25 @@ export const TuftReveal: React.FC<FileteadoProps & { src: string; viewBox: strin
 };
 
 const DIVIDER_VIEWBOX = '0 0 420 88';
+// El trazo original partido en su centro (210,39): las dos mitades se dibujan a
+// la vez, así el ornamento crece del centro hacia ambas puntas. La mitad
+// izquierda va con las cúbicas invertidas para arrancar también en el centro.
 const DIVIDER_STROKES: RevealStroke[] = [
   {
-    d: 'M24 44 C58 14, 96 17, 112 39 C126 59, 92 66, 88 45 C86 30, 104 27, 124 39 C156 58, 182 58, 210 39 C238 20, 264 20, 296 39 C316 27, 334 30, 332 45 C328 66, 294 59, 308 39 C324 17, 362 14, 396 44',
+    d: 'M210 39 C182 58, 156 58, 124 39 C104 27, 86 30, 88 45 C92 66, 126 59, 112 39 C96 17, 58 14, 24 44',
+    width: 98,
+  },
+  {
+    d: 'M210 39 C238 20, 264 20, 296 39 C316 27, 334 30, 332 45 C328 66, 294 59, 308 39 C324 17, 362 14, 396 44',
     width: 98,
   },
 ];
 
 const CARD_RULE_VIEWBOX = '0 0 260 52';
+// Igual que el divisor: partido en el centro (130,32) para crecer hacia afuera.
 const CARD_RULE_STROKES: RevealStroke[] = [
-  { d: 'M12 26 C50 10, 84 12, 104 26 C118 34, 142 34, 156 26 C176 12, 210 10, 248 26', width: 58 },
+  { d: 'M130 32 C120.5 32, 111 30, 104 26 C84 12, 50 10, 12 26', width: 58 },
+  { d: 'M130 32 C139.5 32, 149 30, 156 26 C176 12, 210 10, 248 26', width: 58 },
 ];
 
 const CORNER_VIEWBOX = '0 0 132 132';
@@ -125,6 +147,7 @@ export const FileteadoDivider: React.FC<FileteadoProps> = ({ className, label })
     src={sectionDivider}
     viewBox={DIVIDER_VIEWBOX}
     strokes={DIVIDER_STROKES}
+    blur={3.5}
     className={cn('h-14 w-full', className)}
     label={label}
   />
@@ -181,6 +204,7 @@ export const FileteadoCardRule: React.FC<FileteadoProps> = ({ className, label }
     src={cardRule}
     viewBox={CARD_RULE_VIEWBOX}
     strokes={CARD_RULE_STROKES}
+    blur={2.5}
     className={cn('h-10 w-full', className)}
     label={label}
   />

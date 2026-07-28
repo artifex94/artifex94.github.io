@@ -43,62 +43,63 @@ export const TuftingCalculadora: React.FC = () => {
       className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth px-4 pb-8 pt-3 text-primary sm:px-6 sm:py-12 lg:px-8"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-7 lg:gap-10">
-        <AnimatePresence initial={false}>
+        {/* El cartel de entrada flota POR ENCIMA del taller (overlay fijo): no
+            empuja el layout al aparecer ni fuerza reacomodos al retirarse. */}
+        <AnimatePresence>
           {!heroDismissed && (
-            <motion.header
-              key="hero"
-              className="relative overflow-hidden text-center"
-              exit={
-                reduceMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, height: 0, y: -14, transition: { duration: 0.45, ease: 'easeInOut' } }
-              }
+            <motion.div
+              key="hero-cartel"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Bienvenida al taller de tufting"
+              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(43,35,32,0.38)] px-4 py-8 backdrop-blur-[3px] sm:items-center"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: reduceMotion ? 0 : 0.35, ease: 'easeOut' } }}
+              onPointerDown={dismissHero}
             >
-              <AtelierWoodFrame className="mx-auto max-w-3xl rounded-[2.6rem] p-2.5 sm:p-3.5">
-                <div className={cn(atelierFeltPanelClass, 'px-5 py-8 sm:px-10 md:py-10')}>
-                  <div className="relative z-10">
-                    <Link
-                      to="/servicios/tufting"
-                      className={cn(atelierPillClass, 'mb-6 min-h-0 px-4 py-2 text-secondary')}
-                    >
-                      <ArrowLeft size={14} aria-hidden="true" />
-                      Volver a Tufting
-                    </Link>
-                    <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
-                      El taller
-                    </span>
-                    <h1 className="font-display text-3xl font-semibold leading-tight mb-4 md:text-5xl">
-                      Tu alfombra empieza <span className="text-accent italic">en este bastidor</span>
-                    </h1>
-                    <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-                      Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
-                      solo. Sin esperas y sin compromiso.
-                    </p>
-                    <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
+              <motion.div
+                className="w-full max-w-3xl"
+                initial={reduceMotion ? false : { y: 16, scale: 0.98 }}
+                animate={{ y: 0, scale: 1 }}
+                exit={reduceMotion ? undefined : { y: -12, scale: 0.98 }}
+                transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 130, damping: 20 }}
+              >
+                <AtelierWoodFrame className="rounded-[2.6rem] p-2.5 sm:p-3.5">
+                  <div className={cn(atelierFeltPanelClass, 'px-5 py-8 text-center sm:px-10 md:py-10')}>
+                    <div className="relative z-10">
+                      <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
+                        El taller
+                      </span>
+                      <p className="font-display text-3xl font-semibold leading-tight mb-4 md:text-5xl">
+                        Tu alfombra empieza <span className="text-accent italic">en este bastidor</span>
+                      </p>
+                      <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
+                        Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
+                        solo. Sin esperas y sin compromiso.
+                      </p>
+                      <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
+                      <p className="mt-5 text-xs uppercase tracking-widest text-secondary">
+                        Tocá donde sea para empezar
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </AtelierWoodFrame>
-            </motion.header>
+                </AtelierWoodFrame>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
 
-        {heroDismissed && (
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.25 }}
-            className="flex justify-center sm:justify-start"
+        <h1 className="sr-only">Tu alfombra empieza en este bastidor</h1>
+        <div className="flex justify-center sm:justify-start">
+          <Link
+            to="/servicios/tufting"
+            className={cn(atelierPillClass, 'min-h-0 px-4 py-2 text-sm text-secondary')}
           >
-            <h1 className="sr-only">Tu alfombra empieza en este bastidor</h1>
-            <Link
-              to="/servicios/tufting"
-              className={cn(atelierPillClass, 'min-h-0 px-4 py-2 text-sm text-secondary')}
-            >
-              <ArrowLeft size={14} aria-hidden="true" />
-              Volver a Tufting
-            </Link>
-          </motion.div>
-        )}
+            <ArrowLeft size={14} aria-hidden="true" />
+            Volver a Tufting
+          </Link>
+        </div>
 
         <section
           className="relative"
