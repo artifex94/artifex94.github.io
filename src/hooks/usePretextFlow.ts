@@ -19,10 +19,16 @@ export interface Obstacle {
   width: number;
   /** Aire entre el obstáculo y el texto. */
   gap: number;
-  /** Intrusión real (px CSS) de la silueta del obstáculo dentro de la banda
-      [lineTop, lineBottom), medida desde el borde que enfrenta al texto. Si no
-      está, el obstáculo se trata como rectángulo lleno. */
-  intrusionAt?: (lineTop: number, lineBottom: number) => number;
+  /** Intrusión real (px CSS) de la silueta dentro de la banda LOCAL
+      [bandTop, bandBottom) medida desde el TOPE del obstáculo. Si no está,
+      el obstáculo se trata como rectángulo lleno. */
+  intrusionAt?: (bandTop: number, bandBottom: number) => number;
+  /** Un obstáculo anclado al fondo (p. ej. esquinero inferior del panel) se
+      reposiciona con la altura final del texto: su posición depende de cuánto
+      mide el párrafo, así que se resuelve por punto fijo en el flow. */
+  anchor?: 'top' | 'bottom';
+  /** Distancia del tope del obstáculo al FONDO del contenedor (solo anchor bottom). */
+  offsetFromBottom?: number;
 }
 
 export interface LineBox {
@@ -59,7 +65,7 @@ export function insetForLine(
     if (!overlaps) continue;
 
     const intrusion = obstacle.intrusionAt
-      ? Math.min(Math.max(obstacle.intrusionAt(lineTop, lineBottom), 0), obstacle.width)
+      ? Math.min(Math.max(obstacle.intrusionAt(lineTop - obstacle.top, lineBottom - obstacle.top), 0), obstacle.width)
       : obstacle.width;
     if (intrusion === 0) continue;
 
@@ -254,21 +260,25 @@ const measureObstacle = (
   if (o.width <= 0 || o.height <= 0) return null;
   const top = o.top - c.top;
   const centerX = o.left + o.width / 2 - c.left;
+  const centerY = top + o.height / 2;
+  const anchoredBottom = c.height > 0 && centerY > c.height / 2;
   const obstacle: Obstacle = {
     side: centerX > c.width / 2 ? 'right' : 'left',
     top,
     bottom: top + o.height,
     width: o.width,
     gap,
+    anchor: anchoredBottom ? 'bottom' : 'top',
+    offsetFromBottom: anchoredBottom ? c.height - top : undefined,
   };
 
   if (silhouette && silhouette.width > 0 && silhouette.height > 0) {
     const { profile, flipX, flipY } = silhouette;
     const scaleX = silhouette.width / profile.width;
     const rowsPerCssPx = profile.height / silhouette.height;
-    obstacle.intrusionAt = (lineTop, lineBottom) => {
-      let first = Math.max(0, Math.floor((lineTop - top) * rowsPerCssPx));
-      let last = Math.min(profile.height - 1, Math.ceil((lineBottom - top) * rowsPerCssPx) - 1);
+    obstacle.intrusionAt = (bandTop, bandBottom) => {
+      let first = Math.max(0, Math.floor(bandTop * rowsPerCssPx));
+      let last = Math.min(profile.height - 1, Math.ceil(bandBottom * rowsPerCssPx) - 1);
       if (last < first) return 0;
       if (flipY) {
         const f = profile.height - 1 - last;
@@ -326,6 +336,38 @@ const flow = (
   return lines;
 };
 
+// Los obstáculos anclados al fondo dependen de la altura final del texto (su
+// posición absoluta sigue al panel, y el panel sigue al párrafo). Se resuelve
+// por punto fijo: maquetar, reposicionarlos con la altura resultante y repetir
+// hasta converger. Evita el ping-pongo del ResizeObserver (texto que a veces
+// pisaba el esquinero inferior).
+const flowStable = (
+  pretext: typeof import('@chenglou/pretext'),
+  prepared: PreparedTextWithSegments,
+  containerWidth: number,
+  lineHeight: number,
+  obstacles: readonly Obstacle[],
+  initialHeight: number,
+): PositionedLine[] => {
+  const hasBottomAnchored = obstacles.some((o) => o.anchor === 'bottom');
+  let height = initialHeight;
+  let lines: PositionedLine[] = [];
+  const iterations = hasBottomAnchored ? 4 : 1;
+  for (let i = 0; i < iterations; i += 1) {
+    const positioned = obstacles.map((o) => {
+      if (o.anchor !== 'bottom' || o.offsetFromBottom === undefined) return o;
+      const boxHeight = o.bottom - o.top;
+      const top = height - o.offsetFromBottom;
+      return { ...o, top, bottom: top + boxHeight };
+    });
+    lines = flow(pretext, prepared, containerWidth, lineHeight, positioned);
+    const newHeight = lines.length ? lines[lines.length - 1].y + lineHeight : 0;
+    if (Math.abs(newHeight - height) < 1) break;
+    height = newHeight;
+  }
+  return lines;
+};
+
 export function usePretextFlow({
   text,
   containerRef,
@@ -369,7 +411,7 @@ export function usePretextFlow({
           const obstacle = measureObstacle(container, el, gap, silhouette);
           if (obstacle) obstacles.push(obstacle);
         }
-        const lines = flow(pretext, prepared, container.clientWidth, lineHeight, obstacles);
+        const lines = flowStable(pretext, prepared, container.clientWidth, lineHeight, obstacles, container.clientHeight);
         if (cancelled) return;
         if (lines.length === 0) {
           fallback();

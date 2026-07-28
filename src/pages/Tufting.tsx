@@ -24,6 +24,7 @@ import {
 import { FileteadoBanner, FileteadoCardRule, FileteadoCorner, FileteadoDivider, FileteadoOrnament } from '../components/tufting/Fileteado';
 import { MagazineText } from '../components/tufting/MagazineText';
 import { tuftingLines, tuftingCategories } from '../data/tufting';
+import cornerFlourish from '../assets/tufting/corner-flourish.webp';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { breadcrumb } from '../data/structuredData';
 import { cn } from '../utils/cn';
@@ -53,11 +54,11 @@ export const Tufting: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth px-4 py-12 text-primary sm:px-6 lg:px-8"
+      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth px-4 pb-12 pt-3 text-primary sm:px-6 sm:pt-12 lg:px-8"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-14 md:gap-[4.5rem] lg:gap-20">
         {/* Hero */}
-        <section className="relative mx-auto w-full max-w-4xl py-10 text-center md:py-[4.5rem] lg:py-20">
+        <section className="relative mx-auto w-full max-w-4xl pb-8 pt-1 text-center sm:py-10 md:py-[4.5rem] lg:py-20">
           <span className={cn(atelierPillClass, 'mb-5 flex-col gap-1 text-xs uppercase tracking-widest sm:flex-row sm:gap-2')}>
             <span>
               Tufting · Alfombras y tapices artesanales
@@ -94,11 +95,19 @@ export const Tufting: React.FC = () => {
             <FileteadoCorner className="h-full w-full opacity-30" flip="both" />
           </div>
           <div className="relative z-10 mx-auto max-w-4xl">
-            {/* El título no pasa por Pretext: un float espaciador del tamaño del
-                esquinero corre SOLO los renglones que lo tienen al lado; los de
-                abajo vuelven al margen. En xl el centrado ya lo despeja. */}
+            {/* El título no pasa por Pretext: un float con shape-outside sobre el
+                MISMO webp del esquinero hace que cada renglón siga su contorno
+                alpha real (no la caja). En xl el centrado ya lo despeja. */}
             <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
-              <span aria-hidden="true" className="float-left mr-2 h-[4.25rem] w-[4.25rem] md:h-[4.5rem] md:w-[4.5rem] xl:hidden" />
+              <span
+                aria-hidden="true"
+                className="float-left h-[4.25rem] w-[4.25rem] md:h-[4.5rem] md:w-[4.5rem] xl:hidden"
+                style={{
+                  shapeOutside: `url(${cornerFlourish})`,
+                  shapeImageThreshold: 0.08,
+                  shapeMargin: '6px',
+                }}
+              />
               Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
             </h2>
             <MagazineText
