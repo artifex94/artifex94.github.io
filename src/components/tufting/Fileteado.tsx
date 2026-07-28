@@ -20,11 +20,11 @@ type CornerProps = FileteadoProps & {
   flip?: 'none' | 'x' | 'y' | 'both';
 };
 
-const springIn = (reduce: boolean, delay = 0) => ({
+const softRevealIn = (reduce: boolean, delay = 0) => ({
   initial: reduce ? false : { opacity: 0, scale: 0.97, y: 8 },
   whileInView: { opacity: 1, scale: 1, y: 0 },
   viewport: { once: true, margin: '-24px' },
-  transition: reduce ? { duration: 0 } : { type: 'spring' as const, stiffness: 120, damping: 19, delay },
+  transition: reduce ? { duration: 0 } : { duration: 1.8, ease: 'easeOut' as const, delay },
 });
 
 const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }> = ({ className, label, src, animate = false }) => {
@@ -32,7 +32,7 @@ const FileteadoImg: React.FC<FileteadoProps & { src: string; animate?: boolean }
   const accessibility = label ? { alt: label } : { alt: '', 'aria-hidden': true as const };
 
   if (animate) {
-    return <motion.img src={src} className={className} draggable={false} decoding="async" {...accessibility} {...springIn(Boolean(reduce))} />;
+    return <motion.img src={src} className={className} draggable={false} decoding="async" {...accessibility} {...softRevealIn(Boolean(reduce))} />;
   }
 
   return <img src={src} className={className} draggable={false} decoding="async" {...accessibility} />;
@@ -102,7 +102,7 @@ export const TuftReveal: React.FC<FileteadoProps & TuftRevealOptions & { src: st
                 hidden: { pathLength: 0 },
                 visible: {
                   pathLength: 1,
-                  transition: { duration: 1.05, delay: stroke.delay ?? 0, ease: 'easeInOut' },
+                  transition: { duration: 2.4, delay: stroke.delay ?? 0, ease: 'linear' },
                 },
               }}
             />
@@ -115,16 +115,16 @@ export const TuftReveal: React.FC<FileteadoProps & TuftRevealOptions & { src: st
 };
 
 const DIVIDER_VIEWBOX = '0 0 420 88';
-// El trazo original partido en su centro (210,39): las dos mitades se dibujan a
-// la vez, así el ornamento crece del centro hacia ambas puntas. La mitad
-// izquierda va con las cúbicas invertidas para arrancar también en el centro.
+// La guía de máscara se parte en el centro (210,39): ambas mitades se dibujan a
+// la vez y avanzan siempre hacia afuera. Los recorridos son deliberadamente
+// monotónicos para que ninguna voluta produzca una pausa antes del remate.
 const DIVIDER_STROKES: RevealStroke[] = [
   {
-    d: 'M210 39 C182 58, 156 58, 124 39 C104 27, 86 30, 88 45 C92 66, 126 59, 112 39 C96 17, 58 14, 24 44',
+    d: 'M210 39 C184 54, 153 55, 124 39 C91 21, 56 25, 24 44',
     width: 98,
   },
   {
-    d: 'M210 39 C238 20, 264 20, 296 39 C316 27, 334 30, 332 45 C328 66, 294 59, 308 39 C324 17, 362 14, 396 44',
+    d: 'M210 39 C236 24, 267 23, 296 39 C329 57, 364 53, 396 44',
     width: 98,
   },
 ];
@@ -139,7 +139,7 @@ const CARD_RULE_STROKES: RevealStroke[] = [
 const CORNER_VIEWBOX = '0 0 132 132';
 const CORNER_STROKES: RevealStroke[] = [
   { d: 'M17 115 C18 71, 36 35, 72 17 C89 9, 108 11, 118 24', width: 76 },
-  { d: 'M35 100 C42 70, 66 54, 94 60 C76 42, 84 26, 112 24', width: 54, delay: 0.22 },
+  { d: 'M35 100 C42 70, 66 54, 94 60 C76 42, 84 26, 112 24', width: 54, delay: 0.45 },
 ];
 
 export const FileteadoDivider: React.FC<FileteadoProps> = ({ className, label }) => (
@@ -178,7 +178,7 @@ export const FileteadoBanner: React.FC<BannerProps> = ({ className, children }) 
         draggable={false}
         decoding="async"
       />
-      <div className="absolute bottom-[30%] left-[16%] right-[16%] top-[25%] flex flex-col items-center justify-center px-[2%]">
+      <div className="absolute bottom-[23%] left-[13.5%] right-[13.5%] top-[20.5%] flex flex-col items-center justify-center px-[1.5%]">
         {children}
       </div>
     </motion.figure>

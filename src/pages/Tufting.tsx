@@ -70,24 +70,26 @@ export const Tufting: React.FC = () => {
             </span>
           </span>
           <FileteadoBanner className="max-w-3xl">
-            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 h-[9cqw] w-[9cqw]" />
-            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 h-[9cqw] w-[9cqw]" flip="both" />
-            <FileteadoCardRule className="mx-auto h-4 w-48 shrink-0 sm:h-[4.5cqw] sm:w-[40cqw]" />
-            <h1 className="my-[2cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
+            <FileteadoCorner className="pointer-events-none absolute left-[1.2cqw] top-[0.7cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" />
+            <FileteadoCorner className="pointer-events-none absolute right-[1.2cqw] top-[0.7cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="x" />
+            <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] left-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="y" />
+            <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] right-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="both" />
+            <FileteadoCardRule className="mx-auto h-[clamp(2rem,7.25cqw,3.5rem)] w-[clamp(13rem,50cqw,24rem)] shrink-0 origin-center scale-x-[1.28] max-[359px]:scale-x-[1.05] sm:scale-x-[1.45]" />
+            <h1 className="my-[1.25cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
-            <FileteadoDivider className="mx-auto h-6 w-44 shrink-0 sm:h-[6.5cqw] sm:w-[36cqw]" />
+            <FileteadoDivider className="mx-auto h-[clamp(2.125rem,7.6cqw,3.7rem)] w-[clamp(13rem,50cqw,24rem)] shrink-0 origin-center scale-x-[1.28] max-[359px]:scale-x-[1.05] sm:scale-x-[1.45]" />
           </FileteadoBanner>
         </section>
 
         {/* Manifiesto */}
         <AtelierFeltPanel framed className="p-7 text-left md:p-10">
           <div ref={manifestoCornerTL} className="pointer-events-none absolute left-4 top-4 h-20 w-20 md:h-24 md:w-24">
-            <FileteadoCorner className="h-full w-full opacity-35" />
+            <FileteadoCorner className="h-full w-full" />
           </div>
           <div ref={manifestoCornerBR} className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 md:h-24 md:w-24">
-            <FileteadoCorner className="h-full w-full opacity-30" flip="both" />
+            <FileteadoCorner className="h-full w-full" flip="both" />
           </div>
           <div className="relative z-10 mx-auto max-w-4xl">
             {/* El título no pasa por Pretext: un float con shape-outside sobre el
@@ -158,7 +160,7 @@ export const Tufting: React.FC = () => {
                         inset-x + w-full (sobre-restringe e ignora right, +20px a
                         la derecha) ni inset-x + w-auto (ancho intrínseco) lo
                         centran. left-1/2 + translate no falla. */}
-                    <FileteadoCardRule className="pointer-events-none absolute left-1/2 top-3 w-[calc(100%-2.5rem)] -translate-x-1/2 opacity-45 transition-opacity group-hover:opacity-65" />
+                    <FileteadoCardRule className="pointer-events-none absolute left-1/2 top-3 w-[calc(100%-2.5rem)] -translate-x-1/2" />
                     <div className="relative mt-9 flex-1">
                       <img
                         src={line.pictogram}
@@ -167,13 +169,13 @@ export const Tufting: React.FC = () => {
                         loading="lazy"
                         decoding="async"
                         draggable={false}
-                        className="float-right mb-2 ml-3 mt-1 w-16 object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
+                        className="float-right mb-2 ml-3 mt-1 w-16 object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:-translate-y-1 motion-safe:group-hover:rotate-[2deg]"
                       />
                       <h3 className="mb-3 font-display text-2xl font-semibold">{line.title}</h3>
                       <p className="text-sm leading-relaxed text-secondary">{line.desc}</p>
                     </div>
                     <div className="relative mt-7">
-                      <FileteadoDivider className="mb-4 h-9 opacity-80" />
+                      <FileteadoDivider className="mb-4 h-9" />
                       <span className={atelierPrimaryTagClass}>
                         {line.cta}
                         <ArrowRight size={16} aria-hidden="true" />
@@ -205,7 +207,7 @@ export const Tufting: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={reduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 }}
-                className={cn(atelierFeltPanelClass, 'p-3')}
+                className={cn(atelierFeltPanelClass, 'group p-3')}
               >
                 <AtelierWoodFrame className="rounded-[1.85rem] p-2">
                   <div className="relative overflow-hidden rounded-[1.35rem]" style={clothBackground}>
@@ -222,6 +224,7 @@ export const Tufting: React.FC = () => {
                         className={cn(
                           'aspect-square w-full rounded-[1.2rem]',
                           category.imageIsIllustration ? 'object-contain p-6' : 'object-cover',
+                          'motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-[1.025]',
                         )}
                       />
                     ) : (
@@ -235,10 +238,10 @@ export const Tufting: React.FC = () => {
                   </div>
                 </AtelierWoodFrame>
                 <div className="relative z-10 p-5">
-                  <FileteadoCardRule className="mx-auto mb-2 max-w-36 opacity-55" />
+                  <FileteadoCardRule className="mx-auto mb-2 max-w-36" />
                   <h3 className="mb-2 font-display text-lg font-semibold">{category.title}</h3>
                   <p className="text-sm leading-relaxed text-secondary">{category.desc}</p>
-                  <FileteadoDivider className="mx-auto mt-3 h-8 max-w-40 opacity-60" />
+                  <FileteadoDivider className="mx-auto mt-3 h-8 max-w-40" />
                 </div>
               </motion.div>
             ))}
@@ -247,7 +250,7 @@ export const Tufting: React.FC = () => {
 
         {/* Proceso breve */}
         <AtelierFeltPanel framed className="p-8 md:p-12">
-          <FileteadoCardRule className="mx-auto mb-4 max-w-xs opacity-75" />
+          <FileteadoCardRule className="mx-auto mb-4 max-w-xs" />
           <h2 className="mb-8 text-center font-display text-2xl font-semibold">
             Si es por encargo, el camino es corto
           </h2>
@@ -263,17 +266,17 @@ export const Tufting: React.FC = () => {
               </div>
             ))}
           </div>
-          <FileteadoDivider className="mx-auto mt-9 h-10 max-w-xs opacity-75" />
+          <FileteadoDivider className="mx-auto mt-9 h-10 max-w-xs" />
         </AtelierFeltPanel>
 
         {/* CTA de cierre */}
         <AtelierFeltPanel className="mb-16 p-8 text-center md:p-12">
-          <FileteadoCardRule className="mx-auto mb-4 max-w-sm opacity-70" />
+          <FileteadoCardRule className="mx-auto mb-4 max-w-sm" />
           <h2 className="mb-3 font-display text-3xl font-semibold">¿Tejemos algo juntos?</h2>
           <p className="mb-4 text-secondary">
             Contanos qué imaginás: el bastidor ya está listo.
           </p>
-          <FileteadoDivider className="mx-auto mb-6 h-9 max-w-xs opacity-70" />
+          <FileteadoDivider className="mx-auto mb-6 h-9 max-w-xs" />
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded className="atelier-contact-cta" />
           <p className="relative z-10 mt-6 text-sm text-secondary">
             ¿Querés fotos profesionales de tus piezas?{' '}
