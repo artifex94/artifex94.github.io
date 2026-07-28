@@ -9,27 +9,27 @@ describe('insetForLine', () => {
   const CONTAINER = 600;
   const LINE_H = 24;
 
-  it('sin obstáculo usa todo el ancho', () => {
-    expect(insetForLine(0, LINE_H, CONTAINER, null)).toEqual({ x: 0, width: CONTAINER });
-    expect(insetForLine(500, LINE_H, CONTAINER, null)).toEqual({ x: 0, width: CONTAINER });
+  it('sin obstáculos usa todo el ancho', () => {
+    expect(insetForLine(0, LINE_H, CONTAINER, [])).toEqual({ x: 0, width: CONTAINER });
+    expect(insetForLine(500, LINE_H, CONTAINER, [])).toEqual({ x: 0, width: CONTAINER });
   });
 
   const right: Obstacle = { side: 'right', top: 0, bottom: 96, width: 200, gap: 20 };
 
   it('angosta las líneas que cruzan el obstáculo (lado derecho: x=0)', () => {
-    const box = insetForLine(0, LINE_H, CONTAINER, right);
+    const box = insetForLine(0, LINE_H, CONTAINER, [right]);
     expect(box.x).toBe(0);
     expect(box.width).toBe(CONTAINER - (200 + 20)); // 380
   });
 
   it('vuelve al ancho completo debajo del obstáculo', () => {
-    const box = insetForLine(120, LINE_H, CONTAINER, right); // 120 > bottom 96
+    const box = insetForLine(120, LINE_H, CONTAINER, [right]); // 120 > bottom 96
     expect(box).toEqual({ x: 0, width: CONTAINER });
   });
 
   it('reserva del lado izquierdo desplaza el texto (x = ancho reservado)', () => {
     const left: Obstacle = { side: 'left', top: 0, bottom: 96, width: 180, gap: 20 };
-    const box = insetForLine(0, LINE_H, CONTAINER, left);
+    const box = insetForLine(0, LINE_H, CONTAINER, [left]);
     expect(box.x).toBe(200);
     expect(box.width).toBe(CONTAINER - 200);
   });
@@ -37,15 +37,31 @@ describe('insetForLine', () => {
   it('detecta el solapamiento por el borde inferior de la línea', () => {
     // Línea que empieza justo antes del obstáculo pero lo cruza con su alto.
     const obstacle: Obstacle = { side: 'right', top: 20, bottom: 100, width: 200, gap: 20 };
-    expect(insetForLine(0, LINE_H, CONTAINER, obstacle).width).toBe(380); // 0..24 cruza top=20
-    expect(insetForLine(100, LINE_H, CONTAINER, obstacle).width).toBe(CONTAINER); // arranca en bottom
+    expect(insetForLine(0, LINE_H, CONTAINER, [obstacle]).width).toBe(380); // 0..24 cruza top=20
+    expect(insetForLine(100, LINE_H, CONTAINER, [obstacle]).width).toBe(CONTAINER); // arranca en bottom
   });
 
   it('nunca devuelve ancho negativo si el obstáculo es más ancho que el contenedor', () => {
     const huge: Obstacle = { side: 'right', top: 0, bottom: 96, width: 900, gap: 20 };
-    const box = insetForLine(0, LINE_H, CONTAINER, huge);
+    const box = insetForLine(0, LINE_H, CONTAINER, [huge]);
     expect(box.width).toBe(0);
     expect(box.x).toBe(0);
+  });
+
+  describe('con varios obstáculos', () => {
+    it('reserva ambos lados cuando dos obstáculos cruzan la misma banda', () => {
+      const left: Obstacle = { side: 'left', top: 0, bottom: 96, width: 90, gap: 10 };
+      const right: Obstacle = { side: 'right', top: 0, bottom: 96, width: 120, gap: 20 };
+      const box = insetForLine(0, LINE_H, CONTAINER, [left, right]);
+      expect(box.x).toBe(100);
+      expect(box.width).toBe(CONTAINER - 100 - 140);
+    });
+
+    it('por lado gana la reserva más grande, no la suma', () => {
+      const a: Obstacle = { side: 'right', top: 0, bottom: 96, width: 80, gap: 20 };
+      const b: Obstacle = { side: 'right', top: 0, bottom: 96, width: 150, gap: 20 };
+      expect(insetForLine(0, LINE_H, CONTAINER, [a, b]).width).toBe(CONTAINER - 170);
+    });
   });
 
   describe('con silueta (intrusionAt)', () => {
@@ -58,7 +74,7 @@ describe('insetForLine', () => {
         gap: 20,
         intrusionAt: () => 80,
       };
-      const box = insetForLine(0, LINE_H, CONTAINER, contoured);
+      const box = insetForLine(0, LINE_H, CONTAINER, [contoured]);
       expect(box.width).toBe(CONTAINER - (80 + 20));
     });
 
@@ -71,7 +87,7 @@ describe('insetForLine', () => {
         gap: 20,
         intrusionAt: () => 0,
       };
-      expect(insetForLine(0, LINE_H, CONTAINER, contoured)).toEqual({ x: 0, width: CONTAINER });
+      expect(insetForLine(0, LINE_H, CONTAINER, [contoured])).toEqual({ x: 0, width: CONTAINER });
     });
 
     it('acota la intrusión al ancho de la caja y nunca es negativa', () => {
@@ -83,10 +99,10 @@ describe('insetForLine', () => {
         gap: 20,
         intrusionAt: () => 999,
       };
-      expect(insetForLine(0, LINE_H, CONTAINER, overflowing)).toEqual({ x: 200, width: CONTAINER - 200 });
+      expect(insetForLine(0, LINE_H, CONTAINER, [overflowing])).toEqual({ x: 200, width: CONTAINER - 200 });
 
       const negative: Obstacle = { ...overflowing, intrusionAt: () => -50 };
-      expect(insetForLine(0, LINE_H, CONTAINER, negative)).toEqual({ x: 0, width: CONTAINER });
+      expect(insetForLine(0, LINE_H, CONTAINER, [negative])).toEqual({ x: 0, width: CONTAINER });
     });
   });
 });

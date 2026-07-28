@@ -30,6 +30,9 @@ import { cn } from '../utils/cn';
 
 export const Tufting: React.FC = () => {
   const reduceMotion = useReducedMotion();
+  const manifestoCornerTL = React.useRef<HTMLDivElement>(null);
+  const manifestoCornerBR = React.useRef<HTMLDivElement>(null);
+  const manifestoObstacles = React.useMemo(() => [manifestoCornerTL, manifestoCornerBR], []);
 
   usePageMeta({
     title: 'Tufting: Alfombras Artesanales en Victoria | Artifex',
@@ -77,10 +80,15 @@ export const Tufting: React.FC = () => {
 
         {/* Manifiesto */}
         <AtelierFeltPanel framed className="p-7 text-left md:p-10">
-          <FileteadoCorner className="pointer-events-none absolute left-4 top-4 h-20 w-20 opacity-35 md:h-24 md:w-24" />
-          <FileteadoCorner className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 opacity-30 md:h-24 md:w-24" flip="both" />
+          <div ref={manifestoCornerTL} className="pointer-events-none absolute left-4 top-4 h-20 w-20 md:h-24 md:w-24">
+            <FileteadoCorner className="h-full w-full opacity-35" />
+          </div>
+          <div ref={manifestoCornerBR} className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 md:h-24 md:w-24">
+            <FileteadoCorner className="h-full w-full opacity-30" flip="both" />
+          </div>
           <div className="relative z-10 mx-auto max-w-4xl">
-            <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
+            {/* El pl despeja el esquinero superior: el título no pasa por Pretext. */}
+            <h2 className="mb-5 pl-20 font-display text-3xl font-semibold leading-tight md:text-4xl xl:pl-0">
               Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
             </h2>
             <MagazineText
@@ -88,6 +96,7 @@ export const Tufting: React.FC = () => {
               ornament={<FileteadoOrnament className="w-full" />}
               ornamentSide="right"
               ornamentClassName="w-36 md:w-48"
+              extraObstacles={manifestoObstacles}
               className="font-display text-lg leading-relaxed text-primary first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-accent md:text-xl"
             />
           </div>

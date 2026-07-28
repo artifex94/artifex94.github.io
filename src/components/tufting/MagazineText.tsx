@@ -11,6 +11,9 @@ interface MagazineTextProps {
   ornamentSide?: 'left' | 'right';
   /** Clases para el contenedor del ornamento (tamaño/márgenes). */
   ornamentClassName?: string;
+  /** Elementos externos que el texto también esquiva (p. ej. esquineros del
+      panel). El array debe ser estable entre renders (useMemo en el caller). */
+  extraObstacles?: React.RefObject<HTMLElement | null>[];
   /** Clases tipográficas (font, color, tamaño). Se usan tanto en el texto base
       como en las líneas realzadas, para que midan y se vean idéntico. */
   className?: string;
@@ -32,6 +35,7 @@ export const MagazineText: React.FC<MagazineTextProps> = ({
   ornament,
   ornamentSide = 'right',
   ornamentClassName,
+  extraObstacles,
   className,
   minWidth,
   gap,
@@ -44,6 +48,7 @@ export const MagazineText: React.FC<MagazineTextProps> = ({
     containerRef,
     measureRef,
     obstacleRef: ornamentRef,
+    extraObstacleRefs: extraObstacles,
     minWidth,
     gap,
   });

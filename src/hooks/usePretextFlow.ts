@@ -40,30 +40,36 @@ export interface PositionedLine {
 /**
  * Ancho y desplazamiento disponibles para una línea dada su posición vertical.
  *
- * Función PURA (sin DOM): si la línea cruza la banda del obstáculo, se reserva su
- * ancho + gap del lado correspondiente; si no, ocupa todo el ancho. Es el corazón
- * del "fluir alrededor" y es lo que se testea.
+ * Función PURA (sin DOM): cada obstáculo que cruza la banda de la línea reserva
+ * su intrusión + gap del lado que le toca; por lado gana la reserva más grande.
+ * Es el corazón del "fluir alrededor" y es lo que se testea.
  */
 export function insetForLine(
   lineTop: number,
   lineHeight: number,
   containerWidth: number,
-  obstacle: Obstacle | null,
+  obstacles: readonly Obstacle[],
 ): LineBox {
-  if (!obstacle) return { x: 0, width: containerWidth };
-
   const lineBottom = lineTop + lineHeight;
-  const overlaps = lineBottom > obstacle.top && lineTop < obstacle.bottom;
-  if (!overlaps) return { x: 0, width: containerWidth };
+  let reservedLeft = 0;
+  let reservedRight = 0;
 
-  const intrusion = obstacle.intrusionAt
-    ? Math.min(Math.max(obstacle.intrusionAt(lineTop, lineBottom), 0), obstacle.width)
-    : obstacle.width;
-  if (intrusion === 0) return { x: 0, width: containerWidth };
+  for (const obstacle of obstacles) {
+    const overlaps = lineBottom > obstacle.top && lineTop < obstacle.bottom;
+    if (!overlaps) continue;
 
-  const reserved = Math.min(intrusion + obstacle.gap, containerWidth);
-  const width = Math.max(containerWidth - reserved, 0);
-  const x = obstacle.side === 'left' ? reserved : 0;
+    const intrusion = obstacle.intrusionAt
+      ? Math.min(Math.max(obstacle.intrusionAt(lineTop, lineBottom), 0), obstacle.width)
+      : obstacle.width;
+    if (intrusion === 0) continue;
+
+    const reserved = intrusion + obstacle.gap;
+    if (obstacle.side === 'left') reservedLeft = Math.max(reservedLeft, reserved);
+    else reservedRight = Math.max(reservedRight, reserved);
+  }
+
+  const x = Math.min(reservedLeft, containerWidth);
+  const width = Math.max(containerWidth - reservedLeft - reservedRight, 0);
   return { x, width };
 }
 
@@ -75,6 +81,9 @@ interface UsePretextFlowOptions {
   measureRef: RefObject<HTMLElement | null>;
   /** Ornamento a esquivar (opcional). */
   obstacleRef?: RefObject<HTMLElement | null>;
+  /** Obstáculos adicionales (p. ej. esquineros del panel). El array debe ser
+      estable entre renders (useMemo/useRef en el caller) porque es dep del efecto. */
+  extraObstacleRefs?: RefObject<HTMLElement | null>[];
   /** Debajo de este ancho no se realza: se deja el texto plano (mobile). */
   minWidth?: number;
   gap?: number;
@@ -178,11 +187,66 @@ const alphaProfileFor = (img: HTMLImageElement): Promise<AlphaProfile | null> =>
   return promise;
 };
 
+interface Silhouette {
+  profile: AlphaProfile;
+  /** Tamaño de layout (px CSS) con el que se mapea el perfil. */
+  width: number;
+  height: number;
+  /** Espejados visuales del elemento (p. ej. esquineros con -scale-x-100). */
+  flipX: boolean;
+  flipY: boolean;
+}
+
+// Resuelve la silueta de un obstáculo: sirve un <img> directo o un <image> de
+// SVG (assets TuftReveal); en este último caso el bitmap se carga aparte por su
+// href. Devuelve null si no hay imagen o no se puede muestrear.
+const silhouetteFor = async (obstacleEl: HTMLElement): Promise<Silhouette | null> => {
+  const rect = obstacleEl.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
+
+  const imgEl = obstacleEl.matches('img')
+    ? (obstacleEl as HTMLImageElement)
+    : obstacleEl.querySelector('img');
+  const svgImage = imgEl ? null : obstacleEl.querySelector('svg image');
+  const visual: Element | null = imgEl ?? svgImage?.closest('svg') ?? null;
+
+  let bitmap: HTMLImageElement | null = imgEl;
+  if (!bitmap && svgImage) {
+    const href = svgImage.getAttribute('href') ?? svgImage.getAttribute('xlink:href');
+    if (!href) return null;
+    bitmap = new Image();
+    bitmap.src = href;
+  }
+  if (!bitmap) return null;
+
+  const profile = await alphaProfileFor(bitmap);
+  if (!profile) return null;
+
+  // El transform del elemento visual (matrix a,b,c,d) revela espejados.
+  let flipX = false;
+  let flipY = false;
+  if (visual) {
+    const transform = getComputedStyle(visual).transform;
+    const match = /matrix\(([-\d.e]+), [-\d.e]+, [-\d.e]+, ([-\d.e]+)/.exec(transform);
+    if (match) {
+      flipX = parseFloat(match[1]) < 0;
+      flipY = parseFloat(match[2]) < 0;
+    }
+  }
+
+  const width = imgEl ? imgEl.offsetWidth || rect.width : rect.width;
+  const height = imgEl
+    ? imgEl.offsetHeight || (width * profile.height) / profile.width
+    : rect.height;
+
+  return { profile, width, height, flipX, flipY };
+};
+
 const measureObstacle = (
   container: HTMLElement,
   obstacleEl: HTMLElement | null,
   gap: number,
-  silhouette?: { img: HTMLImageElement; profile: AlphaProfile },
+  silhouette?: Silhouette | null,
 ): Obstacle | null => {
   if (!obstacleEl) return null;
   const c = container.getBoundingClientRect();
@@ -198,29 +262,34 @@ const measureObstacle = (
     gap,
   };
 
-  if (silhouette) {
-    const { img, profile } = silhouette;
-    // Medidas de layout del <img> (offsetWidth/Height ignoran el transform de la
-    // animación de entrada). El img arranca en el tope del float.
-    const imgWidth = img.offsetWidth || o.width;
-    const imgHeight = img.offsetHeight || (imgWidth * profile.height) / profile.width;
-    if (imgWidth > 0 && imgHeight > 0) {
-      const scaleX = imgWidth / profile.width;
-      const rowsPerCssPx = profile.height / imgHeight;
-      obstacle.intrusionAt = (lineTop, lineBottom) => {
-        const first = Math.max(0, Math.floor((lineTop - top) * rowsPerCssPx));
-        const last = Math.min(profile.height - 1, Math.ceil((lineBottom - top) * rowsPerCssPx) - 1);
-        if (last < first) return 0;
-        let min = profile.width;
-        let max = -1;
-        for (let row = first; row <= last; row += 1) {
-          if (profile.minX[row] < min) min = profile.minX[row];
-          if (profile.maxX[row] > max) max = profile.maxX[row];
-        }
-        if (max < 0) return 0;
-        return obstacle.side === 'right' ? obstacle.width - min * scaleX : (max + 1) * scaleX;
-      };
-    }
+  if (silhouette && silhouette.width > 0 && silhouette.height > 0) {
+    const { profile, flipX, flipY } = silhouette;
+    const scaleX = silhouette.width / profile.width;
+    const rowsPerCssPx = profile.height / silhouette.height;
+    obstacle.intrusionAt = (lineTop, lineBottom) => {
+      let first = Math.max(0, Math.floor((lineTop - top) * rowsPerCssPx));
+      let last = Math.min(profile.height - 1, Math.ceil((lineBottom - top) * rowsPerCssPx) - 1);
+      if (last < first) return 0;
+      if (flipY) {
+        const f = profile.height - 1 - last;
+        last = profile.height - 1 - first;
+        first = f;
+      }
+      let min = profile.width;
+      let max = -1;
+      for (let row = first; row <= last; row += 1) {
+        if (profile.minX[row] < min) min = profile.minX[row];
+        if (profile.maxX[row] > max) max = profile.maxX[row];
+      }
+      if (max < 0) return 0;
+      if (flipX) {
+        const mirroredMin = profile.width - 1 - max;
+        const mirroredMax = profile.width - 1 - min;
+        min = mirroredMin;
+        max = mirroredMax;
+      }
+      return obstacle.side === 'right' ? obstacle.width - min * scaleX : (max + 1) * scaleX;
+    };
   }
 
   return obstacle;
@@ -231,7 +300,7 @@ const flow = (
   prepared: PreparedTextWithSegments,
   containerWidth: number,
   lineHeight: number,
-  obstacle: Obstacle | null,
+  obstacles: readonly Obstacle[],
 ): PositionedLine[] => {
   const lines: PositionedLine[] = [];
   let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
@@ -240,7 +309,7 @@ const flow = (
   // Cota dura: un texto de marketing nunca llega a cientos de líneas; evita un
   // bucle infinito si algo no avanza.
   for (let guard = 0; guard < 400; guard += 1) {
-    const { x, width } = insetForLine(y, lineHeight, containerWidth, obstacle);
+    const { x, width } = insetForLine(y, lineHeight, containerWidth, obstacles);
     const line = pretext.layoutNextLine(prepared, cursor, Math.max(width, 1));
     if (!line) break;
     lines.push({ text: line.text, x, y, width });
@@ -262,6 +331,7 @@ export function usePretextFlow({
   containerRef,
   measureRef,
   obstacleRef,
+  extraObstacleRefs,
   minWidth = 640,
   gap = 22,
 }: UsePretextFlowOptions): FlowResult {
@@ -290,17 +360,16 @@ export function usePretextFlow({
         if (cancelled) return;
         const { font, lineHeight } = readFont(measure);
         const prepared = pretext.prepareWithSegments(text, font);
-        const obstacleEl = obstacleRef?.current ?? null;
-        const obstacleImg = obstacleEl?.querySelector('img') ?? null;
-        const profile = obstacleImg ? await alphaProfileFor(obstacleImg) : null;
-        if (cancelled) return;
-        const obstacle = measureObstacle(
-          container,
-          obstacleEl,
-          gap,
-          obstacleImg && profile ? { img: obstacleImg, profile } : undefined,
-        );
-        const lines = flow(pretext, prepared, container.clientWidth, lineHeight, obstacle);
+        const obstacleEls = [obstacleRef?.current ?? null, ...(extraObstacleRefs ?? []).map((ref) => ref.current)]
+          .filter((el): el is HTMLElement => el !== null);
+        const obstacles: Obstacle[] = [];
+        for (const el of obstacleEls) {
+          const silhouette = await silhouetteFor(el).catch(() => null);
+          if (cancelled) return;
+          const obstacle = measureObstacle(container, el, gap, silhouette);
+          if (obstacle) obstacles.push(obstacle);
+        }
+        const lines = flow(pretext, prepared, container.clientWidth, lineHeight, obstacles);
         if (cancelled) return;
         if (lines.length === 0) {
           fallback();
@@ -326,6 +395,9 @@ export function usePretextFlow({
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedule) : null;
     ro?.observe(container);
     if (obstacleRef?.current) ro?.observe(obstacleRef.current);
+    for (const ref of extraObstacleRefs ?? []) {
+      if (ref.current) ro?.observe(ref.current);
+    }
     window.addEventListener('resize', schedule);
 
     return () => {
@@ -334,7 +406,7 @@ export function usePretextFlow({
       ro?.disconnect();
       window.removeEventListener('resize', schedule);
     };
-  }, [text, minWidth, gap, containerRef, measureRef, obstacleRef]);
+  }, [text, minWidth, gap, containerRef, measureRef, obstacleRef, extraObstacleRefs]);
 
   return result;
 }
