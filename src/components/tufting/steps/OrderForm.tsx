@@ -87,9 +87,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   const canSend = name.trim().length > 0 && EMAIL_RE.test(email.trim()) && !busy;
 
-  // La seña: el total, o la mitad redondeada a 1000 (igual que el servidor).
-  const halfArs = Math.ceil(total / 2 / 1000) * 1000;
-
   const payDeposit = async (portion: DepositPortion) => {
     if (!orderId) return;
     setDepositError(null);
@@ -191,25 +188,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           todo y coordinar.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-1">
-          <button
-            type="button"
-            onClick={() => payDeposit('half')}
-            disabled={depositBusy !== null}
-            className={cn(depositBtn, 'flex-1 bg-accent text-on-accent hover:opacity-90')}
-          >
-            {depositBusy === 'half' ? (
-              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <CreditCard size={18} aria-hidden="true" />
-            )}
-            Señar la mitad · {formatARS(halfArs)}
-          </button>
+        <div className="flex w-full max-w-md flex-col gap-3 pt-1">
           <button
             type="button"
             onClick={() => payDeposit('full')}
             disabled={depositBusy !== null}
-            className={cn(depositBtn, 'flex-1 border border-accent text-accent hover:bg-accent hover:text-on-accent')}
+            className={cn(depositBtn, 'bg-accent text-on-accent hover:opacity-90')}
           >
             {depositBusy === 'full' ? (
               <Loader2 size={18} className="animate-spin" aria-hidden="true" />
@@ -219,7 +203,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             Pagar el total · {formatARS(total)}
           </button>
         </div>
-        <p className="text-xs text-secondary">Si pagás el total, queda todo cerrado y no pensás más en plata: solo en la alfombra.</p>
+        <p className="text-xs text-secondary">
+          Podés pagar el total y dejarlo cerrado, o señar la propuesta pagando la primera cuota
+          para que el trabajo arranque — el resto se debita solo, mes a mes. Las cuotas las
+          coordinamos al confirmar el encargo.
+        </p>
 
         {depositError && (
           <p role="alert" className="text-sm text-accent">
