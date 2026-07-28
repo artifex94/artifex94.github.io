@@ -74,12 +74,12 @@ export const Tufting: React.FC = () => {
             <FileteadoCorner className="pointer-events-none absolute right-[1.2cqw] top-[0.7cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="x" />
             <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] left-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="y" />
             <FileteadoCorner className="pointer-events-none absolute bottom-[1.35cqw] right-[1.2cqw] h-[clamp(2rem,8cqw,4.25rem)] w-[clamp(2rem,8cqw,4.25rem)]" flip="both" />
-            <FileteadoCardRule className="mx-auto h-[clamp(2rem,7.25cqw,3.5rem)] w-[clamp(13rem,50cqw,24rem)] shrink-0 origin-center scale-x-[1.28] max-[359px]:scale-x-[1.05] sm:scale-x-[1.45]" />
-            <h1 className="my-[1.25cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
+            <FileteadoCardRule className="mx-auto h-auto w-[clamp(13rem,48cqw,22.5rem)] shrink-0 overflow-visible max-[359px]:w-40" />
+            <h1 className="my-[0.75cqw] font-display text-[clamp(1.15rem,5.6cqw,3.2rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
-            <FileteadoDivider className="mx-auto h-[clamp(2.125rem,7.6cqw,3.7rem)] w-[clamp(13rem,50cqw,24rem)] shrink-0 origin-center scale-x-[1.28] max-[359px]:scale-x-[1.05] sm:scale-x-[1.45]" />
+            <FileteadoDivider className="mx-auto h-auto w-[clamp(13rem,48cqw,22.5rem)] shrink-0 overflow-visible max-[359px]:w-40" />
           </FileteadoBanner>
         </section>
 
