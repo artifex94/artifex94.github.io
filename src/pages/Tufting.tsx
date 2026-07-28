@@ -80,7 +80,6 @@ export const Tufting: React.FC = () => {
           <FileteadoCorner className="pointer-events-none absolute left-4 top-4 h-20 w-20 opacity-35 md:h-24 md:w-24" />
           <FileteadoCorner className="pointer-events-none absolute bottom-4 right-4 h-20 w-20 opacity-30 md:h-24 md:w-24" flip="both" />
           <div className="relative z-10 mx-auto max-w-4xl">
-            <FileteadoCardRule className="mx-auto mb-5 max-w-sm opacity-80" />
             <h2 className="mb-5 font-display text-3xl font-semibold leading-tight md:text-4xl">
               Tejemos <span className="text-accent italic">despacio</span>, para que dure una vida
             </h2>
@@ -132,21 +131,30 @@ export const Tufting: React.FC = () => {
                   >
                     <div aria-hidden="true" className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
                     <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
-                    <img
-                      src={line.pictogram}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
-                      className="relative mb-6 mt-9 h-20 w-20 object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
-                    />
-                    <h3 className="relative font-display text-2xl font-semibold mb-3">
+                    <h3 className="relative mt-9 font-display text-2xl font-semibold mb-3">
                       {line.title}
                     </h3>
-                    <p className="relative flex-1 text-sm leading-relaxed text-secondary">
-                      {line.desc}
-                    </p>
+                    <div className="relative flex-1">
+                      <MagazineText
+                        text={line.desc}
+                        ornament={
+                          <img
+                            src={line.pictogram}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            decoding="async"
+                            draggable={false}
+                            className="w-full object-contain drop-shadow-[0_10px_14px_rgba(112,70,52,0.22)] transition-transform duration-300 group-hover:-translate-y-0.5"
+                          />
+                        }
+                        ornamentSide="right"
+                        ornamentClassName="w-16"
+                        minWidth={240}
+                        gap={12}
+                        className="text-sm leading-relaxed text-secondary"
+                      />
+                    </div>
                     <div className="relative mt-7">
                       <FileteadoDivider className="mb-4 h-9 opacity-80" />
                       <span className={atelierPrimaryTagClass}>
