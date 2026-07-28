@@ -144,12 +144,12 @@ export default defineConfig({
   // cuando se carga una ruta anidada como /business.
   base: '/',
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         // Separa las libs pesadas del chunk de entrada: quedan cacheadas por
         // el navegador entre deploys que no las tocan (cambian con poca
         // frecuencia respecto del código propio).
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             {
               name: 'react-vendor',

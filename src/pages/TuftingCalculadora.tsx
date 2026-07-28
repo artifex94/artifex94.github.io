@@ -52,7 +52,7 @@ export const TuftingCalculadora: React.FC = () => {
               role="dialog"
               aria-modal="true"
               aria-label="Bienvenida al taller de tufting"
-              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(43,35,32,0.38)] px-4 py-8 backdrop-blur-[3px] sm:items-center"
+              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(43,35,32,0.38)] px-4 pb-8 pt-[clamp(6rem,18vh,10rem)] backdrop-blur-[3px] sm:items-center sm:py-8"
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: reduceMotion ? 0 : 0.35, ease: 'easeOut' } }}
