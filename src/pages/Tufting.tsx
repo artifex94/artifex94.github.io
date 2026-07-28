@@ -159,7 +159,11 @@ export const Tufting: React.FC = () => {
                     )}
                   >
                     <div aria-hidden="true" className="absolute right-0 top-0 h-28 w-28 rounded-bl-full bg-accent/10 blur-2xl" />
-                    <FileteadoCardRule className="pointer-events-none absolute inset-x-5 top-3 opacity-45 transition-opacity group-hover:opacity-65" />
+                    {/* Centrado explícito: el svg es replaced element, así que ni
+                        inset-x + w-full (sobre-restringe e ignora right, +20px a
+                        la derecha) ni inset-x + w-auto (ancho intrínseco) lo
+                        centran. left-1/2 + translate no falla. */}
+                    <FileteadoCardRule className="pointer-events-none absolute left-1/2 top-3 w-[calc(100%-2.5rem)] -translate-x-1/2 opacity-45 transition-opacity group-hover:opacity-65" />
                     <div className="relative mt-9 flex-1">
                       <img
                         src={line.pictogram}
