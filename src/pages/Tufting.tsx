@@ -70,14 +70,18 @@ export const Tufting: React.FC = () => {
             </span>
           </span>
           <FileteadoBanner className="max-w-3xl">
-            <h1 className="font-display text-[clamp(1.1rem,5.4cqw,3.1rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] sm:mb-[2.5cqw]">
+            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 hidden h-[9cqw] w-[9cqw] opacity-55 sm:block" />
+            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 hidden h-[9cqw] w-[9cqw] opacity-50 sm:block" flip="both" />
+            <FileteadoCardRule className="mx-auto hidden h-[3.5cqw] w-[34cqw] shrink-0 sm:block" />
+            <h1 className="font-display text-[clamp(1.1rem,5cqw,2.9rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] sm:my-[1.4cqw]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
-            <p className="mx-auto hidden max-w-[36em] text-[clamp(0.78rem,2cqw,1.05rem)] leading-relaxed text-primary/85 [text-shadow:0_1px_0_rgba(255,250,240,0.75)] sm:block">
+            <p className="mx-auto hidden max-w-[36em] text-[clamp(0.78rem,1.9cqw,1rem)] leading-relaxed text-primary/85 [text-shadow:0_1px_0_rgba(255,250,240,0.75)] sm:block">
               Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
               traé tu obra de artista o llevate una que ya está esperando pared.
             </p>
+            <FileteadoDivider className="mx-auto mt-[1.2cqw] hidden h-[5cqw] w-[28cqw] shrink-0 sm:block" />
           </FileteadoBanner>
           {/* En mobile el campo del tapiz solo da para el titular: el párrafo baja acá. */}
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary/85 sm:hidden">
@@ -240,9 +244,10 @@ export const Tufting: React.FC = () => {
                   </div>
                 </AtelierWoodFrame>
                 <div className="relative z-10 p-5">
-                  <FileteadoCardRule className="mb-2 max-w-36 opacity-55" />
+                  <FileteadoCardRule className="mx-auto mb-2 max-w-36 opacity-55" />
                   <h3 className="mb-2 font-display text-lg font-semibold">{category.title}</h3>
                   <p className="text-sm leading-relaxed text-secondary">{category.desc}</p>
+                  <FileteadoDivider className="mx-auto mt-3 h-8 max-w-40 opacity-60" />
                 </div>
               </motion.div>
             ))}
@@ -251,7 +256,7 @@ export const Tufting: React.FC = () => {
 
         {/* Proceso breve */}
         <AtelierFeltPanel framed className="p-8 md:p-12">
-          <FileteadoDivider className="mx-auto mb-4 max-w-xs opacity-75" />
+          <FileteadoCardRule className="mx-auto mb-4 max-w-xs opacity-75" />
           <h2 className="mb-8 text-center font-display text-2xl font-semibold">
             Si es por encargo, el camino es corto
           </h2>
@@ -267,15 +272,17 @@ export const Tufting: React.FC = () => {
               </div>
             ))}
           </div>
+          <FileteadoDivider className="mx-auto mt-9 h-10 max-w-xs opacity-75" />
         </AtelierFeltPanel>
 
         {/* CTA de cierre */}
         <AtelierFeltPanel className="mb-16 p-8 text-center md:p-12">
           <FileteadoCardRule className="mx-auto mb-4 max-w-sm opacity-70" />
           <h2 className="mb-3 font-display text-3xl font-semibold">¿Tejemos algo juntos?</h2>
-          <p className="mb-8 text-secondary">
+          <p className="mb-4 text-secondary">
             Contanos qué imaginás: el bastidor ya está listo.
           </p>
+          <FileteadoDivider className="mx-auto mb-6 h-9 max-w-xs opacity-70" />
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded className="atelier-contact-cta" />
           <p className="relative z-10 mt-6 text-sm text-secondary">
             ¿Querés fotos profesionales de tus piezas?{' '}
