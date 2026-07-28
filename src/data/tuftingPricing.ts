@@ -44,15 +44,6 @@ export const DISCOUNT_LABELS: Record<DiscountId, string> = {
 };
 
 /**
- * Anticipo mínimo para pagar en cuotas, como fracción del total.
- *
- * Una alfombra a medida no se revende: si el débito automático falla en la
- * cuota 3, el material ya está puesto y el diseño es de otra persona. El
- * anticipo tiene que cubrir al menos los materiales.
- */
-export const INSTALLMENT_DEPOSIT_RATE = 0.5;
-
-/**
  * El descuento más grande que un cliente puede llegar a aplicar.
  *
  * Se deriva de DISCOUNTS en vez de escribirse a mano: agregar un descuento nuevo

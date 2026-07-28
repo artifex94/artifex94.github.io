@@ -6,7 +6,7 @@ import {
   createCheckout,
   createSubscription,
 } from '../../../data/tuftingCheckout';
-import { formatARS, INSTALLMENT_DEPOSIT_RATE } from '../../../data/tuftingPricing';
+import { formatARS } from '../../../data/tuftingPricing';
 import type { Dimensions, Shape } from '../../../data/tuftingCalculator';
 
 interface PaymentActionsProps {
@@ -40,7 +40,9 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
   const [instalments, setInstalments] = useState(3);
 
   const online = canPayOnline(shape);
-  const deposit = Math.ceil((total * INSTALLMENT_DEPOSIT_RATE) / 1000) * 1000;
+  // Espejo del server: cuotas iguales redondeadas a 1000 hacia arriba; la
+  // primera que se debita hace de seña.
+  const instalmentArs = Math.ceil(total / instalments / 1000) * 1000;
 
   // Solo viajan las medidas crudas: el servidor reprecia todo por su cuenta. Los
   // colores van solo como referencia (el precio no depende de ellos).
@@ -141,9 +143,9 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
 
         <div className="flex flex-col gap-4 p-4 pt-0">
           <p className="text-sm text-secondary leading-relaxed">
-            Se debita solo, mes a mes. Arranca con un anticipo de{' '}
-            <strong className="text-primary">{formatARS(deposit)}</strong> que cubre los materiales:
-            la pieza se teje a tu medida y no hay otra igual para revender.
+            Señás la propuesta pagando la primera cuota de{' '}
+            <strong className="text-primary">{formatARS(instalmentArs)}</strong> — con eso el
+            trabajo arranca. Las siguientes se debitan solas, mes a mes, hasta cubrir el total.
           </p>
 
           <div className="flex flex-col gap-1.5">

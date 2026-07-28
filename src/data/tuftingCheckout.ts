@@ -60,6 +60,9 @@ export interface SubscriptionRequest extends Omit<CheckoutRequest, 'discountCode
 }
 
 export interface SubscriptionResponse extends CheckoutResponse {
+  /** La primera cuota hace de seña (mismo valor que monthlyArs). */
+  firstInstalmentArs: number;
+  /** Compat con clientes viejos: igual a firstInstalmentArs. */
   depositArs: number;
   monthlyArs: number;
   instalments: number;
@@ -171,7 +174,7 @@ export const createOrder = (request: OrderRequest): Promise<OrderResponse> =>
     'No pude enviar el encargo. Probá de nuevo en un rato.',
   );
 
-// ---- Seña del encargo (total o mitad) --------------------------------------
+// ---- Pago del encargo (solo total; la seña en cuotas va por suscripción) ---
 
 /** Cuánto del total se paga como seña. */
 export type DepositPortion = 'full' | 'half';

@@ -7,7 +7,6 @@ import {
   formatARS,
   DISCOUNTS,
   DISCOUNT_LABELS,
-  INSTALLMENT_DEPOSIT_RATE,
   type DiscountId,
 } from '../../../data/tuftingPricing';
 import { describeDimensions, describeShape, minorAxisCm } from '../../../data/tuftingCalculator';
@@ -75,7 +74,9 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
     border: borderName,
   });
 
-  const deposit = Math.ceil((price.total * INSTALLMENT_DEPOSIT_RATE) / 1000) * 1000;
+  // La primera cuota hace de seña: total dividido en cuotas iguales (la
+  // estimación más accesible es a 12; el paso de pago deja elegir 3/6/12).
+  const smallestInstalment = Math.ceil(price.total / 12 / 1000) * 1000;
 
   return (
     <div className="flex flex-col gap-6 md:gap-8">
@@ -156,9 +157,9 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
         <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
           <p className="font-semibold mb-1">Cuotas con débito automático</p>
           <p className="text-secondary leading-relaxed">
-            Sin descuento, pero a tu ritmo: arrancás con un anticipo de{' '}
-            <strong className="text-primary">{formatARS(deposit)}</strong> y el resto se debita solo,
-            mes a mes.
+            Podés pagar el total, o señar la propuesta pagando la primera cuota (desde{' '}
+            <strong className="text-primary">{formatARS(smallestInstalment)}</strong> en 12) para
+            que el trabajo arranque. Las siguientes se debitan solas, mes a mes. Sin descuento.
           </p>
         </div>
 

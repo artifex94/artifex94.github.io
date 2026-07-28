@@ -51,7 +51,7 @@ describe('constantes derivadas', () => {
 describe('coherencia con el backend de pagos', () => {
   it('las constantes coinciden con las del backend de pagos', () => {
     // El precio vive duplicado: acá y en
-    // artifex-portal/supabase/functions/_shared/pricing.ts, porque el sitio es
+    // supabase/functions/_shared/pricing.ts (este repo), porque el sitio es
     // un build estático y las edge functions corren en Deno, sin módulo común.
     //
     // Este test fija los valores exactos. Si alguien cambia el precio de un solo
