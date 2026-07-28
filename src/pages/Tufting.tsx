@@ -107,7 +107,7 @@ export const Tufting: React.FC = () => {
               ornamentSide="right"
               ornamentClassName="w-36 md:w-48"
               extraObstacles={manifestoObstacles}
-              gap={14}
+              gap={4}
               className="font-display text-lg leading-relaxed text-primary first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-accent md:text-xl"
             />
           </div>
