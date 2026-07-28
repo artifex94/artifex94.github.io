@@ -70,10 +70,10 @@ export const Tufting: React.FC = () => {
             </span>
           </span>
           <FileteadoBanner className="max-w-3xl">
-            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 hidden h-[9cqw] w-[9cqw] opacity-55 sm:block" />
-            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 hidden h-[9cqw] w-[9cqw] opacity-50 sm:block" flip="both" />
-            <FileteadoCardRule className="mx-auto hidden h-[3.5cqw] w-[34cqw] shrink-0 sm:block" />
-            <h1 className="font-display text-[clamp(1.1rem,5cqw,2.9rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] sm:my-[1.4cqw]">
+            <FileteadoCorner className="pointer-events-none absolute left-0 top-0 h-[9cqw] w-[9cqw] opacity-55" />
+            <FileteadoCorner className="pointer-events-none absolute bottom-0 right-0 h-[9cqw] w-[9cqw] opacity-50" flip="both" />
+            <FileteadoCardRule className="mx-auto h-3.5 w-44 shrink-0 sm:h-[3.5cqw] sm:w-[34cqw]" />
+            <h1 className="font-display text-[clamp(1.1rem,5cqw,2.9rem)] font-semibold leading-tight text-primary [text-shadow:0_1px_0_rgba(255,250,240,0.85),0_2px_8px_rgba(112,70,52,0.28)] my-[1.4cqw]">
               Un territorio de lana, <br />
               <span className="text-accent italic">tejido hilo por hilo.</span>
             </h1>
@@ -81,7 +81,7 @@ export const Tufting: React.FC = () => {
               Alfombras y tapices únicos, hechos a mano con pistola de tufting. Encargá tu pieza,
               traé tu obra de artista o llevate una que ya está esperando pared.
             </p>
-            <FileteadoDivider className="mx-auto mt-[1.2cqw] hidden h-[5cqw] w-[28cqw] shrink-0 sm:block" />
+            <FileteadoDivider className="mx-auto mt-[1.2cqw] h-5 w-40 shrink-0 sm:h-[5cqw] sm:w-[28cqw]" />
           </FileteadoBanner>
           {/* En mobile el campo del tapiz solo da para el titular: el párrafo baja acá. */}
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary/85 sm:hidden">
