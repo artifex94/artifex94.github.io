@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 // Misma fuente display que el resto de las páginas artesanales. Al importarse
@@ -17,6 +17,10 @@ import { cn } from '../utils/cn';
 
 export const TuftingCalculadora: React.FC = () => {
   const reduceMotion = useReducedMotion();
+  // El cartel de entrada se retira al primer gesto de trabajo en el taller,
+  // para que el bastidor quede limpio.
+  const [heroDismissed, setHeroDismissed] = React.useState(false);
+  const dismissHero = React.useCallback(() => setHeroDismissed(true), []);
 
   usePageMeta({
     title: 'Calculá el precio de tu alfombra de tufting | Artifex',
@@ -36,37 +40,72 @@ export const TuftingCalculadora: React.FC = () => {
       animate={{ opacity: 1 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.5 }}
       data-theme="tufting"
-      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth px-4 py-8 text-primary sm:px-6 sm:py-12 lg:px-8"
+      className="min-h-screen w-full overflow-x-hidden bg-atelier-cloth px-4 pb-8 pt-3 text-primary sm:px-6 sm:py-12 lg:px-8"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-7 lg:gap-10">
-        <header className="relative text-center">
-          <AtelierWoodFrame className="mx-auto max-w-3xl rounded-[2.6rem] p-2.5 sm:p-3.5">
-            <div className={cn(atelierFeltPanelClass, 'px-5 py-8 sm:px-10 md:py-10')}>
-              <div className="relative z-10">
-                <Link
-                  to="/servicios/tufting"
-                  className={cn(atelierPillClass, 'mb-6 min-h-0 px-4 py-2 text-secondary')}
-                >
-                  <ArrowLeft size={14} aria-hidden="true" />
-                  Volver a Tufting
-                </Link>
-                <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
-                  El taller
-                </span>
-                <h1 className="font-display text-3xl font-semibold leading-tight mb-4 md:text-5xl">
-                  Tu alfombra empieza <span className="text-accent italic">en este bastidor</span>
-                </h1>
-                <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
-                  Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
-                  solo. Sin esperas y sin compromiso.
-                </p>
-                <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
-              </div>
-            </div>
-          </AtelierWoodFrame>
-        </header>
+        <AnimatePresence initial={false}>
+          {!heroDismissed && (
+            <motion.header
+              key="hero"
+              className="relative overflow-hidden text-center"
+              exit={
+                reduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, height: 0, y: -14, transition: { duration: 0.45, ease: 'easeInOut' } }
+              }
+            >
+              <AtelierWoodFrame className="mx-auto max-w-3xl rounded-[2.6rem] p-2.5 sm:p-3.5">
+                <div className={cn(atelierFeltPanelClass, 'px-5 py-8 sm:px-10 md:py-10')}>
+                  <div className="relative z-10">
+                    <Link
+                      to="/servicios/tufting"
+                      className={cn(atelierPillClass, 'mb-6 min-h-0 px-4 py-2 text-secondary')}
+                    >
+                      <ArrowLeft size={14} aria-hidden="true" />
+                      Volver a Tufting
+                    </Link>
+                    <span className="text-accent uppercase tracking-widest text-xs font-bold mb-3 block">
+                      El taller
+                    </span>
+                    <h1 className="font-display text-3xl font-semibold leading-tight mb-4 md:text-5xl">
+                      Tu alfombra empieza <span className="text-accent italic">en este bastidor</span>
+                    </h1>
+                    <p className="text-secondary leading-relaxed max-w-2xl mx-auto">
+                      Prendé tu diseño, dale forma, elegí las lanas y mirala tomar cuerpo — el precio aparece
+                      solo. Sin esperas y sin compromiso.
+                    </p>
+                    <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
+                  </div>
+                </div>
+              </AtelierWoodFrame>
+            </motion.header>
+          )}
+        </AnimatePresence>
 
-        <section className="relative" aria-label="Calculadora de tufting">
+        {heroDismissed && (
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.25 }}
+            className="flex justify-center sm:justify-start"
+          >
+            <h1 className="sr-only">Tu alfombra empieza en este bastidor</h1>
+            <Link
+              to="/servicios/tufting"
+              className={cn(atelierPillClass, 'min-h-0 px-4 py-2 text-sm text-secondary')}
+            >
+              <ArrowLeft size={14} aria-hidden="true" />
+              Volver a Tufting
+            </Link>
+          </motion.div>
+        )}
+
+        <section
+          className="relative"
+          aria-label="Calculadora de tufting"
+          onPointerDownCapture={dismissHero}
+          onFocusCapture={dismissHero}
+        >
           <CalculatorStepper />
         </section>
 

@@ -303,41 +303,14 @@ const DesignerControls: React.FC<{
         <strong className="font-semibold">{describeDimensions(shape, dimensions)}</strong>
       </p>
 
+      {/* El borde (color, mismo-que-relleno, grosor) se decide UNA sola vez, en
+          el paso Las lanas — acá solo el relleno, que es parte del diseño base. */}
       <SwatchPalette
         id="fill"
         label="Color de relleno"
         selectedWoolId={state.fillWoolId}
         onSelect={(woolId) => dispatch({ type: 'fill-selected', woolId })}
       />
-
-      <div className="flex flex-col gap-3">
-        <label className="flex items-center gap-3 min-h-11 cursor-pointer rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-          <input
-            type="checkbox"
-            checked={state.borderSameAsFill}
-            onChange={() => dispatch({ type: 'border-same-toggled' })}
-            className="accent-current"
-          />
-          Mismo color que el relleno
-        </label>
-        <SwatchPalette
-          id="border"
-          label="Color de borde"
-          selectedWoolId={state.borderWoolId}
-          disabled={state.borderSameAsFill}
-          onSelect={(woolId) => dispatch({ type: 'border-selected', woolId })}
-        />
-      </div>
-
-      <label className="flex items-center gap-3 min-h-11 cursor-pointer rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-        <input
-          type="checkbox"
-          checked={state.borderThick}
-          onChange={() => dispatch({ type: 'border-thick-toggled' })}
-          className="accent-current"
-        />
-        Borde grueso
-      </label>
     </div>
   );
 };

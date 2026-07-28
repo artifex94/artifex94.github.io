@@ -18,8 +18,12 @@ interface ColorsStepProps {
 // logra con el diseño y deja elegir el único color que sí es una decisión — el
 // del borde.
 export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detectedColors }) => {
-  const { borderWoolId } = state;
+  const { borderWoolId, borderSameAsFill, borderThick, shape } = state;
   const hasColors = detectedColors.length > 0;
+  // Solo circular/rectangular tienen relleno; en contorneada el borde siempre
+  // se elige a mano.
+  const hasFill = shape === 'circular' || shape === 'rectangular';
+  const borderLocked = hasFill && borderSameAsFill;
 
   return (
     <div className="flex flex-col gap-5 md:gap-6">
@@ -66,11 +70,26 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detecte
       <fieldset className="flex flex-col gap-3">
         <legend className="text-sm font-semibold mb-1">
           Color del borde
-          <span className="text-secondary font-normal"> · {woolById(borderWoolId)?.name}</span>
+          <span className="text-secondary font-normal">
+            {' '}· {borderLocked ? 'igual al relleno' : woolById(borderWoolId)?.name}
+          </span>
         </legend>
+
+        {hasFill && (
+          <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+            <input
+              type="checkbox"
+              checked={borderSameAsFill}
+              onChange={() => dispatch({ type: 'border-same-toggled' })}
+              className="accent-current"
+            />
+            Mismo color que el relleno
+          </label>
+        )}
+
         <ul className="grid grid-cols-4 sm:grid-cols-6 gap-2 list-none p-0">
           {wools.map((wool) => {
-            const selected = wool.id === borderWoolId;
+            const selected = !borderLocked && wool.id === borderWoolId;
             return (
               <li key={wool.id}>
                 <button
@@ -78,10 +97,12 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detecte
                   aria-pressed={selected}
                   aria-label={`Borde ${wool.name}`}
                   title={wool.name}
+                  disabled={borderLocked}
                   onClick={() => dispatch({ type: 'border-selected', woolId: wool.id })}
                   className={cn(
                     'relative w-full aspect-square rounded-lg border-2 transition-transform min-h-11',
                     selected ? 'border-accent scale-105' : 'border-line hover:border-accent',
+                    borderLocked && 'cursor-not-allowed opacity-45 hover:border-line',
                   )}
                   style={{ backgroundColor: wool.hex }}
                 >
@@ -97,6 +118,16 @@ export const ColorsStep: React.FC<ColorsStepProps> = ({ state, dispatch, detecte
             );
           })}
         </ul>
+
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.75))] p-3 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+          <input
+            type="checkbox"
+            checked={borderThick}
+            onChange={() => dispatch({ type: 'border-thick-toggled' })}
+            className="accent-current"
+          />
+          Borde grueso
+        </label>
       </fieldset>
     </div>
   );
