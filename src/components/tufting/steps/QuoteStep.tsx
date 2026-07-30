@@ -244,15 +244,11 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
 
       <div className="border-t border-line pt-6">
         <p className="text-center text-xs text-secondary uppercase tracking-widest mb-4">
-          {online ? 'o cerralo ahora mismo' : 'o seguilo por WhatsApp'}
+          o seguilo por WhatsApp
         </p>
         <PaymentActions
           shape={shape}
-          dimensions={dimensions}
-          colors={colorNames}
           payByTransfer={discounts.includes('transferencia')}
-          discountCode={discountCode}
-          total={price.total}
           whatsappUrl={whatsappUrl}
         />
       </div>
