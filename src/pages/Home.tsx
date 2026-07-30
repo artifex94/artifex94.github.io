@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ServiceCard } from '../components/ServiceCard';
 import { ContactCTA } from '../components/ContactCTA';
 import { Typewriter } from '../components/Typewriter';
+import { HeroPongBand } from '../components/home/HeroPongBand';
 import { services, type ServiceSummary } from '../data/services';
 import { data } from '../data/data';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -19,6 +20,18 @@ const MOBILE_ORDER: Partial<Record<ServiceSummary['id'], string>> = {
 };
 
 export const Home: React.FC = () => {
+  // Refs del hero para el HeroPongBand: la sección es el origen de coordenadas
+  // y los tres bloques aportan las letras que esquivan la pelota. Nada de esto
+  // cambia el render: solo expone los nodos que ya existían.
+  const heroRef = useRef<HTMLElement>(null);
+  const eyebrowRef = useRef<HTMLSpanElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const introRef = useRef<HTMLParagraphElement>(null);
+  const [titleTyped, setTitleTyped] = useState(false);
+  const handleTitleComplete = useCallback(() => setTitleTyped(true), []);
+
+  const heroBlockRefs = useMemo(() => [eyebrowRef, titleRef, introRef], []);
+
   usePageMeta({
     title: 'Artifex — Desarrollo web, Fotografía y Tufting | Ramiro Escobar',
     description:
@@ -34,18 +47,30 @@ export const Home: React.FC = () => {
       className="min-h-screen w-full bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-16">
-        {/* Hero del hub */}
-        <section className="py-12 md:py-20 text-center max-w-3xl mx-auto flex flex-col items-center">
-          <span className="text-accent uppercase tracking-widest text-sm font-bold mb-4">
+        {/* Hero del hub. `relative` no desplaza nada: es el ancla del HeroPongBand,
+            que se posiciona en absoluto sobre el gap que sigue a esta sección. */}
+        <section
+          ref={heroRef}
+          className="relative py-12 md:py-20 text-center max-w-3xl mx-auto flex flex-col items-center"
+        >
+          <span
+            ref={eyebrowRef}
+            className="text-accent uppercase tracking-widest text-sm font-bold mb-4"
+          >
             // {data.personal.name}
           </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
-            <Typewriter text="Un taller, tres oficios." speed="fast" />
+          <h1
+            ref={titleRef}
+            className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight"
+          >
+            <Typewriter text="Un taller, tres oficios." speed="fast" onComplete={handleTitleComplete} />
           </h1>
-          <p className="text-lg md:text-xl text-secondary leading-relaxed">
+          <p ref={introRef} className="text-lg md:text-xl text-secondary leading-relaxed">
             Código, luz y lana. Construyo tiendas online que venden, fotografío eventos, personas
             y productos, y tejo piezas de tufting únicas. Elegí el servicio que estás buscando.
           </p>
+
+          <HeroPongBand originRef={heroRef} blockRefs={heroBlockRefs} ready={titleTyped} />
         </section>
 
         {/* Cards de servicios: cada una con la paleta de su rubro */}

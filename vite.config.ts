@@ -159,6 +159,12 @@ export default defineConfig({
               name: 'framer-vendor',
               test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
             },
+            // Pretext lo cargan dos lugares por import() dinámico (el manifiesto
+            // de tufting y el hero del home): un grupo propio evita duplicarlo.
+            {
+              name: 'pretext-vendor',
+              test: /[\\/]node_modules[\\/]@chenglou[\\/]pretext[\\/]/,
+            },
           ],
         },
       },

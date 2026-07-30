@@ -6,6 +6,8 @@ interface TypewriterProps {
   delay?: number;
   speed?: 'normal' | 'fast';
   className?: string;
+  /** Se llama cuando el texto ya está completo en el DOM. */
+  onComplete?: () => void;
 }
 
 export const Typewriter: React.FC<TypewriterProps> = ({
@@ -13,6 +15,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   delay = 0,
   speed = 'normal',
   className = '',
+  onComplete,
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   // Controlamos la visibilidad del cursor explícitamente
@@ -45,6 +48,20 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       setShowCursor(false);   // Sin cursor
     }
   }, [isFirstVisit, text]);
+
+  // En un ref para que cambiar el callback no reinicie el tipeo.
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  // Avisa cuando el texto quedó en su estado FINAL: no alcanza con que esté
+  // completo, hay que esperar a que se vaya el cursor. El cursor ocupa ancho y
+  // el texto está centrado, así que mientras parpadea todo el título está
+  // corrido; quien mida en ese momento mide posiciones equivocadas.
+  useEffect(() => {
+    if (displayedText === text && !showCursor) onCompleteRef.current?.();
+  }, [displayedText, text, showCursor]);
 
   // Lógica de escritura
   useEffect(() => {
@@ -93,6 +110,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       {displayedText}
       {showCursor && (
         <motion.span
+          aria-hidden="true"
           animate={{ opacity: [1, 0] }}
           transition={{ repeat: Infinity, duration: 0.8, ease: "circInOut" }}
           className="inline-block text-accent font-bold ml-[2px]"

@@ -1,5 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react';
 import type { LayoutCursor, PreparedTextWithSegments } from '@chenglou/pretext';
+import { loadPretext } from '../utils/pretextLoader';
 
 // Layout "estilo revista" con Pretext: el texto fluye línea por línea, angostándose
 // donde un ornamento (el "obstáculo") se interpone y volviendo al ancho completo
@@ -100,14 +101,6 @@ interface FlowResult {
   height: number;
   enhanced: boolean;
 }
-
-// Un solo import dinámico compartido: Pretext nunca entra en el bundle inicial ni
-// en SSR, y no se re-descarga en cada recálculo.
-let pretextModule: Promise<typeof import('@chenglou/pretext')> | null = null;
-const loadPretext = () => {
-  if (!pretextModule) pretextModule = import('@chenglou/pretext');
-  return pretextModule;
-};
 
 const canEnhance = (container: HTMLElement | null, minWidth: number): boolean => {
   if (typeof window === 'undefined') return false;

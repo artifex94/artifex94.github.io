@@ -13,6 +13,7 @@
     "start": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
+    "bench": "vitest bench --run",
     "coverage": "vitest run --coverage",
     "photos:sync": "node --env-file-if-exists=.env scripts/photos-sync.mjs"
   },
