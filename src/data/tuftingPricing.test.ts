@@ -9,6 +9,8 @@ import {
   MAX_QUOTABLE_M2,
   ROUNDING_STEP,
   MIN_PRICE_ARS,
+  MIN_LIST_PRICE_ARS,
+  DISCOUNT_MIN_LIST_ARS,
   bestDiscount,
   computePrice,
   markupOverCost,
@@ -66,25 +68,95 @@ describe('coherencia con el backend de pagos', () => {
     expect(MAX_QUOTABLE_M2).toBe(6);
     expect(ROUNDING_STEP).toBe(1_000);
     expect(MIN_PRICE_ARS).toBe(30_000);
+    expect(MIN_LIST_PRICE_ARS).toBe(30_000);
+    expect(DISCOUNT_MIN_LIST_ARS.transferencia).toBe(0);
+    expect(DISCOUNT_MIN_LIST_ARS.instagram).toBe(150_000);
   });
 });
 
 describe('piso de precio', () => {
-  it('ninguna pieza cobra menos que MIN_PRICE_ARS, ni con descuento', () => {
+  it('ninguna pieza baja del piso en su precio de LISTA', () => {
     for (const discounts of DISCOUNT_COMBOS) {
       const chica = computePrice({ areaM2: 0.09, discounts });
-      expect(chica.total).toBeGreaterThanOrEqual(MIN_PRICE_ARS);
-      expect(chica.listTotal).toBeGreaterThanOrEqual(MIN_PRICE_ARS);
+      expect(chica.listTotal).toBeGreaterThanOrEqual(MIN_LIST_PRICE_ARS);
       // El total nunca supera la lista, aun con el piso aplicado.
       expect(chica.total).toBeLessThanOrEqual(chica.listTotal);
+      // Y no baja más de lo que permite el mejor descuento posible.
+      expect(chica.total).toBeGreaterThanOrEqual(MIN_LIST_PRICE_ARS * (1 - MAX_DISCOUNT));
     }
+  });
+
+  it('deja que el descuento baje el piso: es precio de lista, no piso final', () => {
+    // La regresión del bug reportado: con el piso aplicado DESPUÉS del descuento,
+    // una pieza de 25x25 daba $30.000 de lista y $30.000 con transferencia.
+    const chica = computePrice({ areaM2: 0.0625, discounts: ['transferencia'] });
+    expect(chica.listTotal).toBe(30_000);
+    expect(chica.total).toBe(27_000);
+    expect(chica.appliedDiscount).toBe('transferencia');
+    expect(chica.total).toBeLessThan(chica.listTotal);
+  });
+
+  it('sin descuento, la pieza chica queda en el piso y no informa descuento', () => {
+    const chica = computePrice({ areaM2: 0.0625 });
+    expect(chica.listTotal).toBe(30_000);
+    expect(chica.total).toBe(30_000);
+    expect(chica.appliedDiscount).toBeNull();
+    expect(chica.discountRate).toBe(0);
   });
 
   it('el piso no afecta a las piezas que ya superan el mínimo', () => {
     const grande = computePrice({ areaM2: 2 });
     expect(grande.total).toBeGreaterThan(MIN_PRICE_ARS);
   });
+
+  it('nunca informa un descuento que no bajó el total', () => {
+    for (const areaM2 of AREAS_M2) {
+      for (const discounts of DISCOUNT_COMBOS) {
+        const price = computePrice({ areaM2, discounts });
+        if (price.appliedDiscount) {
+          expect(
+            price.total,
+            `área ${areaM2} informó ${price.appliedDiscount} sin bajar el total`,
+          ).toBeLessThan(price.listTotal);
+        } else {
+          expect(price.total).toBe(price.listTotal);
+        }
+      }
+    }
+  });
 });
+
+describe('mínimo de compra por descuento', () => {
+  it('no aplica el código de Instagram por debajo de $150.000 de lista', () => {
+    // 1 m² = $125.000 de lista: no llega.
+    const chica = computePrice({ areaM2: 1, discounts: ['instagram'] });
+    expect(chica.listTotal).toBe(125_000);
+    expect(chica.total).toBe(125_000);
+    expect(chica.appliedDiscount).toBeNull();
+  });
+
+  it('lo aplica cuando la lista alcanza el mínimo', () => {
+    // 1.2 m² = $150.000 justos: elegible.
+    const grande = computePrice({ areaM2: 1.2, discounts: ['instagram'] });
+    expect(grande.listTotal).toBe(150_000);
+    expect(grande.total).toBe(143_000);
+    expect(grande.appliedDiscount).toBe('instagram');
+  });
+
+  it('la transferencia no tiene mínimo', () => {
+    const chica = computePrice({ areaM2: 0.0625, discounts: ['transferencia'] });
+    expect(chica.appliedDiscount).toBe('transferencia');
+  });
+
+  it('con los dos tildados en pieza chica, gana la transferencia igual', () => {
+    const chica = computePrice({ areaM2: 1, discounts: ['instagram', 'transferencia'] });
+    expect(chica.appliedDiscount).toBe('transferencia');
+    expect(chica.total).toBe(113_000);
+  });
+});
+
+// Cuotas: no hay lógica propia que testear a propósito. La web cobra el total y
+// las cuotas (2 o 3 con tarjeta) las resuelve la pasarela de MercadoPago.
 
 describe('invariante de ganancia', () => {
   it('nunca perfora el piso de markup, para ninguna combinación de área y descuentos', () => {

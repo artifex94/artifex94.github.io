@@ -329,7 +329,8 @@ export const ShapeStep: React.FC<ShapeStepProps> = ({ state, dispatch, pipeline 
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Elegí la forma</h2>
         <p className="text-secondary text-sm">
-          Las medidas son las de la alfombra terminada, borde incluido.
+          En circular y rectangular las medidas son las de la alfombra terminada, borde incluido; en
+          la contorneada medís tu diseño y el borde se suma aparte.
         </p>
       </div>
 

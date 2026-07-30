@@ -54,20 +54,6 @@ export interface CheckoutResponse {
   initPoint: string;
 }
 
-export interface SubscriptionRequest extends Omit<CheckoutRequest, 'discountCode' | 'payByTransfer'> {
-  instalments: number;
-  payerEmail: string;
-}
-
-export interface SubscriptionResponse extends CheckoutResponse {
-  /** La primera cuota hace de seña (mismo valor que monthlyArs). */
-  firstInstalmentArs: number;
-  /** Compat con clientes viejos: igual a firstInstalmentArs. */
-  depositArs: number;
-  monthlyArs: number;
-  instalments: number;
-}
-
 const post = async <T>(
   endpoint: string,
   body: unknown,
@@ -92,15 +78,15 @@ const post = async <T>(
   return payload as T;
 };
 
-/** Pago único con Checkout Pro. */
+/**
+ * Pago único con Checkout Pro.
+ *
+ * La web cobra siempre el TOTAL: las cuotas (2 o 3 con tarjeta) las ofrece la
+ * propia pasarela de MercadoPago según la configuración de la cuenta. No hay
+ * plan de pagos propio del sitio.
+ */
 export const createCheckout = (request: CheckoutRequest): Promise<CheckoutResponse> =>
   post<CheckoutResponse>('tufting-create-preference', request);
-
-/** Cuotas con débito automático. Sin descuento aplicable. */
-export const createSubscription = (
-  request: SubscriptionRequest,
-): Promise<SubscriptionResponse> =>
-  post<SubscriptionResponse>('tufting-create-subscription', request);
 
 // ---- Encargo (todas las formas, con o sin pago online) --------------------
 //
@@ -177,7 +163,11 @@ export const createOrder = (request: OrderRequest): Promise<OrderResponse> =>
 // ---- Pago del encargo (solo total; la seña en cuotas va por suscripción) ---
 
 /** Cuánto del total se paga como seña. */
-export type DepositPortion = 'full' | 'half';
+// Solo 'full': la seña del 50% se eliminó a propósito (el servidor rechaza
+// 'half') porque Checkout Pro permite dividir cualquier pago único en cuotas, así
+// que "señar la mitad" podía terminar en la mitad EN CUOTAS. La web cobra el
+// total, y las cuotas las ofrece la pasarela de MercadoPago.
+export type DepositPortion = 'full';
 
 export interface OrderDepositResponse {
   orderId: string;

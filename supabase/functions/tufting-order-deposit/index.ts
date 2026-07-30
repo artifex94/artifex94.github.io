@@ -5,9 +5,9 @@
 //
 // WHY FULL ONLY: the old 50% "seña" was removed on purpose. Checkout Pro lets
 // the buyer split ANY single charge into card instalments, so a half deposit
-// could end up as "half, in instalments" — broken logic. The way to reserve a
-// spot paying less is the subscription flow (tufting-create-subscription),
-// where the first automatic instalment acts as the seña.
+// could end up as "half, in instalments" — broken logic. The web always charges
+// the TOTAL; if the buyer wants 2 or 3 card instalments, the MercadoPago
+// gateway itself offers that split, per the account configuration.
 //
 // THE RULE THAT MATTERS: the browser only chooses the order. The charged
 // amount always comes from the stored quote on the server.

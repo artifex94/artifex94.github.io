@@ -274,7 +274,7 @@ export const Tufting: React.FC = () => {
           <FileteadoCardRule className="mx-auto mb-4 max-w-sm" />
           <h2 className="mb-3 font-display text-3xl font-semibold">¿Tejemos algo juntos?</h2>
           <p className="mb-4 text-secondary">
-            Contanos qué imaginás: el bastidor ya está listo.
+            Contame qué imaginás: el bastidor ya está listo.
           </p>
           <FileteadoDivider className="mx-auto mb-6 max-w-xs" />
           <ContactCTA service="tufting" emailSubject="Consulta - Tufting" rounded className="atelier-contact-cta" />

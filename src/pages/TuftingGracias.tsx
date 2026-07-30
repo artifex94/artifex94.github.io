@@ -14,13 +14,20 @@ import { usePageMeta } from '../hooks/usePageMeta';
 // establece el webhook, que consulta el pago contra la API de MercadoPago con
 // nuestro token. Acá no se marca nada como pagado ni se dispara ninguna acción,
 // justamente para que manipular la URL no tenga ningún efecto.
-type Outcome = 'approved' | 'pending' | 'failure';
+type Outcome = 'approved' | 'subscribed' | 'pending' | 'failure';
 
 const OUTCOMES: Record<Outcome, { icon: typeof CheckCircle2; title: string; body: string }> = {
   approved: {
     icon: CheckCircle2,
     title: '¡Listo! Tu alfombra ya tiene turno en el bastidor',
-    body: 'Me llegó el pago. Te escribo por WhatsApp para afinar los últimos detalles del diseño y contarte los tiempos de entrega — lo tejido a mano lleva su tiempo, y ese tiempo se nota.',
+    // No se afirma que el pago esté acreditado: eso lo confirma el webhook, no
+    // la URL de vuelta.
+    body: 'Tu pago quedó registrado en MercadoPago. En cuanto se acredite te escribo por WhatsApp para afinar los últimos detalles del diseño y contarte los tiempos de entrega — lo tejido a mano lleva su tiempo, y ese tiempo se nota.',
+  },
+  subscribed: {
+    icon: CheckCircle2,
+    title: '¡Listo! El débito automático quedó activado',
+    body: 'La primera cuota hace de seña, y con eso tu pieza entra al bastidor. Las que quedan se debitan solas, mes a mes. Te escribo por WhatsApp para afinar los detalles del diseño.',
   },
   pending: {
     icon: Clock,
@@ -34,7 +41,16 @@ const OUTCOMES: Record<Outcome, { icon: typeof CheckCircle2; title: string; body
   },
 };
 
-const readOutcome = (status: string | null): Outcome => {
+/**
+ * Interpreta la vuelta de MercadoPago.
+ *
+ * El caso `preapproval_id`/`authorized` es robustez de lectura: el sitio ya no
+ * crea suscripciones, pero un link de débito automático armado a mano desde
+ * MercadoPago puede volver acá, y sin este caso quien lo autorizó leería "El
+ * pago no se completó. No se hizo ningún cargo" — falso en las dos frases.
+ */
+const readOutcome = (status: string | null, preapprovalId: string | null): Outcome => {
+  if (preapprovalId || status === 'authorized') return 'subscribed';
   if (status === 'approved') return 'approved';
   if (status === 'pending' || status === 'in_process') return 'pending';
   return 'failure';
@@ -42,7 +58,10 @@ const readOutcome = (status: string | null): Outcome => {
 
 export const TuftingGracias: React.FC = () => {
   const [params] = useSearchParams();
-  const outcome = readOutcome(params.get('status') ?? params.get('collection_status'));
+  const outcome = readOutcome(
+    params.get('status') ?? params.get('collection_status'),
+    params.get('preapproval_id'),
+  );
   const { icon: Icon, title, body } = OUTCOMES[outcome];
 
   usePageMeta({

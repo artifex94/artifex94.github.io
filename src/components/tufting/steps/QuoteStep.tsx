@@ -7,8 +7,10 @@ import {
   formatARS,
   DISCOUNTS,
   DISCOUNT_LABELS,
+  DISCOUNT_MIN_LIST_ARS,
   type DiscountId,
 } from '../../../data/tuftingPricing';
+import { canPayOnline } from '../../../data/tuftingCheckout';
 import { describeDimensions, describeShape, minorAxisCm } from '../../../data/tuftingCalculator';
 import { buildQuoteWhatsAppUrl } from '../../../data/contact';
 import { woolById } from '../../../data/wools';
@@ -74,16 +76,22 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
     border: borderName,
   });
 
-  // La primera cuota hace de seña: total dividido en cuotas iguales (la
-  // estimación más accesible es a 12; el paso de pago deja elegir 3/6/12).
-  const smallestInstalment = Math.ceil(price.total / 12 / 1000) * 1000;
+  const online = canPayOnline(shape);
+  // El código de Instagram solo se le ofrece a quien llega al mínimo: mostrarlo
+  // en una pieza de $30.000 sería prometer un descuento que no se va a aplicar.
+  const offeredDiscounts = (Object.keys(DISCOUNTS) as DiscountId[]).filter(
+    (id) => price.listTotal >= DISCOUNT_MIN_LIST_ARS[id],
+  );
+  const instagramOffered = offeredDiscounts.includes('instagram');
 
   return (
     <div className="flex flex-col gap-6 md:gap-8">
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">La ficha de tu pieza</h2>
         <p className="text-secondary text-sm">
-          Un presupuesto firme para estas medidas. Si algo no cierra, el bastidor sigue ahí: volvé y ajustá.
+          {price.requiresManualQuote
+            ? 'Una pieza de este tamaño la cotizo a mano: escribime y lo vemos juntos.'
+            : 'Un presupuesto firme para estas medidas. Si algo no cierra, el bastidor sigue ahí: volvé y ajustá.'}
         </p>
       </div>
 
@@ -95,7 +103,16 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
         <dd className="text-right font-medium">{describeDimensions(shape, dimensions)}</dd>
 
         <dt className="text-secondary">Superficie</dt>
-        <dd className="text-right font-medium">{price.billableAreaM2.toFixed(2)} m²</dd>
+        <dd className="text-right font-medium">
+          {areaM2.toFixed(2)} m²
+          {price.billableAreaM2 > areaM2 && (
+            // El área chica se cobra como el mínimo facturable: mostrar ese
+            // número como si fuera la medida real sería mentirle al cliente.
+            <span className="block text-xs font-normal text-secondary">
+              se cobra el mínimo de {price.billableAreaM2.toFixed(2)} m²
+            </span>
+          )}
+        </dd>
 
         {colorNames.length > 0 && (
           <>
@@ -130,8 +147,9 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
       <fieldset className="flex flex-col gap-3">
         <legend className="font-display text-lg font-semibold mb-2">Cómo querés pagarlo</legend>
 
-        {(Object.keys(DISCOUNTS) as DiscountId[]).map((id) => {
+        {offeredDiscounts.map((id) => {
           const active = discounts.includes(id);
+          const minimum = DISCOUNT_MIN_LIST_ARS[id];
           return (
             <label
               key={id}
@@ -149,21 +167,34 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
               <span className="text-sm">
                 <span className="font-semibold">{DISCOUNT_LABELS[id]}</span>
                 <span className="text-secondary"> · {Math.round(DISCOUNTS[id] * 100)}% off</span>
+                {minimum > 0 && (
+                  <span className="text-secondary"> · en piezas desde {formatARS(minimum)}</span>
+                )}
               </span>
             </label>
           );
         })}
 
+        {/* Las cuotas no son un plan propio: la web cobra el total y es la
+            pasarela de MercadoPago la que ofrece dividirlo con la tarjeta. */}
         <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-          <p className="font-semibold mb-1">Cuotas con débito automático</p>
+          <p className="font-semibold mb-1">¿Y si lo quiero en cuotas?</p>
           <p className="text-secondary leading-relaxed">
-            Podés pagar el total, o señar la propuesta pagando la primera cuota (desde{' '}
-            <strong className="text-primary">{formatARS(smallestInstalment)}</strong> en 12) para
-            que el trabajo arranque. Las siguientes se debitan solas, mes a mes. Sin descuento.
+            {online ? (
+              <>
+                El pago es por MercadoPago: al pagar el total podés elegir si va al contado o en 2 o
+                3 cuotas con tu tarjeta.
+              </>
+            ) : (
+              <>
+                Cuando confirmemos el diseño y las medidas te paso el link de MercadoPago, y ahí
+                elegís si va al contado o en 2 o 3 cuotas con tu tarjeta.
+              </>
+            )}
           </p>
         </div>
 
-        {discounts.includes('instagram') && (
+        {discounts.includes('instagram') && instagramOffered && (
           <div className="flex flex-col gap-1.5 rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
             <label htmlFor="discount-code" className="text-sm font-semibold">
               Tu código de Instagram
@@ -179,7 +210,8 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
             />
             <p id="discount-code-hint" className="text-xs text-secondary">
               Instagram no me deja verificar solo quién me sigue, así que el código te lo paso yo
-              por mensaje directo.
+              por mensaje directo. Vale para piezas desde{' '}
+              {formatARS(DISCOUNT_MIN_LIST_ARS.instagram)}.
             </p>
           </div>
         )}
@@ -212,7 +244,7 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
 
       <div className="border-t border-line pt-6">
         <p className="text-center text-xs text-secondary uppercase tracking-widest mb-4">
-          o cerralo ahora mismo
+          {online ? 'o cerralo ahora mismo' : 'o seguilo por WhatsApp'}
         </p>
         <PaymentActions
           shape={shape}

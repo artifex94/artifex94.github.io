@@ -2,7 +2,6 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   canPayOnline,
   createCheckout,
-  createSubscription,
   ONLINE_PAYABLE_SHAPES,
   FUNCTIONS_URL,
 } from './tuftingCheckout';
@@ -87,41 +86,5 @@ describe('createCheckout', () => {
   });
 });
 
-describe('createSubscription', () => {
-  it('manda las cuotas y el email del pagador', async () => {
-    const spy = mockFetch({
-      quoteId: 'abc',
-      initPoint: 'https://mp/sub',
-      depositArs: 60_000,
-      monthlyArs: 20_000,
-      instalments: 3,
-    });
-
-    const result = await createSubscription({
-      shape: 'circular',
-      diameterCm: 80,
-      instalments: 3,
-      payerEmail: 'cliente@example.com',
-    });
-
-    const body = JSON.parse(spy.mock.calls[0][1].body as string);
-    expect(body.instalments).toBe(3);
-    expect(body.payerEmail).toBe('cliente@example.com');
-    expect(result.depositArs).toBe(60_000);
-  });
-
-  it('tampoco manda montos en el camino de cuotas', async () => {
-    const spy = mockFetch({ quoteId: 'a', initPoint: 'x', depositArs: 1, monthlyArs: 1, instalments: 3 });
-
-    await createSubscription({
-      shape: 'circular',
-      diameterCm: 80,
-      instalments: 3,
-      payerEmail: 'c@example.com',
-    });
-
-    const body = JSON.parse(spy.mock.calls[0][1].body as string);
-    expect(body).not.toHaveProperty('amountArs');
-    expect(body).not.toHaveProperty('areaM2');
-  });
-});
+// createSubscription ya no existe: la web cobra el total con Checkout Pro y las
+// cuotas (2 o 3 con tarjeta) las ofrece la propia pasarela de MercadoPago.
