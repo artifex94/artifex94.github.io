@@ -77,7 +77,8 @@ export const HeroPongGame: React.FC<HeroPongGameProps> = ({
   // Medición: una sola pasada, antes de que exista el engine.
   useEffect(() => {
     let cancelled = false;
-    void measureHero(origin, blocks).then((result) => {
+    // allowWarm: si la franja ya midió en tiempo muerto, el toque no espera nada.
+    void measureHero(origin, blocks, { allowWarm: true }).then((result) => {
       if (cancelled) return;
       // Sin medición confiable no hay juego: se sale y el hero queda intacto.
       if (!result) finishRef.current();

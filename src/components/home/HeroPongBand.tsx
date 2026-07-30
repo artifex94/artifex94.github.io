@@ -3,7 +3,6 @@ import { useReducedMotion } from 'framer-motion';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { Engine } from './heroPongEngine';
 import type { HeroBlockInput } from './measureHero';
-import type { HeroPongGame as HeroPongGameComponent } from './HeroPongGame';
 import {
   BALL_SIZE,
   BAND_HEIGHT,
@@ -25,13 +24,17 @@ import {
 // En reposo son dos <div> y nada más: sin canvas, sin rAF, sin listeners y sin
 // el chunk del juego descargado. Todo eso aparece con el primer toque.
 
-type GameModule = { HeroPongGame: typeof HeroPongGameComponent };
+/** Solo tipo: no genera ningún import en runtime. */
+type GameModule = typeof import('./HeroPongGame');
 
 let gameModule: Promise<GameModule> | null = null;
 const loadGame = (): Promise<GameModule> => {
   if (!gameModule) gameModule = import('./HeroPongGame');
   return gameModule;
 };
+
+/** La medición vive en el chunk del juego; se pide aparte solo para precalentarla. */
+const loadMeasure = () => import('./measureHero');
 
 /** Nodos y posición inicial, resueltos en el toque que arranca la partida. */
 interface GameSetup {
@@ -60,8 +63,10 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
   const enabled = isMobile && !reduceMotion && ready;
   const playing = setup !== null;
 
-  // Precarga en tiempo muerto: así el primer toque no espera la red. Se saltea
-  // en conexiones malas o con ahorro de datos.
+  // Precalentado en tiempo muerto: el chunk del juego, Pretext y la medición del
+  // texto (~150ms) salen del camino crítico, así el toque arranca al instante.
+  // Se saltea entero en conexiones malas o con ahorro de datos: ahí no vale
+  // gastar datos de alguien que quizá no juegue.
   useEffect(() => {
     if (!enabled) return;
     const connection = (navigator as { connection?: { saveData?: boolean; effectiveType?: string } })
@@ -75,8 +80,28 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
       }
     ).requestIdleCallback;
     if (!idle) return;
-    idle(() => void loadGame(), { timeout: 6000 });
-  }, [enabled]);
+
+    let cancelled = false;
+    idle(
+      () => {
+        void Promise.all([loadGame(), loadMeasure()]).then(([, measure]) => {
+          if (cancelled) return;
+          const origin = originRef.current;
+          if (!origin) return;
+          const blocks = blockRefs
+            .map((ref) => ref.current)
+            .filter((element): element is HTMLElement => !!element)
+            .map((element) => ({ element }));
+          if (blocks.length) void measure.warmMeasureHero(origin, blocks);
+        });
+      },
+      { timeout: 6000 },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, originRef, blockRefs]);
 
   const handleFinish = useCallback(() => setSetup(null), []);
 
@@ -123,6 +148,10 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
   return (
     <div
       aria-hidden="true"
+      // Identidad estable para las verificaciones locales (scripts/heropong-*):
+      // depender de la posición en el DOM se rompe con cualquier nodo
+      // decorativo nuevo, como el cursor del Typewriter.
+      data-hero-pong="band"
       // md:hidden además del gate por JS: si el viewport cruza el breakpoint
       // antes de que corra el efecto, el CSS ya la esconde.
       className="md:hidden absolute left-0 right-0 top-full select-none"

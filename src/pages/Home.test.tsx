@@ -38,6 +38,8 @@ describe('Home en reposo (el juego no debe existir)', () => {
     expect(hero).not.toBeNull();
     expect(hero!.querySelector('[aria-hidden="true"]')).toBeNull();
     expect(container.querySelector('canvas')).toBeNull();
+    // Ni la franja ni la capa de letras: en desktop el juego no existe.
+    expect(container.querySelector('[data-hero-pong]')).toBeNull();
   });
 
   it('no toca la visibilidad ni el flujo del texto del hero', () => {
@@ -77,9 +79,11 @@ describe('Home en reposo (el juego no debe existir)', () => {
 
     const { container } = renderWithProviders(<Home />);
     const hero = container.querySelector('section')!;
-    const band = hero.querySelector('[aria-hidden="true"]');
+    const band = hero.querySelector('[data-hero-pong="band"]');
 
     expect(band).not.toBeNull();
+    // La capa de letras solo aparece en partida.
+    expect(container.querySelector('[data-hero-pong="glyphs"]')).toBeNull();
     // Absoluta sobre el gap que ya existía: no puede empujar nada.
     expect(band!.className).toContain('absolute');
     expect(band!.className).toContain('top-full');

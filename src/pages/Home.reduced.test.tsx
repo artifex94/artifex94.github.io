@@ -34,7 +34,7 @@ describe('Home con movimiento reducido', () => {
   it('no monta la franja de juego ni aunque el viewport sea móvil', () => {
     const { container } = renderWithProviders(<Home />);
     const hero = container.querySelector('section')!;
-    expect(hero.querySelector('[aria-hidden="true"]')).toBeNull();
+    expect(hero.querySelector('[data-hero-pong]')).toBeNull();
     expect(container.querySelector('canvas')).toBeNull();
   });
 

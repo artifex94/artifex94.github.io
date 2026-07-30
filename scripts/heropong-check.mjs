@@ -15,6 +15,8 @@ import { chromium } from 'playwright-core';
 
 const URL = process.env.HEROPONG_URL ?? 'http://localhost:5173/';
 const CYCLE = process.argv.includes('--cycle');
+/** Sin sembrar la sesión: el título se tipea y aparece el cursor. */
+const FIRST_VISIT = process.argv.includes('--first-visit');
 const shotArg = process.argv.find((a) => a.startsWith('--shot='));
 /** Cantidad de letras jugables del hero: define el progreso que se puede sembrar. */
 const GLYPH_COUNT = 186;
@@ -34,9 +36,13 @@ const context = await browser.newContext({
 });
 
 await context.addInitScript(
-  ([cycle, count]) => {
+  ([cycle, count, firstVisit]) => {
     try {
-      sessionStorage.setItem('artifex_system_init', 'true');
+      // Con firstVisit no se siembra el flag: Typewriter tipea letra por letra y
+      // deja el cursor parpadeando un segundo. Medir en ese momento daría
+      // posiciones corridas, porque el cursor ocupa ancho y el título está
+      // centrado — este escenario existe justamente para cazar eso.
+      if (!firstVisit) sessionStorage.setItem('artifex_system_init', 'true');
       if (cycle) {
         // Tablero vacío y en pausa: la siguiente fase es la vuelta de las letras.
         sessionStorage.setItem(
@@ -55,11 +61,30 @@ await context.addInitScript(
     } catch {
       /* ignore */
     }
-    window.__heroPongDebug = (info) => {
-      window.__last = info;
+    // La sonda entrega un objeto reutilizado con referencias en crudo (no puede
+    // allocar por frame), así que los agregados se calculan acá.
+    window.__heroPongDebug = (frame) => {
+      let maxDx = 0;
+      for (let i = 0; i < frame.lastDx.length; i += 1) {
+        const value = Math.abs(frame.lastDx[i]);
+        if (value > maxDx) maxDx = value;
+      }
+      const digits = frame.state.scoreDigits;
+      window.__last = {
+        ballLocalX: frame.ballLocalX,
+        ballLocalY: frame.ballLocalY,
+        maxDx,
+        score: digits.length ? Number(digits.join('')) : 0,
+        digits: [...digits],
+        digitRects: frame.hudDigitRects(),
+        activeLines: [...frame.activeLines],
+        cycle: frame.state.cycle,
+        resets: frame.state.resets,
+        digitsDestructible: frame.state.digitsDestructible,
+      };
     };
   },
-  [CYCLE, GLYPH_COUNT],
+  [CYCLE, GLYPH_COUNT, FIRST_VISIT],
 );
 
 const page = await context.newPage();
@@ -73,16 +98,32 @@ await page.goto(URL + (CYCLE ? '?heropong=turbo' : ''), { waitUntil: 'networkidl
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(700);
 
+if (FIRST_VISIT) {
+  console.log('\nprimera visita (título tipeándose):');
+  // Mientras el cursor parpadea, el título centrado está corrido: la franja no
+  // debe existir todavía, o el juego mediría posiciones equivocadas.
+  const duringTyping = await page.evaluate(() => ({
+    band: !!document.querySelector('[data-hero-pong="band"]'),
+    cursor: !!document.querySelector('#root h1 [aria-hidden="true"]'),
+  }));
+  check('no hay franja mientras el cursor sigue visible', !duringTyping.band || !duringTyping.cursor);
+  await page.waitForSelector('[data-hero-pong="band"]', { timeout: 10000 });
+  const cursorGone = await page.evaluate(
+    () => !document.querySelector('#root h1 [aria-hidden="true"]'),
+  );
+  check('la franja aparece recién con el título en su lugar final', cursorGone);
+}
+
 // --- Reposo ---
 console.log('\nreposo:');
 const idle = await page.evaluate(() => {
-  const band = document.querySelector('#root section [aria-hidden="true"]');
+  const band = document.querySelector('[data-hero-pong="band"]');
   const painted = document.querySelector('#root h1 span');
   return {
     band: !!band,
     bandRect: band ? band.getBoundingClientRect().toJSON() : null,
     canvas: !!document.querySelector('canvas'),
-    glyphs: band ? band.parentElement.querySelectorAll('[aria-hidden="true"] span').length : -1,
+    glyphs: document.querySelectorAll('[data-hero-pong="glyphs"] span').length,
     titleColor: painted?.style.color ?? '',
   };
 });
@@ -103,12 +144,24 @@ const band = idle.bandRect;
 await page.touchscreen.tap(band.x + band.width / 2, band.y + 30);
 await page.waitForFunction(() => !!window.__last, null, { timeout: 20000, polling: 'raf' });
 
+// El texto tiene que estar quieto ANTES de comparar posiciones. Si el juego
+// hubiera medido con el cursor todavía visible, el título se recentra al
+// desaparecer y el overlay queda corrido: es exactamente lo que hay que cazar.
+// Comparar mientras el cursor sigue puesto no serviría, porque el overlay y el
+// original estarían corridos por igual y coincidirían.
+await page
+  .waitForFunction(() => !document.querySelector('#root h1 [aria-hidden="true"]'), null, {
+    timeout: 4000,
+    polling: 'raf',
+  })
+  .catch(() => {});
+
 console.log('\npartida:');
 const started = await page.evaluate(() => {
   const painted = document.querySelector('#root h1 span');
   return {
     canvas: !!document.querySelector('canvas'),
-    glyphs: document.querySelectorAll('#root section [aria-hidden="true"] span').length,
+    glyphs: document.querySelectorAll('[data-hero-pong="glyphs"] span').length,
     titleColor: painted?.style.color ?? '',
     titleText: document.querySelector('#root h1')?.textContent ?? '',
   };
@@ -117,6 +170,73 @@ check('aparece el canvas', started.canvas);
 check('el texto se duplica en letras jugables', started.glyphs > 100, `${started.glyphs} letras`);
 check('el original queda transparente', started.titleColor === 'transparent');
 check('el título sigue en el DOM (a11y y SEO)', started.titleText === 'Un taller, tres oficios.');
+
+// La verificación que importa de verdad: el overlay tiene que caer EXACTAMENTE
+// sobre el texto que reemplaza. Si se mide en un momento equivocado (por
+// ejemplo con el cursor del Typewriter todavía visible, que corre el título
+// centrado), acá se ve como un desplazamiento de varios píxeles.
+const alignment = await page.evaluate(() => {
+  // Se vuelve a medir el texto original grafema por grafema, igual que hace
+  // measureHero pero de forma independiente, y se compara con el span que le
+  // corresponde. Comparar contra la caja del bloque entero no serviría: el
+  // rect de un grafema es su caja de fuente, no la de la línea.
+  const segmenter = new Intl.Segmenter('es', { granularity: 'grapheme' });
+  const range = document.createRange();
+  const expected = [];
+
+  for (const el of [
+    document.querySelector('#root section > span'),
+    document.querySelector('#root h1'),
+    document.querySelector('#root section > p'),
+  ]) {
+    if (!el) continue;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+      const value = node.nodeValue ?? '';
+      // Igual que measureHero: se saltea lo decorativo (el cursor).
+      if (value.trim() && !node.parentElement?.closest('[aria-hidden="true"]')) {
+        for (const piece of segmenter.segment(value)) {
+          if (!piece.segment.trim()) continue;
+          range.setStart(node, piece.index);
+          range.setEnd(node, piece.index + piece.segment.length);
+          const rects = range.getClientRects();
+          if (rects.length && rects[0].width > 0) {
+            expected.push({ char: piece.segment, left: rects[0].left, top: rects[0].top });
+          }
+        }
+      }
+      node = walker.nextNode();
+    }
+  }
+
+  const spans = [...document.querySelectorAll('[data-hero-pong="glyphs"] span')];
+  let worstDx = 0;
+  let worstDy = 0;
+  let mismatched = 0;
+  const compared = Math.min(spans.length, expected.length);
+  for (let i = 0; i < compared; i += 1) {
+    if (spans[i].textContent !== expected[i].char) {
+      mismatched += 1;
+      continue;
+    }
+    const rect = spans[i].getBoundingClientRect();
+    worstDx = Math.max(worstDx, Math.abs(rect.left - expected[i].left));
+    worstDy = Math.max(worstDy, Math.abs(rect.top - expected[i].top));
+  }
+
+  return { spans: spans.length, expected: expected.length, compared, mismatched, worstDx, worstDy };
+});
+check(
+  'el overlay tiene una letra por grafema del hero',
+  alignment.spans === alignment.expected && alignment.mismatched === 0,
+  `${alignment.spans} spans vs ${alignment.expected} grafemas, ${alignment.mismatched} desalineados`,
+);
+check(
+  'cada letra cae exactamente sobre la original',
+  alignment.worstDx < 0.6 && alignment.worstDy < 0.6,
+  `peor desfase ${alignment.worstDx.toFixed(2)}px horizontal, ${alignment.worstDy.toFixed(2)}px vertical`,
+);
 
 // --- Movimiento, rebotes y esquive ---
 const geo = await page.evaluate(() => {
@@ -168,7 +288,7 @@ check('las letras esquivan la pelota', sawDodge > 4, `${sawDodge.toFixed(1)}px d
 if (CYCLE) {
   console.log('\nendgame:');
   const final = await page.evaluate(() => {
-    const spans = [...document.querySelectorAll('#root section [aria-hidden="true"] span')];
+    const spans = [...document.querySelectorAll('[data-hero-pong="glyphs"] span')];
     return {
       hidden: spans.filter((s) => s.style.visibility === 'hidden').length,
       total: spans.length,

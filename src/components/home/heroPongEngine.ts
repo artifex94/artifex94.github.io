@@ -143,6 +143,8 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
   let running = false;
   let paused = false;
   let geometryDirty = true;
+  /** El texto se re-acomodó: la medición quedó vieja y hay que salir. */
+  let staleGeometry = false;
   let lastPhase: GamePhase = state.phase;
 
   /** Desplazamiento vertical actual de cada letra (solo las que están cayendo). */
@@ -163,6 +165,19 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     originTop: 0,
     width: 0,
     height: 0,
+  };
+
+  // Objeto único de la sonda (ver `debugSink`): se muta en vez de recrearse.
+  const debugFrame = {
+    ballLocalX: 0,
+    ballLocalY: 0,
+    state: state as HeroPongState,
+    lines: metrics.lines,
+    activeLines: [] as number[],
+    lastDx,
+    lut,
+    columns: DEFAULT_DODGE_CONFIG.columns,
+    hudDigitRects: (): Rect[] => hudDigitRects(),
   };
 
   let hudDigitAdvance = 0;
@@ -206,6 +221,14 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     inkColor = style.getPropertyValue('--color-primary').trim() || inkColor;
     dimColor = style.getPropertyValue('--color-secondary').trim() || dimColor;
 
+    // Si el bloque de texto cambió de ancho, el texto se re-acomodó y las
+    // posiciones medidas ya no valen: el overlay quedaría corrido. Se termina
+    // la partida antes de mostrar algo mal puesto.
+    if (Math.abs(originRect.width - metrics.width) > 1) staleGeometry = true;
+
+    // Las cajas del HUD dependen del techo y del avance del dígito.
+    digitRectsCount = -1;
+
     resizeCanvas();
     geometryDirty = false;
   };
@@ -241,28 +264,68 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     h: PADDLE_HEIGHT,
   });
 
-  const hudDigitRects = (): Rect[] =>
-    digitBoxes(
-      HUD_INSET,
-      geometry.ceiling + HUD_TOP_GAP - HUD_FONT_SIZE,
-      state.scoreDigits.length,
-      hudDigitAdvance,
-      HUD_FONT_SIZE,
-    );
+  // Las cajas de los dígitos solo cambian cuando cambia la cantidad de dígitos
+  // (o la geometría), no en cada sub-paso de la física.
+  let digitRectsCache: Rect[] = [];
+  let digitRectsCount = -1;
+  const hudDigitRects = (): Rect[] => {
+    if (digitRectsCount !== state.scoreDigits.length) {
+      digitRectsCount = state.scoreDigits.length;
+      digitRectsCache = digitBoxes(
+        HUD_INSET,
+        geometry.ceiling + HUD_TOP_GAP - HUD_FONT_SIZE,
+        digitRectsCount,
+        hudDigitAdvance,
+        HUD_FONT_SIZE,
+      );
+    }
+    return digitRectsCache;
+  };
 
   /**
-   * Letras que pueden frenar la pelota: las armadas y las que están cayendo.
-   * Escribe en un buffer reutilizado para no allocar por sub-paso.
+   * Índice de letras sólidas (armadas o cayendo), la lista corta contra la que
+   * hay que testear colisiones.
+   *
+   * Se recalcula solo cuando cambia el array de letras, y eso se detecta por
+   * IDENTIDAD: el estado es inmutable, así que `state.letters` cambia de
+   * referencia únicamente si alguna letra cambió de fase. Recorrer las 186 en
+   * cada sub-paso (tres veces por frame) era trabajo puro al vacío: en juego
+   * normal la lista tiene entre cero y un par de elementos.
    */
+  let solidIndices: number[] = [];
+  let fallingIndices: number[] = [];
+  let solidSource: readonly string[] | null = null;
+  const refreshSolidIndices = (): void => {
+    if (solidSource === state.letters) return;
+    solidSource = state.letters;
+    solidIndices = [];
+    fallingIndices = [];
+    for (let i = 0; i < glyphCount; i += 1) {
+      const phase = state.letters[i];
+      if (phase === 'rigid' || phase === 'falling') solidIndices.push(i);
+      if (phase === 'falling') fallingIndices.push(i);
+      // Visibilidad y reposo también son consecuencia de la fase, así que se
+      // resuelven en la misma pasada: por frame no hay nada que revisar.
+      setHidden(i, phase === 'destroyed');
+      if (phase === 'rigid' || phase === 'destroyed') writeTransform(i, 0, 0);
+      if (phase === 'destroyed') {
+        // Una letra golpeada mientras caía tiene que reintentar desde el
+        // principio (el borde del header), no desde donde la interceptaron.
+        fallOffset[i] = 0;
+        fallSpeed[i] = 0;
+      }
+    }
+  };
+
+  /** De las sólidas, las que están a la altura de la pelota. */
   const solidBuffer = new Int32Array(glyphCount);
   let solidCount = 0;
   const collectSolidGlyphsNear = (): void => {
+    refreshSolidIndices();
     solidCount = 0;
     const top = ball.y - ball.r;
     const bottom = ball.y + ball.r;
-    for (let i = 0; i < glyphCount; i += 1) {
-      const phase = state.letters[i];
-      if (phase !== 'rigid' && phase !== 'falling') continue;
+    for (const i of solidIndices) {
       const glyph = metrics.glyphs[i];
       const y = geometry.originTop + glyph.y + fallOffset[i];
       if (y + glyph.h < top || y > bottom) continue;
@@ -345,9 +408,10 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
 
   const updateLetters = (dtSeconds: number): void => {
     if (!spans.length) return;
+    refreshSolidIndices();
 
     // Caída de las letras que vuelven a su lugar.
-    for (let i = 0; i < glyphCount; i += 1) {
+    for (const i of fallingIndices) {
       if (state.letters[i] !== 'falling') continue;
       if (fallOffset[i] === 0 && fallSpeed[i] === 0) {
         // Arranca desde el borde del header.
@@ -390,13 +454,10 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     }
     activeLines = nextActive;
 
-    // Visibilidad y posición de las que caen o desaparecieron.
-    for (let i = 0; i < glyphCount; i += 1) {
-      const phase = state.letters[i];
-      setHidden(i, phase === 'destroyed');
-      if (phase === 'falling') writeTransform(i, 0, fallOffset[i]);
-      else if (phase === 'rigid') writeTransform(i, 0, 0);
-    }
+    // Posición de las que están cayendo (la visibilidad y el reposo ya los
+    // resolvió refreshSolidIndices al cambiar de fase).
+    refreshSolidIndices();
+    for (const i of fallingIndices) writeTransform(i, 0, fallOffset[i]);
   };
 
   // --- Dibujo ---
@@ -438,6 +499,13 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
       return;
     }
     if (geometryDirty) readGeometry();
+    if (staleGeometry) {
+      state = reduceHeroPong(state, { t: 'lose' }, tuning);
+      lastPhase = state.phase;
+      deps.onProgress?.(takeProgress(state));
+      deps.onPhase?.(state.phase);
+      return;
+    }
 
     // Cap de dt: tras un stall del hilo un dt gigante teletransportaría la pelota.
     const dtMs = Math.min(ts - lastTs, 32);
@@ -454,20 +522,14 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     draw();
 
     if (debugSink) {
-      debugSink({
-        ballLocalX: ball.x - geometry.originLeft,
-        ballLocalY: ball.y - geometry.originTop,
-        lines: metrics.lines.map((l) => [l.top, l.bottom, l.slack]),
-        activeLines: activeLines.slice(),
-        maxDx: Math.max(...Array.from(lastDx).map(Math.abs)),
-        lutMax: Math.max(...Array.from(lut).map(Math.abs)),
-        score: scoreOf(state.scoreDigits),
-        digits: state.scoreDigits.slice(),
-        digitsDestructible: state.digitsDestructible,
-        digitRects: hudDigitRects(),
-        cycle: state.cycle,
-        resets: state.resets,
-      });
+      // Se reutiliza el mismo objeto y se pasan referencias en crudo: la sonda
+      // no puede allocar ni calcular nada, o mediría al instrumento en vez de
+      // al juego. Los agregados los hace quien la consume.
+      debugFrame.ballLocalX = ball.x - geometry.originLeft;
+      debugFrame.ballLocalY = ball.y - geometry.originTop;
+      debugFrame.state = state;
+      debugFrame.activeLines = activeLines;
+      debugSink(debugFrame);
     }
 
     if (state.phase !== lastPhase) {

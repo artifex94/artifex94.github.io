@@ -55,10 +55,13 @@ export const Typewriter: React.FC<TypewriterProps> = ({
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  // Avisa cuando el texto completo ya está pintado, no cuando se pidió pintarlo.
+  // Avisa cuando el texto quedó en su estado FINAL: no alcanza con que esté
+  // completo, hay que esperar a que se vaya el cursor. El cursor ocupa ancho y
+  // el texto está centrado, así que mientras parpadea todo el título está
+  // corrido; quien mida en ese momento mide posiciones equivocadas.
   useEffect(() => {
-    if (displayedText === text) onCompleteRef.current?.();
-  }, [displayedText, text]);
+    if (displayedText === text && !showCursor) onCompleteRef.current?.();
+  }, [displayedText, text, showCursor]);
 
   // Lógica de escritura
   useEffect(() => {

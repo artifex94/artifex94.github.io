@@ -143,11 +143,36 @@ const contentWidth = (el: HTMLElement): number => {
   return Math.max(el.clientWidth - padding, 0);
 };
 
+/**
+ * Medición hecha por adelantado, en tiempo muerto.
+ *
+ * Medir cuesta ~150ms de latencia (el import de Pretext, esperar las fuentes y
+ * 186 consultas de rects). Hacerlo recién en el toque se siente como un
+ * titubeo, así que se adelanta y se guarda. Solo se reutiliza si el ancho del
+ * bloque sigue siendo el mismo: si el viewport cambió, la medición no sirve.
+ */
+let warmed: { width: number; metrics: HeroMetrics } | null = null;
+
+export async function warmMeasureHero(
+  origin: HTMLElement,
+  blocks: readonly HeroBlockInput[],
+): Promise<void> {
+  const metrics = await measureHero(origin, blocks);
+  if (metrics) warmed = { width: metrics.width, metrics };
+}
+
 export async function measureHero(
   origin: HTMLElement,
   blocks: readonly HeroBlockInput[],
+  { allowWarm = false }: { allowWarm?: boolean } = {},
 ): Promise<HeroMetrics | null> {
   if (!canMeasureHero() || !blocks.length) return null;
+
+  if (allowWarm && warmed) {
+    const width = origin.getBoundingClientRect().width;
+    if (Math.abs(warmed.width - width) < 0.5) return warmed.metrics;
+    warmed = null;
+  }
 
   // Sin esto se mediría con la fuente de fallback y el overlay caería corrido.
   try {

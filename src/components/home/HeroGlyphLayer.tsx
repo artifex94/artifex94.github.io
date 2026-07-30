@@ -34,7 +34,7 @@ export const HeroGlyphLayer: React.FC<HeroGlyphLayerProps> = ({ metrics, onSpans
   }, [metrics]);
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+    <div aria-hidden="true" data-hero-pong="glyphs" className="pointer-events-none absolute inset-0">
       {metrics.glyphs.map((glyph, index) => {
         const style = metrics.blocks[glyph.block];
         return (
