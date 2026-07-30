@@ -5,9 +5,18 @@ import { ArrowRight } from 'lucide-react';
 import { ServiceCard } from '../components/ServiceCard';
 import { ContactCTA } from '../components/ContactCTA';
 import { Typewriter } from '../components/Typewriter';
-import { services } from '../data/services';
+import { services, type ServiceSummary } from '../data/services';
 import { data } from '../data/data';
 import { usePageMeta } from '../hooks/usePageMeta';
+
+// On mobile the hub leads with the craft services; from md up the grid keeps
+// the source order (desarrollo, fotografía, tufting). Literal classes only —
+// Tailwind cannot generate `order-${n}` at build time.
+const MOBILE_ORDER: Partial<Record<ServiceSummary['id'], string>> = {
+  tufting: 'order-1',
+  fotografia: 'order-2',
+  desarrollo: 'order-3',
+};
 
 export const Home: React.FC = () => {
   usePageMeta({
@@ -42,7 +51,12 @@ export const Home: React.FC = () => {
         {/* Cards de servicios: cada una con la paleta de su rubro */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <ServiceCard key={service.id} service={service} delay={0.1 + index * 0.15} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              delay={0.1 + index * 0.15}
+              className={`${MOBILE_ORDER[service.id] ?? ''} md:order-none`}
+            />
           ))}
         </section>
 

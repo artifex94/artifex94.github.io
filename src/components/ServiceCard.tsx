@@ -8,11 +8,13 @@ import type { ServiceSummary } from '../data/services';
 interface ServiceCardProps {
   service: ServiceSummary;
   delay?: number;
+  /** Utilities applied to the grid item itself (e.g. responsive ordering). */
+  className?: string;
 }
 
 // Card del hub: gracias al data-theme, cada servicio se previsualiza
 // con su propia paleta dentro de la home blueprint.
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service, delay = 0 }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ service, delay = 0, className }) => {
   const Icon = service.icon;
 
   return (
@@ -22,7 +24,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, delay = 0 }) 
       viewport={{ once: true, margin: '-30px' }}
       transition={{ duration: 0.6, ease: 'easeOut', delay }}
       data-theme={service.theme}
-      className="h-full"
+      className={cn('h-full', className)}
     >
       <Link
         to={service.href}
