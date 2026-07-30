@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { ServiceCard } from '../components/ServiceCard';
 import { ContactCTA } from '../components/ContactCTA';
 import { Typewriter } from '../components/Typewriter';
+import { HeroPongBand } from '../components/home/HeroPongBand';
 import { services, type ServiceSummary } from '../data/services';
 import { data } from '../data/data';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -34,8 +35,9 @@ export const Home: React.FC = () => {
       className="min-h-screen w-full bg-blueprint-grid py-12 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-16">
-        {/* Hero del hub */}
-        <section className="py-12 md:py-20 text-center max-w-3xl mx-auto flex flex-col items-center">
+        {/* Hero del hub. `relative` no desplaza nada: es el ancla del HeroPongBand,
+            que se posiciona en absoluto sobre el gap que sigue a esta sección. */}
+        <section className="relative py-12 md:py-20 text-center max-w-3xl mx-auto flex flex-col items-center">
           <span className="text-accent uppercase tracking-widest text-sm font-bold mb-4">
             // {data.personal.name}
           </span>
@@ -46,6 +48,8 @@ export const Home: React.FC = () => {
             Código, luz y lana. Construyo tiendas online que venden, fotografío eventos, personas
             y productos, y tejo piezas de tufting únicas. Elegí el servicio que estás buscando.
           </p>
+
+          <HeroPongBand />
         </section>
 
         {/* Cards de servicios: cada una con la paleta de su rubro */}

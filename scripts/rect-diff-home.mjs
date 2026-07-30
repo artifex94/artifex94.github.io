@@ -210,12 +210,43 @@ function compare(beforePath, afterPath) {
   process.exitCode = 1;
 }
 
+// Captura visual del hero a un ancho de móvil: el gate secundario, para ver lo
+// que los rects no muestran (color, opacidad, la franja de juego en sí).
+async function shot(url, outPath, width) {
+  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+  const context = await browser.newContext({
+    viewport: { width, height: 900 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+  });
+  await context.addInitScript(() => {
+    try {
+      sessionStorage.setItem('artifex_system_init', 'true');
+    } catch {
+      /* ignore */
+    }
+  });
+  const page = await context.newPage();
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: outPath });
+  await browser.close();
+  console.log(`rect-diff: screenshot (${width}px) → ${outPath}`);
+}
+
 const [mode, ...rest] = process.argv.slice(2);
 
 if (mode === 'capture') {
   const urlArg = rest.find((a) => a.startsWith('--url='));
   const out = rest.find((a) => !a.startsWith('--')) || 'rect-home.json';
   await capture(urlArg ? urlArg.slice(6) : DEFAULT_URL, out);
+} else if (mode === 'shot') {
+  const urlArg = rest.find((a) => a.startsWith('--url='));
+  const widthArg = rest.find((a) => a.startsWith('--width='));
+  const out = rest.find((a) => !a.startsWith('--')) || 'home-mobile.png';
+  await shot(urlArg ? urlArg.slice(6) : DEFAULT_URL, out, widthArg ? Number(widthArg.slice(8)) : 390);
 } else if (mode === 'compare') {
   const [b, a] = rest.filter((x) => !x.startsWith('--'));
   if (!b || !a) {
