@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  computePrice,
-  instalmentAmountArs,
-  INSTALMENT_OPTIONS,
-  MIN_BILLABLE_M2,
-  type DiscountId,
-} from './tuftingPricing';
+import { computePrice, MIN_BILLABLE_M2, type DiscountId } from './tuftingPricing';
 // El espejo del servidor no importa nada, así que se puede cargar tal cual.
 import * as server from '../../supabase/functions/_shared/pricing';
 
@@ -56,24 +50,6 @@ describe('paridad de precios entre el sitio y las edge functions', () => {
     expect(server.DISCOUNT_MIN_LIST_ARS.transferencia).toBe(0);
     expect(server.DISCOUNTS.transferencia).toBe(0.1);
     expect(server.DISCOUNTS.instagram).toBe(0.05);
-  });
-
-  it('reparte las cuotas igual en los dos lados', () => {
-    for (const areaM2 of AREAS_M2) {
-      const { total } = computePrice({ areaM2 });
-      for (const instalments of INSTALMENT_OPTIONS) {
-        expect(server.instalmentAmountArs(total, instalments)).toBe(
-          instalmentAmountArs(total, instalments),
-        );
-      }
-    }
-  });
-
-  it('ofrece las mismas cuotas que acepta el servidor', () => {
-    // Si divergen, elegir una cuota que el servidor no acepta devuelve un 400 en
-    // la cara del cliente justo al momento de pagar.
-    expect([...server.INSTALMENT_OPTIONS]).toEqual([...INSTALMENT_OPTIONS]);
-    expect(server.INSTALMENT_STEP).toBe(100);
   });
 
   it('no otorga el descuento por transferencia en el camino de pago online', () => {

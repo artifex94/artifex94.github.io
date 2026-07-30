@@ -210,14 +210,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               </button>
             </div>
             <p className="text-xs text-secondary">
-              Podés pagar el total y dejarlo cerrado, o coordinar conmigo una seña y el resto en 2 o
-              3 cuotas: te escribo apenas confirme el encargo.
+              El pago es por MercadoPago: ahí mismo elegís si va al contado o en 2 o 3 cuotas con tu
+              tarjeta. Te escribo apenas confirme el encargo.
             </p>
           </>
         ) : (
           <p className="text-xs text-secondary">
             Al ser una pieza contorneada confirmo las medidas finales con vos y te paso el link de
-            pago por WhatsApp. Si preferís, lo dividimos en 2 o 3 cuotas.
+            pago por WhatsApp — en MercadoPago podés elegirlo al contado o en cuotas.
           </p>
         )}
 

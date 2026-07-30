@@ -50,15 +50,6 @@ export const MIN_PRICE_ARS = 30_000;
   transferencia: 0,
   instagram: 150_000
 };
-/** Instalment plans offered for the automatic debit. The workshop does 2 or 3. */ export const INSTALMENT_OPTIONS: readonly number[] = [
-  2,
-  3
-];
-export const INSTALMENT_STEP = 100;
-/** Monthly instalment for a total. Mirror of the client helper. */ export const instalmentAmountArs = (totalArs: number, instalments: number): number =>{
-  const safeInstalments = Math.max(Math.trunc(instalments), 1);
-  return Math.ceil(totalArs / safeInstalments / INSTALMENT_STEP) * INSTALMENT_STEP;
-};
 export const MIN_DIMENSION_CM = 25;
 export const MAX_DIMENSION_CM = 300;
 const roundUpTo = (value: number, step: number): number =>Math.ceil(value / step - 1e-9) * step;

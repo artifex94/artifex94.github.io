@@ -8,7 +8,6 @@
 // - Cambia la ganancia  -> cambiar MIN_MARGIN
 // - Nuevo descuento     -> agregarlo a DISCOUNTS (y a DISCOUNT_LABELS y a
 //                          DISCOUNT_MIN_LIST_ARS)
-// - Otras cuotas        -> cambiar INSTALMENT_OPTIONS
 // Nada más. LIST_PRICE_PER_M2 y todos los netos se recalculan solos.
 
 /**
@@ -125,33 +124,10 @@ export const MIN_PRICE_ARS = 30_000;
  */
 export const MIN_LIST_PRICE_ARS = MIN_PRICE_ARS;
 
-/**
- * Cuotas que se ofrecen para el débito automático.
- *
- * El taller hace 2 o 3 y nada más: un plan largo lo obliga a financiar meses de
- * trabajo ya entregado. Esta lista la comparten la UI y la edge function que
- * crea la suscripción en MercadoPago.
- */
-export const INSTALMENT_OPTIONS = [2, 3] as const;
-
-/** Se deriva de INSTALMENT_OPTIONS: es la cuota más baja que se puede ofrecer. */
-export const MAX_INSTALMENTS = Math.max(...INSTALMENT_OPTIONS);
-
-/**
- * Paso de redondeo de la cuota mensual, más fino que ROUNDING_STEP a propósito.
- *
- * MercadoPago cobra un monto fijo en todas las repeticiones de un débito
- * automático, así que las cuotas tienen que ser iguales y la suma redondeada
- * termina arriba del total. Con paso de $1.000 el sobrante llegaba a $2.000 en 3
- * cuotas; con $100 queda por debajo de $300, siempre a favor del taller.
- */
-export const INSTALMENT_STEP = 100;
-
-/** Cuota mensual para un total dado. Espejada en supabase/functions/_shared/pricing.ts. */
-export const instalmentAmountArs = (totalArs: number, instalments: number): number => {
-  const safeInstalments = Math.max(Math.trunc(instalments), 1);
-  return Math.ceil(totalArs / safeInstalments / INSTALMENT_STEP) * INSTALMENT_STEP;
-};
+// Cuotas: acá NO hay nada a propósito. La web cobra siempre el total y es la
+// pasarela de MercadoPago la que ofrece dividirlo en 2 o 3 cuotas con tarjeta,
+// según la configuración de la cuenta. Hubo un plan propio de débito automático
+// y se eliminó: duplicaba lo que la pasarela ya resuelve.
 
 export interface PriceInput {
   /** Área de la pieza terminada, en m², con el borde ya incluido. */

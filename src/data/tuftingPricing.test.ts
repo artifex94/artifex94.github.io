@@ -11,10 +11,6 @@ import {
   MIN_PRICE_ARS,
   MIN_LIST_PRICE_ARS,
   DISCOUNT_MIN_LIST_ARS,
-  INSTALMENT_OPTIONS,
-  MAX_INSTALMENTS,
-  INSTALMENT_STEP,
-  instalmentAmountArs,
   bestDiscount,
   computePrice,
   markupOverCost,
@@ -75,8 +71,6 @@ describe('coherencia con el backend de pagos', () => {
     expect(MIN_LIST_PRICE_ARS).toBe(30_000);
     expect(DISCOUNT_MIN_LIST_ARS.transferencia).toBe(0);
     expect(DISCOUNT_MIN_LIST_ARS.instagram).toBe(150_000);
-    expect(INSTALMENT_OPTIONS).toEqual([2, 3]);
-    expect(INSTALMENT_STEP).toBe(100);
   });
 });
 
@@ -161,37 +155,8 @@ describe('mínimo de compra por descuento', () => {
   });
 });
 
-describe('cuotas', () => {
-  it('ofrece 2 y 3, nunca más', () => {
-    // El taller no financia planes largos: un encargo se paga en 2 o 3 veces.
-    expect(INSTALMENT_OPTIONS).toEqual([2, 3]);
-    expect(MAX_INSTALMENTS).toBe(3);
-  });
-
-  it('reparte el total en cuotas iguales, redondeando fino', () => {
-    expect(instalmentAmountArs(125_000, 3)).toBe(41_700);
-    expect(instalmentAmountArs(125_000, 2)).toBe(62_500);
-    expect(instalmentAmountArs(30_000, 3)).toBe(10_000);
-    expect(instalmentAmountArs(27_000, 2)).toBe(13_500);
-  });
-
-  it('nunca cobra de menos, y el sobrante queda acotado', () => {
-    for (const areaM2 of AREAS_M2) {
-      for (const instalments of INSTALMENT_OPTIONS) {
-        const { total } = computePrice({ areaM2 });
-        const cuota = instalmentAmountArs(total, instalments);
-        const cobrado = cuota * instalments;
-        expect(cobrado).toBeGreaterThanOrEqual(total);
-        expect(cobrado - total).toBeLessThan(INSTALMENT_STEP * instalments);
-      }
-    }
-  });
-
-  it('no divide por cero ni por negativos', () => {
-    expect(instalmentAmountArs(30_000, 0)).toBe(30_000);
-    expect(instalmentAmountArs(30_000, -3)).toBe(30_000);
-  });
-});
+// Cuotas: no hay lógica propia que testear a propósito. La web cobra el total y
+// las cuotas (2 o 3 con tarjeta) las resuelve la pasarela de MercadoPago.
 
 describe('invariante de ganancia', () => {
   it('nunca perfora el piso de markup, para ninguna combinación de área y descuentos', () => {

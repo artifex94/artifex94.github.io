@@ -44,10 +44,10 @@ const OUTCOMES: Record<Outcome, { icon: typeof CheckCircle2; title: string; body
 /**
  * Interpreta la vuelta de MercadoPago.
  *
- * Ojo con el débito automático: la vuelta de un preapproval no trae
- * `status=approved`, trae `preapproval_id`. Sin este caso, alguien que acababa de
- * activar sus cuotas con éxito leía "El pago no se completó. No se hizo ningún
- * cargo" — falso en las dos frases.
+ * El caso `preapproval_id`/`authorized` es robustez de lectura: el sitio ya no
+ * crea suscripciones, pero un link de débito automático armado a mano desde
+ * MercadoPago puede volver acá, y sin este caso quien lo autorizó leería "El
+ * pago no se completó. No se hizo ningún cargo" — falso en las dos frases.
  */
 const readOutcome = (status: string | null, preapprovalId: string | null): Outcome => {
   if (preapprovalId || status === 'authorized') return 'subscribed';

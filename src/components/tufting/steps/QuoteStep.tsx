@@ -5,11 +5,9 @@ import { AnimatedPrice } from '../../dev/AnimatedPrice';
 import {
   computePrice,
   formatARS,
-  instalmentAmountArs,
   DISCOUNTS,
   DISCOUNT_LABELS,
   DISCOUNT_MIN_LIST_ARS,
-  MAX_INSTALMENTS,
   type DiscountId,
 } from '../../../data/tuftingPricing';
 import { canPayOnline } from '../../../data/tuftingCheckout';
@@ -78,9 +76,6 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
     border: borderName,
   });
 
-  // La primera cuota hace de seña. Se estima con el plan más largo, que es el de
-  // la cuota más baja; el paso de pago deja elegir entre INSTALMENT_OPTIONS.
-  const smallestInstalment = instalmentAmountArs(price.total, MAX_INSTALMENTS);
   const online = canPayOnline(shape);
   // El código de Instagram solo se le ofrece a quien llega al mínimo: mostrarlo
   // en una pieza de $30.000 sería prometer un descuento que no se va a aplicar.
@@ -180,20 +175,20 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({ state, dispatch, detectedC
           );
         })}
 
+        {/* Las cuotas no son un plan propio: la web cobra el total y es la
+            pasarela de MercadoPago la que ofrece dividirlo con la tarjeta. */}
         <div className="rounded-xl border border-line bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(255,248,240,0.74))] p-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
-          <p className="font-semibold mb-1">Cuotas con débito automático</p>
+          <p className="font-semibold mb-1">¿Y si lo quiero en cuotas?</p>
           <p className="text-secondary leading-relaxed">
             {online ? (
               <>
-                Podés pagar el total, o señar la propuesta pagando la primera cuota (desde{' '}
-                <strong className="text-primary">{formatARS(smallestInstalment)}</strong> en{' '}
-                {MAX_INSTALMENTS}) para que el trabajo arranque. Las que quedan se debitan solas,
-                mes a mes. Sin descuento.
+                El pago es por MercadoPago: al pagar el total podés elegir si va al contado o en 2 o
+                3 cuotas con tu tarjeta.
               </>
             ) : (
               <>
-                Las piezas contorneadas también se pueden pagar en 2 o 3 cuotas: las coordinamos por
-                WhatsApp cuando confirmemos el diseño y las medidas finales.
+                Cuando confirmemos el diseño y las medidas te paso el link de MercadoPago, y ahí
+                elegís si va al contado o en 2 o 3 cuotas con tu tarjeta.
               </>
             )}
           </p>

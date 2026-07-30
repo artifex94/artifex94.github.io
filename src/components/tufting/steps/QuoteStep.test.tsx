@@ -99,11 +99,15 @@ describe('QuoteStep', () => {
     expect(screen.getByText(/no se acumulan/i)).toBeInTheDocument();
   });
 
-  it('ofrece cuotas con débito automático, sin descuento', () => {
+  it('explica que las cuotas las ofrece MercadoPago, no un plan propio', () => {
     renderQuote(estadoConPresupuesto());
 
-    expect(screen.getByText(/cuotas con débito automático/i)).toBeInTheDocument();
-    expect(screen.getByText(/sin descuento/i)).toBeInTheDocument();
+    expect(screen.getByText(/¿y si lo quiero en cuotas\?/i)).toBeInTheDocument();
+    // Aparece en la caja informativa y también bajo el botón de pago.
+    expect(screen.getAllByText(/2 o 3 cuotas con tu tarjeta/i).length).toBeGreaterThan(0);
+    // El flujo viejo de débito automático no tiene que reaparecer.
+    expect(screen.queryByText(/débito automático/i)).toBeNull();
+    expect(screen.queryByLabelText(/cantidad de cuotas/i)).toBeNull();
   });
 
   it('avisa al dispatch cuando se marca un descuento', async () => {
@@ -130,7 +134,8 @@ describe('QuoteStep', () => {
     renderQuote(estadoConPresupuesto());
 
     expect(screen.getByRole('button', { name: /pagar \$/i })).toBeInTheDocument();
-    expect(screen.getByText(/pagarla en cuotas/i)).toBeInTheDocument();
+    // El monto del botón es siempre el TOTAL: las cuotas se eligen en la pasarela.
+    expect(screen.getAllByText(/al contado o en 2 o 3 cuotas/i).length).toBeGreaterThan(0);
   });
 
   it('NO ofrece pago online en una pieza contorneada', () => {
@@ -193,11 +198,12 @@ describe('QuoteStep', () => {
     expect(screen.getByText(/destildá esa opción/i)).toBeInTheDocument();
   });
 
-  it('estima la cuota con el plan más largo que ofrece el taller', () => {
-    renderQuote(estadoConPresupuesto());
-    // 1 m² = $125.000 en 3 cuotas.
-    expect(buscarMonto(formatARS(41_700))).toBeInTheDocument();
-    expect(screen.getByText(/en 3\)/)).toBeInTheDocument();
+  it('no muestra montos de cuota propios: el monto es siempre el total', () => {
+    // El monto por cuota lo decide la tarjeta del cliente en MercadoPago (con su
+    // interés incluido): cualquier número que inventemos acá sería mentira.
+    const { container } = renderQuote(estadoConPresupuesto());
+    expect(container.textContent).not.toContain('41.700');
+    expect(container.textContent).not.toMatch(/primera cuota/i);
   });
 
   it('pide volver atrás si todavía no hay medidas', () => {
