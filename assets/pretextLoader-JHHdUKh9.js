@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/pretext-vendor-CktIQuLK.js","assets/rolldown-runtime-Cyuzqnbw.js"])))=>i.map(i=>d[i]);
+import{u as e}from"./react-vendor-iXKH5_6c.js";var t=null,n=()=>(t||=e(()=>import(`./pretext-vendor-CktIQuLK.js`).then(e=>e.t),__vite__mapDeps([0,1])),t);export{n as t};
