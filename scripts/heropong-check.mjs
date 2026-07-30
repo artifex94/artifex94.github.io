@@ -157,8 +157,12 @@ for (let i = 0; i < (CYCLE ? 300 : 90); i += 1) {
   await page.waitForTimeout(CYCLE ? 100 : 60);
 }
 
-check('la pelota se mueve', new Set(positions).size > 5, `${new Set(positions).size} posiciones`);
-check('rebota en el borde del header', sawCeiling, `${maxScore} golpes`);
+// Con --shot el bucle corta al capturar el frame, así que no alcanzó a juntar
+// suficientes muestras para juzgar el movimiento.
+if (!shotArg) {
+  check('la pelota se mueve', new Set(positions).size > 5, `${new Set(positions).size} posiciones`);
+  check('rebota en el borde del header', sawCeiling, `${maxScore} golpes`);
+}
 check('las letras esquivan la pelota', sawDodge > 4, `${sawDodge.toFixed(1)}px de desplazamiento`);
 
 if (CYCLE) {

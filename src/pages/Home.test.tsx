@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../test/render';
 import { Home } from './Home';
@@ -11,8 +11,15 @@ import { services } from '../data/services';
 describe('Home en reposo (el juego no debe existir)', () => {
   // Visitante recurrente: Typewriter pinta el título completo de una y sin
   // cursor, igual que en el prerender (scripts/prerender.mjs).
+  const originalMatchMedia = window.matchMedia;
+
   beforeEach(() => {
     sessionStorage.setItem('artifex_system_init', 'true');
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+    vi.restoreAllMocks();
   });
 
   it('deja el título como un único nodo de texto, sin partir en glifos', () => {
@@ -56,6 +63,33 @@ describe('Home en reposo (el juego no debe existir)', () => {
     const sections = column!.querySelectorAll(':scope > section');
     expect(sections.length).toBe(4);
     expect(column!.children.length).toBe(4);
+  });
+
+  it('en móvil agrega la franja de juego sin tocar el texto del hero', () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('max-width'),
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    const { container } = renderWithProviders(<Home />);
+    const hero = container.querySelector('section')!;
+    const band = hero.querySelector('[aria-hidden="true"]');
+
+    expect(band).not.toBeNull();
+    // Absoluta sobre el gap que ya existía: no puede empujar nada.
+    expect(band!.className).toContain('absolute');
+    expect(band!.className).toContain('top-full');
+    expect(band!.className).toContain('md:hidden');
+    expect((band as HTMLElement).style.height).toBe('64px');
+    // En reposo: dos divs y nada más. Ni canvas, ni letras partidas.
+    expect(container.querySelector('canvas')).toBeNull();
+    expect(band!.querySelectorAll('span').length).toBe(0);
+    expect(band!.children.length).toBe(2);
+    expect(hero.querySelector('h1 span')!.getAttribute('style')).toBeNull();
   });
 
   it('conserva el orden móvil de las cards (tufting, fotografía, desarrollo)', () => {

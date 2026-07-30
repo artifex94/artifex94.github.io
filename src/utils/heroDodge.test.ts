@@ -164,6 +164,29 @@ describe('buildDodgeLut', () => {
     expect(tight).toBe(0);
   });
 
+  it('no encima las letras entre sí', () => {
+    // La propiedad que más se nota si falla: en la zona donde el empuje decae,
+    // la letra de adelante se corre más que la de atrás y las dos se juntan.
+    // Con una caída abrupta llegaban a solaparse.
+    const ADVANCE = 10.8; // avance del párrafo del hero (mono, 18px)
+    const glyphs = makeLine(40, 0, ADVANCE);
+    const cfg = config({ track: [0, 432], bounds: [-200, 632] });
+    const lut = buildDodgeLut(glyphs, [400], cfg);
+
+    let worstRatio = 1;
+    for (let k = 0; k < cfg.columns; k += 1) {
+      const t = k / (cfg.columns - 1);
+      for (let g = 1; g < glyphs.length; g += 1) {
+        const previous = glyphs[g - 1].x + dodgeOffsetAt(lut, cfg.columns, g - 1, t);
+        const current = glyphs[g].x + dodgeOffsetAt(lut, cfg.columns, g, t);
+        worstRatio = Math.min(worstRatio, (current - previous) / ADVANCE);
+      }
+    }
+    // Nunca invierten el orden ni se solapan, y la compresión se mantiene lejos
+    // del ancho de tinta de un glifo monoespaciado (~65% del avance).
+    expect(worstRatio).toBeGreaterThan(0.7);
+  });
+
   it('no explota sin glifos', () => {
     expect(buildDodgeLut([], [], config())).toHaveLength(0);
   });

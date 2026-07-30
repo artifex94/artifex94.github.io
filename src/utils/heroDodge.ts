@@ -63,22 +63,30 @@ const smooth = (t: number): number => {
   return c * c * (3 - 2 * c);
 };
 
-/** Máximo de `u·e^(−u²/2)`, en u = 1: se usa para normalizar el perfil a 1. */
-const PROFILE_PEAK = Math.exp(-0.5);
-
 /**
- * Perfil de empuje, impar y continuo: `u·e^(−u²/2)` normalizado.
+ * Perfil de empuje: impar, continuo, y con la bajada REPARTIDA.
  *
- * Impar y continuo importa más que abrir el hueco nominal. Un perfil que
- * decidiera el lado por el signo de la distancia daría un salto de decenas de
- * px justo cuando la pelota cruza el centro de una letra (la letra se
- * teleportaría de lado, y se ve como un glitch). Así el empuje crece desde 0 en
- * el centro, llega al máximo a `spread` y vuelve a 0: las letras se separan
- * alrededor de la pelota sin encimarse ni saltar.
+ * Tres propiedades, y las tres son necesarias:
+ *
+ * · Impar y continuo. Un perfil que eligiera el lado por el signo de la
+ *   distancia daría un salto de decenas de px justo cuando la pelota cruza el
+ *   centro de una letra: la letra se teleportaría de lado y se ve como un
+ *   glitch.
+ * · Sube de 0 (en el centro) a 1 en `spread`. Ahí las letras se separan, que es
+ *   lo que abre el hueco.
+ * · Baja de 1 a 0 repartido en todo `[spread, falloff]`. Esta es la parte sutil:
+ *   en la bajada las letras se COMPRIMEN entre sí (la de adelante se corre más
+ *   que la de atrás), así que la pendiente tiene que ser suave. Con una caída
+ *   tipo gaussiana la compresión llegaba al 57% y las letras del párrafo se
+ *   encimaban; repartida en 70px queda en ~25%, que no se nota.
  */
-const pushProfile = (distance: number, spread: number): number => {
-  const u = distance / Math.max(spread, 0.001);
-  return (u * Math.exp(-(u * u) / 2)) / PROFILE_PEAK;
+const pushProfile = (distance: number, spread: number, falloff: number): number => {
+  const away = Math.abs(distance);
+  const safeSpread = Math.max(spread, 0.001);
+  const rise = smooth(away / safeSpread);
+  const fall = smooth((falloff - away) / Math.max(falloff - safeSpread, 0.001));
+  const magnitude = Math.min(rise, fall);
+  return distance < 0 ? -magnitude : magnitude;
 };
 
 interface LineExtent {
@@ -139,12 +147,7 @@ export function buildDodgeLut(
       const distance = center - obstacleX;
       const away = Math.abs(distance);
 
-      // La ventana lleva el empuje exactamente a 0 en `falloff` (la gaussiana
-      // sola nunca llega a cero) y mantiene la continuidad.
-      const dx =
-        away < falloff
-          ? maxMagnitude * pushProfile(distance, spread) * smooth(1 - away / falloff)
-          : 0;
+      const dx = away < falloff ? maxMagnitude * pushProfile(distance, spread, falloff) : 0;
 
       lut[g * columns + k] = clamp(dx, Math.min(lowerShift, 0), Math.max(upperShift, 0));
     }
