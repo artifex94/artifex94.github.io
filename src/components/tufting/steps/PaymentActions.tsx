@@ -6,7 +6,12 @@ import {
   createCheckout,
   createSubscription,
 } from '../../../data/tuftingCheckout';
-import { formatARS } from '../../../data/tuftingPricing';
+import {
+  formatARS,
+  instalmentAmountArs,
+  INSTALMENT_OPTIONS,
+  MAX_INSTALMENTS,
+} from '../../../data/tuftingPricing';
 import type { Dimensions, Shape } from '../../../data/tuftingCalculator';
 
 interface PaymentActionsProps {
@@ -20,11 +25,13 @@ interface PaymentActionsProps {
   whatsappUrl: string | null;
 }
 
-const INSTALMENT_OPTIONS = [3, 6, 12];
-
 // Botones de pago. La forma contorneada no se puede pagar online: el servidor no
 // puede recalcular su área sin recibir la máscara de la imagen, así que no puede
 // verificar el precio. Esos pedidos se cierran por WhatsApp.
+//
+// Tampoco se paga online eligiendo transferencia o efectivo: ese 10% existe
+// porque no hay comisión de plataforma, así que cobrarlo con tarjeta sería
+// regalar el descuento y pagar la comisión encima.
 export const PaymentActions: React.FC<PaymentActionsProps> = ({
   shape,
   dimensions,
@@ -37,12 +44,12 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
   const [busy, setBusy] = useState<'checkout' | 'subscription' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
-  const [instalments, setInstalments] = useState(3);
+  const [instalments, setInstalments] = useState<number>(MAX_INSTALMENTS);
 
   const online = canPayOnline(shape);
-  // Espejo del server: cuotas iguales redondeadas a 1000 hacia arriba; la
-  // primera que se debita hace de seña.
-  const instalmentArs = Math.ceil(total / instalments / 1000) * 1000;
+  // Cuotas iguales; la primera que se debita hace de seña. La fórmula vive en
+  // tuftingPricing y la comparte la edge function.
+  const instalmentArs = instalmentAmountArs(total, instalments);
 
   // Solo viajan las medidas crudas: el servidor reprecia todo por su cuenta. Los
   // colores van solo como referencia (el precio no depende de ellos).
@@ -63,6 +70,8 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
         kind === 'checkout'
           ? await createCheckout({
               ...basePayload,
+              // El servidor lo ignora en este camino (ver _shared/pricing.ts); se
+              // manda igual para que la cotización quede registrada tal cual.
               payByTransfer,
               discountCode: discountCode.trim() || undefined,
             })
@@ -75,6 +84,18 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
     }
   };
 
+  const whatsappButton = whatsappUrl && (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
+    >
+      <MessageCircle size={18} aria-hidden="true" />
+      Encargarla por WhatsApp
+    </a>
+  );
+
   if (!online) {
     return (
       <div className="flex flex-col gap-4">
@@ -82,17 +103,22 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
           Las piezas contorneadas se cierran conversando: te confirmo el diseño, el borde y las
           medidas finales, y te paso el link de pago.
         </p>
-        {whatsappUrl && (
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
-          >
-            <MessageCircle size={18} aria-hidden="true" />
-            Encargarla por WhatsApp
-          </a>
-        )}
+        {whatsappButton}
+      </div>
+    );
+  }
+
+  // Eligió transferencia o efectivo: el descuento es para ese medio, así que el
+  // pago con tarjeta no va. Se le dice por qué y cómo destildarlo.
+  if (payByTransfer) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="text-sm text-secondary leading-relaxed">
+          Elegiste transferencia o efectivo, y por eso el 10% off: escribime y te paso los datos
+          para transferir. Si preferís pagar con tarjeta ahora mismo, destildá esa opción y el botón
+          de pago vuelve.
+        </p>
+        {whatsappButton}
       </div>
     );
   }
@@ -102,17 +128,7 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
   // una pasarela de checkout es pedido explícito del dueño.
   return (
     <div className="flex flex-col gap-6">
-      {whatsappUrl && (
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 bg-accent text-on-accent px-8 py-4 rounded-full font-bold transition-opacity hover:opacity-90 min-h-11"
-        >
-          <MessageCircle size={18} aria-hidden="true" />
-          Encargarla por WhatsApp
-        </a>
-      )}
+      {whatsappButton}
 
       <p className="text-center text-xs text-secondary uppercase tracking-widest">
         o si preferís, pagala online ahora
@@ -145,7 +161,10 @@ export const PaymentActions: React.FC<PaymentActionsProps> = ({
           <p className="text-sm text-secondary leading-relaxed">
             Señás la propuesta pagando la primera cuota de{' '}
             <strong className="text-primary">{formatARS(instalmentArs)}</strong> — con eso el
-            trabajo arranca. Las siguientes se debitan solas, mes a mes, hasta cubrir el total.
+            trabajo arranca.{' '}
+            {instalments === 2
+              ? 'La que queda se debita sola el mes siguiente.'
+              : `Las ${instalments - 1} que quedan se debitan solas, mes a mes.`}
           </p>
 
           <div className="flex flex-col gap-1.5">

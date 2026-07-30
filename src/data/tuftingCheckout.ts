@@ -177,7 +177,11 @@ export const createOrder = (request: OrderRequest): Promise<OrderResponse> =>
 // ---- Pago del encargo (solo total; la seña en cuotas va por suscripción) ---
 
 /** Cuánto del total se paga como seña. */
-export type DepositPortion = 'full' | 'half';
+// Solo 'full': la seña del 50% se eliminó a propósito (el servidor rechaza
+// 'half') porque Checkout Pro permite dividir cualquier pago único en cuotas, así
+// que "señar la mitad" podía terminar en la mitad EN CUOTAS. Hoy la seña es la
+// primera cuota del débito automático.
+export type DepositPortion = 'full';
 
 export interface OrderDepositResponse {
   orderId: string;

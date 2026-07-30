@@ -6,7 +6,9 @@
 // CÓMO AJUSTAR LOS PRECIOS:
 // - Sube la lana        -> cambiar MATERIAL_COST_PER_M2
 // - Cambia la ganancia  -> cambiar MIN_MARGIN
-// - Nuevo descuento     -> agregarlo a DISCOUNTS (y a DiscountId)
+// - Nuevo descuento     -> agregarlo a DISCOUNTS (y a DISCOUNT_LABELS y a
+//                          DISCOUNT_MIN_LIST_ARS)
+// - Otras cuotas        -> cambiar INSTALMENT_OPTIONS
 // Nada más. LIST_PRICE_PER_M2 y todos los netos se recalculan solos.
 
 /**
@@ -41,6 +43,23 @@ export type DiscountId = keyof typeof DISCOUNTS;
 export const DISCOUNT_LABELS: Record<DiscountId, string> = {
   transferencia: 'Transferencia o efectivo',
   instagram: 'Código de Instagram',
+};
+
+/**
+ * Total de LISTA mínimo para que cada descuento sea elegible. 0 = sin mínimo.
+ *
+ * El código de Instagram es un premio para encargos grandes: en una pieza de
+ * $30.000 no da el número. Se evalúa contra el total de lista, que es el precio
+ * que el cliente ve antes de descuentos.
+ *
+ * OJO: MAX_DISCOUNT ignora estos mínimos a propósito. Si algún día el descuento
+ * condicionado fuera el más grande, el precio de lista se despejaría con él
+ * aunque no siempre aplique: se infla la lista para todos, que es el lado
+ * conservador del error (nunca se cobra de menos).
+ */
+export const DISCOUNT_MIN_LIST_ARS: Record<DiscountId, number> = {
+  transferencia: 0,
+  instagram: 150_000,
 };
 
 /**
@@ -85,13 +104,54 @@ export const MAX_QUOTABLE_M2 = 6;
 export const ROUNDING_STEP = 1_000;
 
 /**
- * Precio mínimo de cualquier pieza, en pesos.
+ * Precio de lista mínimo de cualquier pieza, en pesos.
  *
- * Por debajo de esto no se toma el trabajo: montar el bastidor, preparar la
- * lana y el rato mínimo de taller no bajan aunque la pieza sea chica. Se aplica
- * como piso final, después de calcular y de aplicar descuentos.
+ * Por debajo de esto no se toma el trabajo: montar el bastidor, preparar la lana
+ * y el rato mínimo de taller no bajan aunque la pieza sea chica.
  */
 export const MIN_PRICE_ARS = 30_000;
+
+/**
+ * Piso al que no baja el cálculo por área, ANTES de aplicar descuentos.
+ *
+ * Que el piso vaya antes y no después es todo el asunto: aplicándolo al final,
+ * una pieza chica daba $30.000 de lista y $30.000 con descuento, o sea el 10%
+ * por transferencia quedaba en cero y la UI tachaba un precio igual al total.
+ *
+ * Acá los $30.000 son PRECIO DE LISTA: el descuento puede bajarlos (25x25 cm con
+ * transferencia sale $27.000), y a cambio no sube ningún precio del catálogo. Si
+ * el criterio cambia a "nunca cobrar menos de $30.000, ni con descuento", esta
+ * línea pasa a `MIN_PRICE_ARS / (1 - MAX_DISCOUNT)` y no se toca nada más.
+ */
+export const MIN_LIST_PRICE_ARS = MIN_PRICE_ARS;
+
+/**
+ * Cuotas que se ofrecen para el débito automático.
+ *
+ * El taller hace 2 o 3 y nada más: un plan largo lo obliga a financiar meses de
+ * trabajo ya entregado. Esta lista la comparten la UI y la edge function que
+ * crea la suscripción en MercadoPago.
+ */
+export const INSTALMENT_OPTIONS = [2, 3] as const;
+
+/** Se deriva de INSTALMENT_OPTIONS: es la cuota más baja que se puede ofrecer. */
+export const MAX_INSTALMENTS = Math.max(...INSTALMENT_OPTIONS);
+
+/**
+ * Paso de redondeo de la cuota mensual, más fino que ROUNDING_STEP a propósito.
+ *
+ * MercadoPago cobra un monto fijo en todas las repeticiones de un débito
+ * automático, así que las cuotas tienen que ser iguales y la suma redondeada
+ * termina arriba del total. Con paso de $1.000 el sobrante llegaba a $2.000 en 3
+ * cuotas; con $100 queda por debajo de $300, siempre a favor del taller.
+ */
+export const INSTALMENT_STEP = 100;
+
+/** Cuota mensual para un total dado. Espejada en supabase/functions/_shared/pricing.ts. */
+export const instalmentAmountArs = (totalArs: number, instalments: number): number => {
+  const safeInstalments = Math.max(Math.trunc(instalments), 1);
+  return Math.ceil(totalArs / safeInstalments / INSTALMENT_STEP) * INSTALMENT_STEP;
+};
 
 export interface PriceInput {
   /** Área de la pieza terminada, en m², con el borde ya incluido. */
@@ -107,7 +167,7 @@ export interface PriceResult {
   listTotal: number;
   /** Área que se terminó cobrando (puede ser mayor a la real por MIN_BILLABLE_M2). */
   billableAreaM2: number;
-  /** El descuento que ganó, o null si no aplicó ninguno. */
+  /** El descuento que efectivamente bajó el total, o null si ninguno lo bajó. */
   appliedDiscount: DiscountId | null;
   /** La fracción de ese descuento (0 si no hay). */
   discountRate: number;
@@ -128,9 +188,14 @@ const roundUpTo = (value: number, step: number): number => {
  *
  * Ignora ids desconocidos en vez de romper, porque estos valores pueden venir de
  * una URL o del body de un request.
+ *
+ * `listTotalArs` decide la elegibilidad por monto (DISCOUNT_MIN_LIST_ARS). El
+ * default sin límite mantiene el contrato viejo para quien solo quiera saber qué
+ * tasa gana entre varias.
  */
 export const bestDiscount = (
   discounts: readonly DiscountId[] = [],
+  listTotalArs: number = Number.POSITIVE_INFINITY,
 ): { id: DiscountId | null; rate: number } => {
   let id: DiscountId | null = null;
   let rate = 0;
@@ -138,6 +203,8 @@ export const bestDiscount = (
   for (const candidate of discounts) {
     const candidateRate = DISCOUNTS[candidate];
     if (typeof candidateRate !== 'number') continue; // id desconocido
+    // El filtro solo recorta candidatos: sigue ganando el mayor de los que quedan.
+    if (listTotalArs < (DISCOUNT_MIN_LIST_ARS[candidate] ?? 0)) continue;
     if (candidateRate > rate) {
       id = candidate;
       rate = candidateRate;
@@ -151,22 +218,27 @@ export const bestDiscount = (
 export const computePrice = ({ areaM2, discounts = [] }: PriceInput): PriceResult => {
   const safeArea = Number.isFinite(areaM2) && areaM2 > 0 ? areaM2 : 0;
   const billableAreaM2 = Math.max(safeArea, MIN_BILLABLE_M2);
-  const { id, rate } = bestDiscount(discounts);
 
-  // Piso de precio: ninguna pieza baja de MIN_PRICE_ARS, ni en lista ni con el
-  // mejor descuento. Como el piso sube ambos por igual, se mantiene total <= lista.
-  const listTotal = Math.max(roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2, ROUNDING_STEP), MIN_PRICE_ARS);
-  const total = Math.max(
-    roundUpTo(billableAreaM2 * LIST_PRICE_PER_M2 * (1 - rate), ROUNDING_STEP),
-    MIN_PRICE_ARS,
-  );
+  // El orden importa. El piso se aplica a la base ANTES de descontar, y la lista
+  // se calcula antes de mirar descuentos porque la elegibilidad de algunos
+  // depende de ella.
+  const baseArs = Math.max(billableAreaM2 * LIST_PRICE_PER_M2, MIN_LIST_PRICE_ARS);
+  const listTotal = roundUpTo(baseArs, ROUNDING_STEP);
+  const { id, rate } = bestDiscount(discounts, listTotal);
+  // Se descuenta sobre la base sin redondear: descontar sobre la lista redondeada
+  // haría que el cliente pague un peldaño más de lo prometido.
+  const total = roundUpTo(baseArs * (1 - rate), ROUNDING_STEP);
+  // El descuento que EFECTIVAMENTE bajó el total. Si no bajó nada no se informa,
+  // así la UI no tacha un precio igual al total ni el WhatsApp promete un
+  // descuento de cero.
+  const applied = total < listTotal ? id : null;
 
   return {
     total,
     listTotal,
     billableAreaM2,
-    appliedDiscount: id,
-    discountRate: rate,
+    appliedDiscount: applied,
+    discountRate: applied ? rate : 0,
     requiresManualQuote: safeArea > MAX_QUOTABLE_M2,
   };
 };

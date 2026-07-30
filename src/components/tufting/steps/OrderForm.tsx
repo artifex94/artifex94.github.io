@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Loader2, PackageCheck, Send, CreditCard } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import {
+  canPayOnline,
   createOrder,
   getDesignUploadUrl,
   uploadDesign,
@@ -188,26 +189,37 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           todo y coordinar.
         </p>
 
-        <div className="flex w-full max-w-md flex-col gap-3 pt-1">
-          <button
-            type="button"
-            onClick={() => payDeposit('full')}
-            disabled={depositBusy !== null}
-            className={cn(depositBtn, 'bg-accent text-on-accent hover:opacity-90')}
-          >
-            {depositBusy === 'full' ? (
-              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-            ) : (
-              <CreditCard size={18} aria-hidden="true" />
-            )}
-            Pagar el total · {formatARS(total)}
-          </button>
-        </div>
-        <p className="text-xs text-secondary">
-          Podés pagar el total y dejarlo cerrado, o señar la propuesta pagando la primera cuota
-          para que el trabajo arranque — el resto se debita solo, mes a mes. Las cuotas las
-          coordinamos al confirmar el encargo.
-        </p>
+        {/* La contorneada no se paga online: el servidor no puede recalcular su
+            área sin la máscara del diseño, así que no puede verificar el precio.
+            Ofrecer el botón acá contradecía esa regla. */}
+        {canPayOnline(shape) ? (
+          <>
+            <div className="flex w-full max-w-md flex-col gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => payDeposit('full')}
+                disabled={depositBusy !== null}
+                className={cn(depositBtn, 'bg-accent text-on-accent hover:opacity-90')}
+              >
+                {depositBusy === 'full' ? (
+                  <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+                ) : (
+                  <CreditCard size={18} aria-hidden="true" />
+                )}
+                Pagar el total · {formatARS(total)}
+              </button>
+            </div>
+            <p className="text-xs text-secondary">
+              Podés pagar el total y dejarlo cerrado, o coordinar conmigo una seña y el resto en 2 o
+              3 cuotas: te escribo apenas confirme el encargo.
+            </p>
+          </>
+        ) : (
+          <p className="text-xs text-secondary">
+            Al ser una pieza contorneada confirmo las medidas finales con vos y te paso el link de
+            pago por WhatsApp. Si preferís, lo dividimos en 2 o 3 cuotas.
+          </p>
+        )}
 
         {depositError && (
           <p role="alert" className="text-sm text-accent">
@@ -226,8 +238,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       <div>
         <h3 className="font-display text-lg font-semibold">Enviá tu encargo</h3>
         <p className="text-sm text-secondary leading-relaxed">
-          Dejame tus datos para pasarte el presupuesto en firme y coordinar. Tu diseño y tus
-          medidas viajan al taller tal cual los armaste en el bastidor.
+          Dejame tus datos para reservar el turno de tu pieza y coordinar los detalles. Tu diseño y
+          tus medidas viajan al taller tal cual los armaste en el bastidor.
         </p>
       </div>
 

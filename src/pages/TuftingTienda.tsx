@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Loader2, MessageCircle, RefreshCw, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, ShoppingBag } from 'lucide-react';
 import '@fontsource-variable/fraunces/index.css';
 import '@fontsource/baloo-2/700.css';
 import '@fontsource/baloo-2/800.css';
@@ -133,6 +133,10 @@ export const TuftingTienda: React.FC = () => {
                   Piezas únicas, ya tejidas, suaves y terminadas. Ninguna se repite: cuando una encuentra
                   dueño, esa historia se cierra y en el bastidor empieza otra.
                 </p>
+                <p className="text-secondary text-sm leading-relaxed max-w-2xl mx-auto mt-3">
+                  El envío lo coordinamos por WhatsApp después de la compra, desde Victoria, Entre
+                  Ríos a donde estés.
+                </p>
                 <FileteadoDivider className="mx-auto mt-7 max-w-sm" />
               </div>
             </div>
@@ -232,7 +236,9 @@ export const TuftingTienda: React.FC = () => {
                         isBusy ? 'cursor-wait opacity-70' : '',
                       )}
                     >
-                      {isBusy ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <MessageCircle size={18} aria-hidden="true" />}
+                      {/* El botón abre MercadoPago, no un chat: el ícono de mensaje
+                          prometía otra cosa. */}
+                      {isBusy ? <Loader2 size={18} className="animate-spin" aria-hidden="true" /> : <ShoppingBag size={18} aria-hidden="true" />}
                       Comprar
                     </button>
                   </div>

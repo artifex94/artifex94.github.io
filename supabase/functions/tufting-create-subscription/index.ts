@@ -19,9 +19,8 @@
 // Deploy: supabase functions deploy tufting-create-subscription --project-ref <ref>
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { corsHeaders, json, readJsonBody } from '../_shared/http.ts';
-import { priceQuote } from '../_shared/pricing.ts';
+import { priceQuote, INSTALMENT_OPTIONS, instalmentAmountArs } from '../_shared/pricing.ts';
 const MP_API = 'https://api.mercadopago.com';
-const ALLOWED_INSTALMENTS = [3, 6, 12];
 const SITE_URL = () => Deno.env.get('ALLOWED_ORIGIN')?.split(',')[0] ?? 'https://artifex.click';
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders(req) });
@@ -34,8 +33,11 @@ Deno.serve(async (req) => {
   }
   const body = await readJsonBody(req);
   if (!body) return json(req, { error: 'Invalid or oversized body' }, 400);
-  const instalments = body.instalments ?? 3;
-  if (!ALLOWED_INSTALMENTS.includes(instalments)) {
+  // La lista vive en _shared/pricing.ts, que es el mismo archivo que espeja el
+  // sitio: si el select ofreciera una opción que acá no está, el cliente comería
+  // un 400 justo al momento de pagar.
+  const instalments = body.instalments ?? Math.max(...INSTALMENT_OPTIONS);
+  if (!INSTALMENT_OPTIONS.includes(instalments)) {
     return json(req, { error: 'Cantidad de cuotas no disponible.' }, 400);
   }
   if (!body.payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.payerEmail)) {
@@ -46,10 +48,13 @@ Deno.serve(async (req) => {
   if (!quote) {
     return json(req, { error: 'Esas medidas no se pueden cotizar automáticamente.' }, 400);
   }
-  // Cuotas iguales que cubren el total; la primera debitada es la seña. El
-  // redondeo a 1000 hacia arriba puede dejar el total apenas por encima del
-  // cotizado — a favor del taller, nunca en contra.
-  const monthly = Math.ceil(quote.amountArs / instalments / 1000) * 1000;
+  // Cuotas iguales que cubren el total; la primera debitada es la seña.
+  //
+  // MercadoPago cobra un monto fijo en todas las repeticiones de un preapproval,
+  // así que no hay forma de que la última cuota absorba el resto: las cuotas son
+  // iguales y el redondeo deja el total apenas por encima del cotizado, a favor
+  // del taller y por menos de INSTALMENT_STEP por cuota.
+  const monthly = instalmentAmountArs(quote.amountArs, instalments);
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const { data: saved, error: insertError } = await supabase
     .from('tufting_quotes')

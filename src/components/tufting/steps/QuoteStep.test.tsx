@@ -147,6 +147,59 @@ describe('QuoteStep', () => {
     expect(screen.getByRole('link', { name: /whatsapp/i })).toBeInTheDocument();
   });
 
+  it('aplica el descuento por transferencia también en la pieza más chica', () => {
+    // La regresión del bug: el piso de $30.000 se aplicaba después del descuento,
+    // así que acá se veían $30.000 tachados sobre $30.000.
+    const state = estadoConPresupuesto({
+      dimensions: { widthCm: 25, heightCm: 25 },
+      discounts: ['transferencia'],
+    });
+    renderQuote(state);
+
+    expect(buscarMonto(formatARS(30_000))).toBeInTheDocument();
+    expect(buscarMonto(formatARS(27_000))).toBeInTheDocument();
+  });
+
+  it('muestra la superficie real y aclara el mínimo facturable', () => {
+    const state = estadoConPresupuesto({ dimensions: { widthCm: 25, heightCm: 25 } });
+    renderQuote(state);
+
+    expect(screen.getByText('0.06 m²')).toBeInTheDocument();
+    expect(screen.getByText(/se cobra el mínimo de 0.09 m²/i)).toBeInTheDocument();
+  });
+
+  it('no ofrece el código de Instagram por debajo del mínimo de compra', () => {
+    // 1 m² son $125.000 de lista: no llega a los $150.000.
+    renderQuote(estadoConPresupuesto());
+    expect(screen.queryByLabelText(/código de instagram/i)).toBeNull();
+  });
+
+  it('ofrece el código de Instagram cuando la pieza llega al mínimo', () => {
+    const state = estadoConPresupuesto({ dimensions: { widthCm: 120, heightCm: 100 } });
+    renderQuote(state);
+
+    const checkbox = screen.getByLabelText(/código de instagram/i);
+    expect(checkbox).toBeInTheDocument();
+    expect(screen.getByText(/en piezas desde/i)).toBeInTheDocument();
+  });
+
+  it('manda a WhatsApp en vez de cobrar con tarjeta si eligió transferencia', () => {
+    // El 10% existe porque la transferencia no paga comisión de plataforma.
+    const state = estadoConPresupuesto({ discounts: ['transferencia'] });
+    renderQuote(state);
+
+    expect(screen.queryByRole('button', { name: /pagar \$/i })).toBeNull();
+    expect(screen.getByRole('link', { name: /whatsapp/i })).toBeInTheDocument();
+    expect(screen.getByText(/destildá esa opción/i)).toBeInTheDocument();
+  });
+
+  it('estima la cuota con el plan más largo que ofrece el taller', () => {
+    renderQuote(estadoConPresupuesto());
+    // 1 m² = $125.000 en 3 cuotas.
+    expect(buscarMonto(formatARS(41_700))).toBeInTheDocument();
+    expect(screen.getByText(/en 3\)/)).toBeInTheDocument();
+  });
+
   it('pide volver atrás si todavía no hay medidas', () => {
     const state = estadoConPresupuesto({ shape: null, dimensions: {} });
     renderQuote(state);
