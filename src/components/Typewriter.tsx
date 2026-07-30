@@ -6,6 +6,8 @@ interface TypewriterProps {
   delay?: number;
   speed?: 'normal' | 'fast';
   className?: string;
+  /** Se llama cuando el texto ya está completo en el DOM. */
+  onComplete?: () => void;
 }
 
 export const Typewriter: React.FC<TypewriterProps> = ({
@@ -13,6 +15,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
   delay = 0,
   speed = 'normal',
   className = '',
+  onComplete,
 }) => {
   const [displayedText, setDisplayedText] = useState('');
   // Controlamos la visibilidad del cursor explícitamente
@@ -45,6 +48,17 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       setShowCursor(false);   // Sin cursor
     }
   }, [isFirstVisit, text]);
+
+  // En un ref para que cambiar el callback no reinicie el tipeo.
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  // Avisa cuando el texto completo ya está pintado, no cuando se pidió pintarlo.
+  useEffect(() => {
+    if (displayedText === text) onCompleteRef.current?.();
+  }, [displayedText, text]);
 
   // Lógica de escritura
   useEffect(() => {
@@ -93,6 +107,7 @@ export const Typewriter: React.FC<TypewriterProps> = ({
       {displayedText}
       {showCursor && (
         <motion.span
+          aria-hidden="true"
           animate={{ opacity: [1, 0] }}
           transition={{ repeat: Infinity, duration: 0.8, ease: "circInOut" }}
           className="inline-block text-accent font-bold ml-[2px]"

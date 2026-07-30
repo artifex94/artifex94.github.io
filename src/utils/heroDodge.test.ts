@@ -124,22 +124,36 @@ describe('buildDodgeLut', () => {
     }
   });
 
-  it('con la línea sin aire (slack 0) no la hace desbordar', () => {
+  it('sin aire ni desborde permitido, la línea no se mueve de su caja', () => {
     const glyphs = makeLine(10, 0, 20); // ocupa 0..200
-    const cfg = config({ bounds: [-40, 240], corridor: 40, maxShift: 40 });
+    const cfg = config({ bounds: [-40, 240], corridor: 40, maxShift: 40, overflow: 0 });
     const lut = buildDodgeLut(glyphs, [0], cfg);
     for (let k = 0; k < cfg.columns; k += 1) {
       const t = k / (cfg.columns - 1);
-      // Sin slack la línea no puede crecer más allá de su propia caja.
       expect(glyphs[0].x + dodgeOffsetAt(lut, cfg.columns, 0, t)).toBeGreaterThanOrEqual(-0.001);
       expect(glyphs[9].x + glyphs[9].w + dodgeOffsetAt(lut, cfg.columns, 9, t)).toBeLessThanOrEqual(200.001);
     }
   });
 
+  it('el desborde permitido deja esquivar incluso a una línea llena', () => {
+    // El eyebrow del hero ocupa todo el ancho: sin desborde no esquivaría nada.
+    const glyphs = makeLine(10, 0, 20);
+    const cfg = config({ bounds: [-40, 240], overflow: 12 });
+    const lut = buildDodgeLut(glyphs, [0], cfg);
+    let worst = 0;
+    for (let k = 0; k < cfg.columns; k += 1) {
+      const t = k / (cfg.columns - 1);
+      worst = Math.max(worst, Math.abs(dodgeOffsetAt(lut, cfg.columns, 9, t)));
+      // Nunca más allá del desborde permitido.
+      expect(glyphs[9].x + glyphs[9].w + dodgeOffsetAt(lut, cfg.columns, 9, t)).toBeLessThanOrEqual(212.001);
+    }
+    expect(worst).toBeGreaterThan(6);
+  });
+
   it('trata cada línea con su propio aire', () => {
     // Dos líneas idénticas (0..100), una sin aire y otra con aire de sobra.
     const glyphs = [...makeLine(5, 0, 20), ...makeLine(5, 1, 20)];
-    const cfg = config();
+    const cfg = config({ overflow: 0 });
     const lut = buildDodgeLut(glyphs, [0, 400], cfg);
     // Obstáculo en x=77, a `spread` del centro del último glifo (90): es donde
     // el empuje hacia la derecha es máximo.
@@ -147,7 +161,7 @@ describe('buildDodgeLut', () => {
     const tight = dodgeOffsetAt(lut, cfg.columns, 4, t); // línea sin aire
     const loose = dodgeOffsetAt(lut, cfg.columns, 9, t); // línea con aire
     expect(loose).toBeGreaterThan(0);
-    expect(tight).toBe(0); // no puede crecer más allá de su propia caja
+    expect(tight).toBe(0);
   });
 
   it('no explota sin glifos', () => {

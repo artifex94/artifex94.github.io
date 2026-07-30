@@ -31,6 +31,12 @@ export interface DodgeConfig {
   track: readonly [number, number];
   /** Límite duro para los glifos desplazados, en coords del bloque. */
   bounds: readonly [number, number];
+  /**
+   * Cuánto puede invadir una letra el aire lateral del bloque además del slack
+   * de su línea. Sin esto una línea que ocupa todo el ancho (slack ≈ 0) no
+   * podría esquivar nada, ni siquiera un par de píxeles.
+   */
+  overflow: number;
   /** Distancia a la que el empuje ya es exactamente cero. */
   falloff: number;
   /** Distancia a la que el empuje es máximo (ancho del "lomo" del perfil). */
@@ -45,6 +51,7 @@ export const DEFAULT_DODGE_CONFIG: Omit<DodgeConfig, 'track' | 'bounds'> = {
   falloff: 84,
   spread: 13,
   maxShift: 22,
+  overflow: 12,
 };
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -105,7 +112,7 @@ export function buildDodgeLut(
   lineSlack: readonly number[],
   config: DodgeConfig,
 ): Float32Array {
-  const { corridor, columns, track, bounds, falloff, spread, maxShift } = config;
+  const { corridor, columns, track, bounds, falloff, spread, maxShift, overflow } = config;
   const lut = new Float32Array(glyphs.length * columns);
   if (!glyphs.length || columns < 2) return lut;
 
@@ -119,10 +126,11 @@ export function buildDodgeLut(
     const extent = extents.get(glyph.line);
     const slack = Math.max(lineSlack[glyph.line] ?? 0, 0);
 
-    // Margen real de la línea: su caja más la mitad del aire que le sobra,
-    // sin salirse nunca del límite duro del bloque.
-    const lineMin = extent ? Math.max(bounds[0], extent.left - slack / 2) : bounds[0];
-    const lineMax = extent ? Math.min(bounds[1], extent.right + slack / 2) : bounds[1];
+    // Margen real de la línea: su caja, más la mitad del aire que le sobra (el
+    // texto está centrado), más el desborde permitido; y nunca más allá del
+    // límite duro del bloque.
+    const lineMin = extent ? Math.max(bounds[0], extent.left - slack / 2 - overflow) : bounds[0];
+    const lineMax = extent ? Math.min(bounds[1], extent.right + slack / 2 + overflow) : bounds[1];
     const lowerShift = lineMin - glyph.x;
     const upperShift = lineMax - (glyph.x + glyph.w);
 

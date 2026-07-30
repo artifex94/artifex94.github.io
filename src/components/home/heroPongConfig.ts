@@ -28,8 +28,11 @@ export const HUD_FONT_SIZE = 12;
 /** Distancia del borde inferior del header a la línea de base del HUD. */
 export const HUD_TOP_GAP = 22;
 
-/** Cuánto puede invadir el padding lateral una letra desplazada. */
-export const DODGE_OVERFLOW = 6;
+/**
+ * Cuánto puede invadir el padding lateral una letra desplazada. El home tiene
+ * `px-4` (16px), así que 12px se mantiene dentro de la pantalla.
+ */
+export const DODGE_OVERFLOW = 12;
 /** Aire vertical extra para que una línea empiece a esquivar antes del contacto. */
 export const DODGE_GATE_PAD = 8;
 
