@@ -191,8 +191,15 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
         {/* La contorneada no se paga online: el servidor no puede recalcular su
             área sin la máscara del diseño, así que no puede verificar el precio.
-            Ofrecer el botón acá contradecía esa regla. */}
-        {canPayOnline(shape) ? (
+            Ofrecer el botón acá contradecía esa regla.
+            Con transferencia tampoco: ese 10% existe porque no hay comisión de
+            plataforma, así que cobrarlo con tarjeta regalaría el descuento. */}
+        {payByTransfer ? (
+          <p className="text-xs text-secondary">
+            Elegiste transferencia o efectivo, y por eso el 10% off: te escribo por WhatsApp para
+            pasarte los datos y confirmar el encargo.
+          </p>
+        ) : canPayOnline(shape) ? (
           <>
             <div className="flex w-full max-w-md flex-col gap-3 pt-1">
               <button

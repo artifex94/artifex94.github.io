@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   canPayOnline,
-  createCheckout,
+  createOrder,
   ONLINE_PAYABLE_SHAPES,
   FUNCTIONS_URL,
 } from './tuftingCheckout';
@@ -37,41 +37,49 @@ describe('canPayOnline', () => {
   });
 });
 
-describe('createCheckout', () => {
-  it('llama a la edge function y devuelve el punto de pago', async () => {
-    const spy = mockFetch({ quoteId: 'abc', initPoint: 'https://mp/checkout' });
+// createCheckout (pago directo desde el presupuesto) ya no existe: el pago
+// online aparece recién después de enviar el encargo, cobrando la orden que ya
+// quedó registrada en el panel. Las reglas que cubrían sus tests viven ahora
+// sobre createOrder, que es el único camino.
+describe('createOrder', () => {
+  const encargo = {
+    shape: 'rectangular' as const,
+    widthCm: 100,
+    heightCm: 200,
+    contact: { name: 'Clienta', email: 'c@example.com' },
+  };
 
-    const result = await createCheckout({ shape: 'circular', diameterCm: 80 });
+  it('llama a la edge function del encargo', async () => {
+    const spy = mockFetch({ orderId: 'abc' });
+
+    await createOrder(encargo);
 
     expect(spy).toHaveBeenCalledWith(
-      `${FUNCTIONS_URL}/tufting-create-preference`,
+      `${FUNCTIONS_URL}/tufting-create-order`,
       expect.objectContaining({ method: 'POST' }),
     );
-    expect(result.initPoint).toBe('https://mp/checkout');
   });
 
-  it('NUNCA manda un monto ni un área', async () => {
+  it('NUNCA manda un monto en las formas que se pagan online', async () => {
     // Es la regla central del diseño: el servidor reprecia todo desde las
-    // medidas crudas. Si acá se filtrara un total o un área, alcanzaría con
-    // editarlos en DevTools para comprar una alfombra a cualquier precio.
-    const spy = mockFetch({ quoteId: 'abc', initPoint: 'https://mp/checkout' });
+    // medidas crudas. Si acá se filtrara un total, alcanzaría con editarlo en
+    // DevTools para comprar una alfombra a cualquier precio. (La contorneada sí
+    // declara su área, pero esa forma no se paga online: es solo estimación.)
+    const spy = mockFetch({ orderId: 'abc' });
 
-    await createCheckout({ shape: 'rectangular', widthCm: 100, heightCm: 200 });
+    await createOrder(encargo);
 
     const body = JSON.parse(spy.mock.calls[0][1].body as string);
     expect(body).not.toHaveProperty('amount');
     expect(body).not.toHaveProperty('amountArs');
     expect(body).not.toHaveProperty('total');
-    expect(body).not.toHaveProperty('areaM2');
     expect(body).toMatchObject({ shape: 'rectangular', widthCm: 100, heightCm: 200 });
   });
 
   it('propaga el mensaje de error del servidor', async () => {
     mockFetch({ error: 'Ese código no es válido o ya se usó.' }, false);
 
-    await expect(createCheckout({ shape: 'circular', diameterCm: 80 })).rejects.toThrow(
-      /no es válido/i,
-    );
+    await expect(createOrder(encargo)).rejects.toThrow(/no es válido/i);
   });
 
   it('da un mensaje legible si el servidor no devuelve JSON', async () => {
@@ -80,9 +88,7 @@ describe('createCheckout', () => {
       vi.fn().mockResolvedValue({ ok: false, json: () => Promise.reject(new Error('boom')) }),
     );
 
-    await expect(createCheckout({ shape: 'circular', diameterCm: 80 })).rejects.toThrow(
-      /probá de nuevo/i,
-    );
+    await expect(createOrder(encargo)).rejects.toThrow(/no pude enviar el encargo/i);
   });
 });
 

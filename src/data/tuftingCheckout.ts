@@ -36,24 +36,6 @@ export const ONLINE_PAYABLE_SHAPES: readonly Shape[] = ['circular', 'rectangular
 export const canPayOnline = (shape: Shape | null): boolean =>
   shape !== null && ONLINE_PAYABLE_SHAPES.includes(shape);
 
-export interface CheckoutRequest {
-  shape: Shape;
-  diameterCm?: number;
-  /** Circular ovalado: eje menor = diámetro / ovalRatio (1 = círculo). */
-  ovalRatio?: number;
-  widthCm?: number;
-  heightCm?: number;
-  woolIds?: readonly string[];
-  discountCode?: string;
-  payByTransfer?: boolean;
-  contact?: { name?: string; email?: string; phone?: string };
-}
-
-export interface CheckoutResponse {
-  quoteId: string;
-  initPoint: string;
-}
-
 const post = async <T>(
   endpoint: string,
   body: unknown,
@@ -78,15 +60,13 @@ const post = async <T>(
   return payload as T;
 };
 
-/**
- * Pago único con Checkout Pro.
- *
- * La web cobra siempre el TOTAL: las cuotas (2 o 3 con tarjeta) las ofrece la
- * propia pasarela de MercadoPago según la configuración de la cuenta. No hay
- * plan de pagos propio del sitio.
- */
-export const createCheckout = (request: CheckoutRequest): Promise<CheckoutResponse> =>
-  post<CheckoutResponse>('tufting-create-preference', request);
+// El pago online vive ÚNICAMENTE después de enviar el encargo (payOrderDeposit
+// sobre la orden ya registrada): así todo pago tiene su pedido en el panel del
+// taller. Hubo un checkout directo desde el presupuesto (tufting-create-
+// preference) y se eliminó a propósito.
+//
+// La web cobra siempre el TOTAL: las cuotas (2 o 3 con tarjeta) las ofrece la
+// propia pasarela de MercadoPago según la configuración de la cuenta.
 
 // ---- Encargo (todas las formas, con o sin pago online) --------------------
 //

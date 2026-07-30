@@ -130,12 +130,15 @@ describe('QuoteStep', () => {
     expect(texto).toContain('Borde: Negro');
   });
 
-  it('ofrece pagar online las formas que el servidor puede verificar', () => {
+  it('NO ofrece el pago antes de enviar el encargo', () => {
+    // Regla del taller: primero el encargo queda registrado en el panel, y el
+    // pago aparece recién en la confirmación. Antes de eso, nada de cobrar.
     renderQuote(estadoConPresupuesto());
 
-    expect(screen.getByRole('button', { name: /pagar \$/i })).toBeInTheDocument();
-    // El monto del botón es siempre el TOTAL: las cuotas se eligen en la pasarela.
-    expect(screen.getAllByText(/al contado o en 2 o 3 cuotas/i).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /pagar \$/i })).toBeNull();
+    expect(screen.getByText(/el pago online se habilita apenas lo envíes/i)).toBeInTheDocument();
+    // Las cuotas se explican igual: son de la pasarela, no de la web.
+    expect(screen.getAllByText(/2 o 3 cuotas con tu tarjeta/i).length).toBeGreaterThan(0);
   });
 
   it('NO ofrece pago online en una pieza contorneada', () => {
@@ -195,7 +198,7 @@ describe('QuoteStep', () => {
 
     expect(screen.queryByRole('button', { name: /pagar \$/i })).toBeNull();
     expect(screen.getByRole('link', { name: /whatsapp/i })).toBeInTheDocument();
-    expect(screen.getByText(/destildá esa opción/i)).toBeInTheDocument();
+    expect(screen.getByText(/te paso los datos para transferir/i)).toBeInTheDocument();
   });
 
   it('no muestra montos de cuota propios: el monto es siempre el total', () => {
