@@ -13,6 +13,7 @@ import {
 } from './heroPongState';
 // El validador del servidor no importa nada, así que se puede cargar tal cual.
 import * as server from '../../supabase/functions/_shared/heroPongRun';
+import { buildRunPayload, newRunId } from './heroPongLeaderboard';
 
 // El ranking global es el único lugar del juego donde el navegador le habla a un
 // servidor, y la regla del sitio es que el servidor no le cree al cliente (la
@@ -25,7 +26,7 @@ import * as server from '../../supabase/functions/_shared/heroPongRun';
 
 const TUNING = HERO_PONG_TUNING;
 
-const run = (over: Partial<server.HeroPongRun> = {}): unknown => ({
+const run = (over: Record<string, unknown> = {}): unknown => ({
   initials: 'RAM',
   score: 450,
   ceilingHits: 50,
@@ -34,6 +35,15 @@ const run = (over: Partial<server.HeroPongRun> = {}): unknown => ({
   elapsedMs: 60_000,
   ...over,
 });
+
+/** El mismo resumen, con la forma que produce el juego. */
+const runSummary = {
+  score: 450,
+  ceilingHits: 50,
+  lettersDestroyed: 4,
+  boardsCleared: 0,
+  elapsedMs: 60_000,
+};
 
 describe('paridad de puntaje entre el juego y la edge function', () => {
   it('usa las mismas constantes de las dos partes', () => {
@@ -53,21 +63,48 @@ describe('paridad de puntaje entre el juego y la edge function', () => {
     }
   });
 
-  it('acepta una partida realmente jugada', () => {
-    // Se juega de verdad con el reducer y se manda lo que sale de ahí.
+  it('acepta una partida realmente jugada, con el cronómetro fraccionario', () => {
+    // ESTE es el test que faltaba. El cronómetro del juego suma los `dtMs` de
+    // requestAnimationFrame, que son decimales, y el validador exigía enteros:
+    // rechazaba el 100% de las partidas reales y el ranking quedaba vacío.
+    // Antes se armaba el cuerpo a mano en el test y por eso no se veía; ahora
+    // pasa por `buildRunPayload`, que es el camino real.
+    // Un minuto de juego a 60 fps, con un rebote contra el techo cada 3 s: el
+    // ritmo de alguien que de verdad está manteniendo la pelota en el aire.
     let state: HeroPongState = reduceHeroPong(createHeroPongState(5), { t: 'start' }, TUNING);
-    for (let i = 0; i < 20; i += 1) {
-      state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
-      state = reduceHeroPong(state, { t: 'tick', dtMs: 1000, rng: () => 0 }, TUNING);
+    for (let frame = 0; frame < 3600; frame += 1) {
+      state = reduceHeroPong(state, { t: 'tick', dtMs: 16.667, rng: () => 0 }, TUNING);
+      if (frame % 180 === 0) state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
     }
-    const rigid = state.letters.indexOf('rigid');
-    if (rigid >= 0) state = reduceHeroPong(state, { t: 'letterHit', index: rigid }, TUNING);
     state = reduceHeroPong(state, { t: 'lose' }, TUNING);
 
     const summary = takeSummary(state);
-    const accepted = server.validateRun({ initials: 'RAM', ...summary });
+    expect(Number.isInteger(summary.elapsedMs)).toBe(false);
+
+    const accepted = server.validateRun(buildRunPayload('RAM', summary, newRunId()));
     expect(accepted).not.toBeNull();
     expect(accepted!.score).toBe(scoreOf(state.scoreDigits));
+  });
+
+  it('acepta el payload sin runId: los bundles ya cacheados postean sin él', () => {
+    const payload = buildRunPayload('RAM', { ...runSummary, elapsedMs: 60_000.4 }, '');
+    const accepted = server.validateRun({ ...payload, runId: undefined });
+    expect(accepted).not.toBeNull();
+    expect(accepted!.runId).toBeNull();
+  });
+
+  it('descarta un runId con forma inválida en vez de mandarlo a la base', () => {
+    expect(server.validateRun(run({ runId: 'x' }))?.runId).toBeNull();
+    expect(server.validateRun(run({ runId: '../../drop' }))?.runId).toBeNull();
+    expect(server.validateRun(run({ runId: 'run-1234-abcd' }))?.runId).toBe('run-1234-abcd');
+  });
+
+  it('la regla de quién entra al top es la misma de los dos lados', () => {
+    const full = Array.from({ length: 10 }, (_, i) => ({ score: (10 - i) * 100 }));
+    expect(server.qualifiesForTop([], 1)).toBe(true);
+    expect(server.qualifiesForTop(full, 101)).toBe(true);
+    expect(server.qualifiesForTop(full, 100)).toBe(false);
+    expect(server.qualifiesForTop([], 0)).toBe(false);
   });
 
   it('acepta un score MENOR al techo: romper dígitos solo puede bajarlo', () => {

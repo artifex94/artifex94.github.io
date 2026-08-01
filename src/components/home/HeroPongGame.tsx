@@ -7,7 +7,6 @@ import {
   HERO_PONG_TUNING,
   HERO_PONG_TURBO,
   type GamePhase,
-  type HeroPongProgress,
   type HeroPongSummary,
 } from '../../utils/heroPongState';
 
@@ -21,24 +20,9 @@ export { HeroPongGameOver } from './HeroPongGameOver';
 // Reparto: React monta el canvas y la capa de letras (tres renders en toda la
 // partida), y el engine hace el resto sin volver a pasar por React.
 
-const PROGRESS_KEY = 'artifex_hero_pong';
-
-const readProgress = (): unknown => {
-  try {
-    const raw = sessionStorage.getItem(PROGRESS_KEY);
-    return raw ? JSON.parse(raw) : undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-const writeProgress = (progress: HeroPongProgress): void => {
-  try {
-    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-  } catch {
-    /* sessionStorage lleno o bloqueado: el progreso simplemente no persiste */
-  }
-};
+// No hay nada que persistir entre partidas: cada una arranca con el tablero
+// entero y los relojes en cero, para que el ranking global compare partidas
+// comparables. El sessionStorage que guardaba el progreso se retiró.
 
 /** `?heropong=turbo` comprime los tiempos del ciclo para poder verificarlo. */
 const isTurbo = (): boolean => {
@@ -110,8 +94,6 @@ export const HeroPongGame: React.FC<HeroPongGameProps> = ({
         metrics,
         spans,
         tuning: isTurbo() ? HERO_PONG_TURBO : HERO_PONG_TUNING,
-        savedProgress: readProgress(),
-        onProgress: writeProgress,
         onSummary: (summary) => {
           summaryRef.current = summary;
         },

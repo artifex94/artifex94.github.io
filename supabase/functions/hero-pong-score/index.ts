@@ -17,9 +17,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { corsHeaders, json, readJsonBody } from '../_shared/http.ts';
 // La validación vive aparte para que la suite del sitio la pueda cargar y
 // verificar contra el puntaje del cliente (src/utils/heroPongRun.parity.test.ts).
-import { validateRun } from '../_shared/heroPongRun.ts';
-
-const TOP_LIMIT = 10;
+import { qualifiesForTop, validateRun, TOP_LIMIT } from '../_shared/heroPongRun.ts';
 
 const topScores = async (supabase) => {
   const { data, error } = await supabase
@@ -56,21 +54,28 @@ Deno.serve(async (req) => {
   if (!before) return json(req, { error: 'unavailable' }, 502);
 
   // Solo entra lo que de verdad clasifica: mantiene la tabla chica y le saca
-  // sentido a spamear partidas mediocres. Empatar al último NO desplaza.
-  const qualifies = before.length < TOP_LIMIT || run.score > before[before.length - 1].score;
-  if (!qualifies) return json(req, { top: before, rank: -1 });
+  // sentido a spamear partidas mediocres. La regla es compartida con el cliente.
+  if (!qualifiesForTop(before, run.score)) return json(req, { top: before, rank: -1 });
 
-  const { error } = await supabase.from('hero_pong_scores').insert({
+  const row = {
     initials: run.initials,
     score: run.score,
     ceiling_hits: run.ceilingHits,
     letters_destroyed: run.lettersDestroyed,
     boards_cleared: run.boardsCleared,
     elapsed_ms: run.elapsedMs,
-  });
+    run_id: run.runId,
+  };
+  // Upsert e `ignoreDuplicates` en vez de insert: si la misma partida se manda
+  // dos veces (doble toque, reintento), la segunda no agrega una fila.
+  const { error } = run.runId
+    ? await supabase
+        .from('hero_pong_scores')
+        .upsert(row, { onConflict: 'run_id', ignoreDuplicates: true })
+    : await supabase.from('hero_pong_scores').insert(row);
   if (error) return json(req, { error: 'unavailable' }, 502);
 
   const top = (await topScores(supabase)) ?? before;
-  const rank = top.findIndex((row) => row.initials === run.initials && row.score === run.score);
+  const rank = top.findIndex((entry) => entry.initials === run.initials && entry.score === run.score);
   return json(req, { top, rank });
 });

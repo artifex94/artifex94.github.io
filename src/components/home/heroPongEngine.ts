@@ -17,15 +17,12 @@ import {
   type Rect,
 } from '../../utils/heroPongPhysics';
 import {
-  applyProgress,
   createHeroPongState,
   reduceHeroPong,
   scoreOf,
-  takeProgress,
   takeSummary,
   HERO_PONG_TUNING,
   type GamePhase,
-  type HeroPongProgress,
   type HeroPongState,
   type HeroPongSummary,
   type HeroPongTuning,
@@ -67,8 +64,6 @@ export interface EngineDeps {
   metrics: HeroMetrics;
   spans: HTMLSpanElement[];
   tuning?: HeroPongTuning;
-  savedProgress?: unknown;
-  onProgress?: (progress: HeroPongProgress) => void;
   /** Resumen de la partida perdida. Se dispara ANTES que `onPhase('gameover')`. */
   onSummary?: (summary: HeroPongSummary) => void;
   onPhase?: (phase: GamePhase) => void;
@@ -139,7 +134,7 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
   );
 
   // --- Estado mutable ---
-  let state: HeroPongState = applyProgress(createHeroPongState(glyphCount), deps.savedProgress, tuning);
+  let state: HeroPongState = createHeroPongState(glyphCount);
   let ball: Ball = { x: 0, y: 0, vx: 0, vy: 0, r: BALL_RADIUS };
   let speed = START_SPEED;
   let paddleCenter = 0;
@@ -509,7 +504,6 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     if (staleGeometry) {
       state = reduceHeroPong(state, { t: 'lose' }, tuning);
       lastPhase = state.phase;
-      deps.onProgress?.(takeProgress(state));
       deps.onPhase?.(state.phase);
       return;
     }
@@ -542,7 +536,6 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
 
     if (state.phase !== lastPhase) {
       lastPhase = state.phase;
-      deps.onProgress?.(takeProgress(state));
       // Solo las derrotas reales llevan resumen: la salida por staleGeometry
       // (arriba) no pasa por acá y no debe registrar score.
       if (state.phase === 'gameover') deps.onSummary?.(takeSummary(state));
@@ -558,17 +551,10 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
 
   const onVisibility = (): void => {
     paused = document.visibilityState === 'hidden';
-    // Irse de la pestaña no puede costar el progreso de la partida en curso.
-    if (paused) deps.onProgress?.(takeProgress(state));
-  };
-
-  const onPageHide = (): void => {
-    deps.onProgress?.(takeProgress(state));
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll);
-  window.addEventListener('pagehide', onPageHide);
   document.addEventListener('visibilitychange', onVisibility);
 
   const observer =
@@ -612,10 +598,8 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      window.removeEventListener('pagehide', onPageHide);
       document.removeEventListener('visibilitychange', onVisibility);
       observer?.disconnect();
-      deps.onProgress?.(takeProgress(state));
       // Devuelve las letras como estaban: el reposo tiene que quedar intacto.
       for (let i = 0; i < glyphCount; i += 1) {
         spans[i]?.style.removeProperty('transform');

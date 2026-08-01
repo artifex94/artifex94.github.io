@@ -18,7 +18,7 @@ export type LetterPhase = 'dodging' | 'rigid' | 'destroyed' | 'falling';
 
 /**
  * Ciclo del tablero:
- *   arming    se arma una letra por minuto jugado
+ *   arming    se arma una letra cada tanto tiempo de partida
  *   cleared   no queda ninguna letra: pausa larga antes de devolverlas
  *   restoring van cayendo de a una desde el navbar
  *   cooldown  volvieron todas: pausa y arranca un ciclo nuevo
@@ -26,7 +26,7 @@ export type LetterPhase = 'dodging' | 'rigid' | 'destroyed' | 'falling';
 export type CyclePhase = 'arming' | 'cleared' | 'restoring' | 'cooldown';
 
 export interface HeroPongTuning {
-  /** Cada cuánto tiempo JUGADO se vuelve rígida una letra al azar. */
+  /** Cada cuánto tiempo del ciclo en curso se vuelve rígida una letra al azar. */
   armIntervalMs: number;
   /** Pausa larga con el tablero vacío antes de que las letras vuelvan. */
   clearedPauseMs: number;
@@ -34,16 +34,18 @@ export interface HeroPongTuning {
   restoreStaggerMs: number;
   /** Pausa con todas las letras de vuelta antes de reiniciar el ciclo. */
   cooldownMs: number;
-  /** Resets necesarios para que los dígitos del contador se puedan romper. */
-  resetsToUnlockDigits: number;
+  /** Tiempo de partida tras el cual los dígitos del contador se pueden romper. */
+  digitsUnlockMs: number;
 }
 
 export const HERO_PONG_TUNING: HeroPongTuning = {
-  armIntervalMs: 60_000,
+  // Media letra por minuto: nada sólido en los primeros 30 s, así la pelota
+  // toma velocidad antes de que aparezca el primer blanco.
+  armIntervalMs: 30_000,
   clearedPauseMs: 20_000,
   restoreStaggerMs: 260,
   cooldownMs: 10_000,
-  resetsToUnlockDigits: 3,
+  digitsUnlockMs: 180_000,
 };
 
 /** Versión comprimida para poder verificar el ciclo completo sin jugar horas. */
@@ -52,7 +54,7 @@ export const HERO_PONG_TURBO: HeroPongTuning = {
   clearedPauseMs: 2_500,
   restoreStaggerMs: 90,
   cooldownMs: 1_500,
-  resetsToUnlockDigits: 3,
+  digitsUnlockMs: 3_000,
 };
 
 /** Puntos por golpe al borde del header. */
@@ -66,8 +68,8 @@ export interface HeroPongState {
   phase: GamePhase;
   cycle: CyclePhase;
   letters: LetterPhase[];
-  /** Tiempo jugado acumulado en la sesión: es lo que dispara el armado. */
-  playedMs: number;
+  /** Tiempo desde que arrancó el ciclo de armado en curso: dispara las letras. */
+  cycleMs: number;
   /** Letras armadas en el ciclo actual. */
   armed: number;
   /** Ciclos completados (vaciar el tablero y recuperarlo cuenta uno). */
@@ -117,7 +119,7 @@ export const createHeroPongState = (letterCount: number): HeroPongState => ({
   phase: 'idle',
   cycle: 'arming',
   letters: Array.from({ length: letterCount }, () => 'dodging' as LetterPhase),
-  playedMs: 0,
+  cycleMs: 0,
   armed: 0,
   resets: 0,
   digitsDestructible: false,
@@ -166,9 +168,9 @@ const advanceCycle = (state: HeroPongState, dtMs: number, rng: () => number, tun
 
   switch (next.cycle) {
     case 'arming': {
-      // El armado se mide contra el tiempo jugado acumulado, no contra la
-      // partida: si no, con partidas de menos de un minuto nunca pasaría nada.
-      const target = Math.floor(next.playedMs / tuning.armIntervalMs);
+      // Contra el reloj del ciclo, que arranca en cero con cada partida: media
+      // letra por minuto, y nada sólido hasta pasado el primer intervalo.
+      const target = Math.floor(next.cycleMs / tuning.armIntervalMs);
       while (next.armed < target) {
         const index = pickDodging(next.letters, rng);
         if (index < 0) break;
@@ -209,17 +211,15 @@ const advanceCycle = (state: HeroPongState, dtMs: number, rng: () => number, tun
     case 'cooldown': {
       const timer = next.cycleTimerMs + dtMs;
       if (timer < tuning.cooldownMs) return { ...next, cycleTimerMs: timer };
-      const resets = next.resets + 1;
       return {
         ...next,
         cycle: 'arming',
         cycleTimerMs: 0,
-        resets,
-        digitsDestructible: resets >= tuning.resetsToUnlockDigits,
+        resets: next.resets + 1,
         letters: next.letters.map(() => 'dodging' as LetterPhase),
         armed: 0,
-        // El conteo del minuto arranca de nuevo con el ciclo.
-        playedMs: 0,
+        // El reloj del armado arranca de nuevo con el ciclo.
+        cycleMs: 0,
       };
     }
   }
@@ -233,15 +233,10 @@ export function reduceHeroPong(
   switch (event.t) {
     case 'start':
       if (state.phase === 'playing') return state;
-      // Cada partida arranca con el TABLERO entero: las letras rotas vuelven y
-      // ninguna queda armada, así el jugador siempre empieza parejo.
-      //
-      // `playedMs` NO se reinicia a propósito: es el reloj que arma una letra
-      // por minuto jugado, o sea la dificultad acumulada de la sesión. Si se
-      // reiniciara con cada partida habría que jugar 186 minutos SEGUIDOS para
-      // vaciar el tablero, y el bonus de 10000 quedaría fuera de alcance. Como
-      // una letra armada se ve igual que una que esquiva, el tablero igual se
-      // ve entero: lo que sobrevive es la dificultad, no el destrozo.
+      // Toda partida arranca IGUAL, para todos: tablero entero, nada armado,
+      // relojes en cero. Es lo que hace comparable al ranking global — si la
+      // dificultad se arrastrara de partidas anteriores, dos jugadores no
+      // estarían jugando al mismo juego.
       return {
         ...state,
         phase: 'playing',
@@ -255,14 +250,25 @@ export function reduceHeroPong(
         cycleTimerMs: 0,
         restoreQueue: [],
         armed: 0,
+        cycleMs: 0,
+        resets: 0,
+        // Los dígitos rotos son un castigo (romperlos solo baja el score):
+        // arrastrarlos haría que el que vuelve a jugar juegue peor.
+        digitsDestructible: false,
       };
 
     case 'tick': {
       if (state.phase !== 'playing') return state;
+      const elapsedMs = state.elapsedMs + event.dtMs;
       const withTime = {
         ...state,
-        elapsedMs: state.elapsedMs + event.dtMs,
-        playedMs: state.playedMs + event.dtMs,
+        elapsedMs,
+        cycleMs: state.cycleMs + event.dtMs,
+        // Los dígitos se vuelven rompibles por tiempo de PARTIDA. Antes pedían
+        // tres ciclos completos del tablero, que con una letra cada 30 s son
+        // más horas de las que el servidor acepta como partida válida: era una
+        // mecánica que no se podía ver nunca.
+        digitsDestructible: elapsedMs >= tuning.digitsUnlockMs,
       };
       return advanceCycle(withTime, event.dtMs, event.rng, tuning);
     }
@@ -354,61 +360,7 @@ export const maxScoreFor = (run: {
   run.lettersDestroyed * SCORE_LETTER +
   run.boardsCleared * SCORE_CLEAR_BONUS;
 
-/** Lo que sobrevive entre partidas de la misma sesión (el progreso del tablero). */
-export interface HeroPongProgress {
-  letters: LetterPhase[];
-  playedMs: number;
-  armed: number;
-  resets: number;
-  cycle: CyclePhase;
-  cycleTimerMs: number;
-  restoreQueue: number[];
-}
-
-export const takeProgress = (state: HeroPongState): HeroPongProgress => ({
-  letters: state.letters,
-  playedMs: state.playedMs,
-  armed: state.armed,
-  resets: state.resets,
-  cycle: state.cycle,
-  cycleTimerMs: state.cycleTimerMs,
-  restoreQueue: state.restoreQueue,
-});
-
-const LETTER_PHASES: readonly LetterPhase[] = ['dodging', 'rigid', 'destroyed', 'falling'];
-const CYCLE_PHASES: readonly CyclePhase[] = ['arming', 'cleared', 'restoring', 'cooldown'];
-
-/**
- * Reconstruye el estado desde lo guardado. Descarta el progreso si el texto
- * cambió (otra cantidad de letras) o si algo no valida: es mejor arrancar de
- * cero que arrastrar un tablero inconsistente.
- */
-export function applyProgress(
-  base: HeroPongState,
-  progress: unknown,
-  tuning: HeroPongTuning = HERO_PONG_TUNING,
-): HeroPongState {
-  if (!progress || typeof progress !== 'object') return base;
-  const raw = progress as Partial<HeroPongProgress>;
-  if (!Array.isArray(raw.letters) || raw.letters.length !== base.letters.length) return base;
-  if (!raw.letters.every((l) => LETTER_PHASES.includes(l))) return base;
-  if (raw.cycle && !CYCLE_PHASES.includes(raw.cycle)) return base;
-
-  const playedMs = Number.isFinite(raw.playedMs) ? Math.max(raw.playedMs as number, 0) : 0;
-  const resets = Number.isFinite(raw.resets) ? Math.max(raw.resets as number, 0) : 0;
-  const queue = Array.isArray(raw.restoreQueue)
-    ? raw.restoreQueue.filter((i) => Number.isInteger(i) && i >= 0 && i < base.letters.length)
-    : [];
-
-  return {
-    ...base,
-    letters: [...raw.letters],
-    playedMs,
-    armed: Number.isFinite(raw.armed) ? Math.max(raw.armed as number, 0) : 0,
-    resets,
-    digitsDestructible: resets >= tuning.resetsToUnlockDigits,
-    cycle: raw.cycle ?? 'arming',
-    cycleTimerMs: Number.isFinite(raw.cycleTimerMs) ? Math.max(raw.cycleTimerMs as number, 0) : 0,
-    restoreQueue: queue,
-  };
-}
+// La persistencia de progreso entre partidas se retiró: desde que `start`
+// repone el tablero y pone todos los relojes en cero, no quedaba nada que
+// transportar. Que no exista estado previo posible es lo que hace DEMOSTRABLE
+// que dos jugadores del ranking jugaron al mismo juego, y no solo probable.

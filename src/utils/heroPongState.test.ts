@@ -5,9 +5,7 @@ import {
   scoreOf,
   addScore,
   destroyDigit,
-  takeProgress,
   takeSummary,
-  applyProgress,
   HERO_PONG_TUNING,
   SCORE_LETTER,
   SCORE_CLEAR_BONUS,
@@ -20,7 +18,7 @@ const TUNING: HeroPongTuning = {
   clearedPauseMs: 2000,
   restoreStaggerMs: 100,
   cooldownMs: 500,
-  resetsToUnlockDigits: 3,
+  digitsUnlockMs: 5000,
 };
 
 // RNG determinista: siempre elige el primer candidato.
@@ -163,15 +161,15 @@ describe('puntaje por letras', () => {
     expect(scoreOf(state.scoreDigits)).toBe(before + 2 * SCORE_LETTER + SCORE_CLEAR_BONUS);
   });
 
-  it('un tablero vacío guardado no paga el bonus: la partida nueva lo repone', () => {
-    // El progreso viejo puede traer todo destruido, pero `start` repone el
-    // tablero, así que nadie cobra 10000 por una partida que no jugó.
-    const restored = applyProgress(
-      createHeroPongState(2),
-      { letters: ['destroyed', 'destroyed'], playedMs: 0, armed: 2, resets: 0, cycle: 'arming', cycleTimerMs: 0, restoreQueue: [] },
-      TUNING,
-    );
-    let state = reduceHeroPong(restored, { t: 'start' }, TUNING);
+  it('un tablero heredado vacío no paga el bonus: la partida nueva lo repone', () => {
+    // Aunque el estado venga con todo destruido, `start` repone el tablero, así
+    // que nadie cobra 10000 por una partida que no jugó.
+    const wrecked: HeroPongState = {
+      ...createHeroPongState(2),
+      letters: ['destroyed', 'destroyed'],
+      armed: 2,
+    };
+    let state = reduceHeroPong(wrecked, { t: 'start' }, TUNING);
     state = tick(state, 16);
     expect(state.cycle).toBe('arming');
     expect(scoreOf(state.scoreDigits)).toBe(0);
@@ -212,17 +210,12 @@ describe('armado de letras', () => {
     const idle = createHeroPongState(5);
     const state = tick(idle, 5000);
     expect(state.letters.every((l) => l === 'dodging')).toBe(true);
-    expect(state.playedMs).toBe(0);
+    expect(state.cycleMs).toBe(0);
   });
 
-  it('acumula tiempo entre partidas de la misma sesión', () => {
-    let state = run(play(5), 600);
-    state = reduceHeroPong(state, { t: 'lose' }, TUNING);
-    state = reduceHeroPong(state, { t: 'start' }, TUNING);
-    expect(state.playedMs).toBeGreaterThan(0);
-    // Los 600ms de la partida anterior cuentan: alcanza el intervalo antes.
-    state = run(state, 500);
-    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
+  it('no arma nada en el primer intervalo, para que la pelota tome velocidad', () => {
+    const state = run(play(5), TUNING.armIntervalMs - 16);
+    expect(state.letters.every((l) => l === 'dodging')).toBe(true);
   });
 
   it('cada partida arranca con el tablero entero', () => {
@@ -245,17 +238,31 @@ describe('armado de letras', () => {
     expect(state.lettersDestroyed).toBe(0);
   });
 
-  it('el tablero vuelve entero pero la dificultad acumulada no se pierde', () => {
-    // Un minuto jugado deja el reloj de armado en 1.
-    let state = run(play(5), 1000);
+  it('la dificultad NO se hereda: dos partidas seguidas arman en el mismo instante', () => {
+    // Es lo que hace comparable al ranking global. Antes la segunda partida
+    // arrancaba con letras ya armadas desde el primer frame.
+    const firstArmsAt = (state: HeroPongState): number => {
+      let current = state;
+      for (let ms = 0; ms < TUNING.armIntervalMs * 3; ms += 16) {
+        if (current.letters.some((l) => l === 'rigid')) return ms;
+        current = tick(current, 16);
+      }
+      throw new Error('nunca armó');
+    };
+
+    const first = play(5);
+    const firstMs = firstArmsAt(first);
+
+    // Se juega un rato largo, se pierde y se vuelve a empezar.
+    let state = run(first, TUNING.armIntervalMs * 2);
     state = reduceHeroPong(state, { t: 'lose' }, TUNING);
     state = reduceHeroPong(state, { t: 'start' }, TUNING);
-    // Recién empezada no hay ninguna armada...
+
     expect(state.letters.every((l) => l === 'dodging')).toBe(true);
-    // ...pero el reloj sobrevivió, así que vuelve a armar enseguida. Sin esto
-    // haría falta jugar 186 minutos seguidos para vaciar el tablero.
-    state = tick(state, 16);
-    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
+    expect(state.cycleMs).toBe(0);
+    expect(state.resets).toBe(0);
+    expect(state.digitsDestructible).toBe(false);
+    expect(firstArmsAt(state)).toBe(firstMs);
   });
 
   it('no arma más letras si no queda ninguna esquivando', () => {
@@ -320,7 +327,7 @@ describe('ciclo completo', () => {
     const state = runUntil(clearBoard(2), (s) => s.resets === 1, landFalling);
     expect(state.cycle).toBe('arming');
     expect(state.armed).toBe(0);
-    expect(state.playedMs).toBe(0);
+    expect(state.cycleMs).toBe(0);
     expect(state.letters.every((l) => l === 'dodging')).toBe(true);
   });
 
@@ -344,26 +351,23 @@ describe('ciclo completo', () => {
     expect(state.letters.every((l) => l === 'dodging')).toBe(true);
   });
 
-  it('habilita los dígitos destruibles recién en el tercer reset', () => {
-    // Con una sola letra el ciclo es: armar, destruir, pausa, devolver, reset.
-    const restoreUntil = (s: HeroPongState, target: number): HeroPongState =>
-      runUntil(s, (x) => x.resets === target, landFalling);
-    const emptyBoard = (s: HeroPongState): HeroPongState => {
-      const armed = runUntil(s, (x) => x.letters[0] === 'rigid');
-      return reduceHeroPong(armed, { t: 'letterHit', index: 0 }, TUNING);
-    };
-
-    let state = restoreUntil(clearBoard(1), 1);
-    expect(state.digitsDestructible).toBe(false);
-    state = restoreUntil(emptyBoard(state), 2);
-    expect(state.digitsDestructible).toBe(false);
-    state = restoreUntil(emptyBoard(state), 3);
-    expect(state.resets).toBe(3);
-    expect(state.digitsDestructible).toBe(true);
-  });
 });
 
 describe('dígitos destruibles', () => {
+  it('se desbloquean por tiempo de PARTIDA, no por ciclos del tablero', () => {
+    // Antes pedían tres ciclos completos del tablero: con una letra cada 30 s
+    // eso era más tiempo del que el servidor acepta como partida válida, o sea
+    // una mecánica que no se podía ver nunca.
+    let state = run(play(3), TUNING.digitsUnlockMs - 100);
+    expect(state.digitsDestructible).toBe(false);
+    state = run(state, 200);
+    expect(state.digitsDestructible).toBe(true);
+    // Y no se heredan: la partida siguiente vuelve a arrancar sin el castigo.
+    state = reduceHeroPong(state, { t: 'lose' }, TUNING);
+    state = reduceHeroPong(state, { t: 'start' }, TUNING);
+    expect(state.digitsDestructible).toBe(false);
+  });
+
   it('ignora los golpes a dígitos antes del desbloqueo', () => {
     let state = play(3);
     state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
@@ -386,59 +390,12 @@ describe('dígitos destruibles', () => {
   });
 });
 
-describe('progreso entre partidas', () => {
-  it('sobrevive un ida y vuelta por serialización', () => {
-    const state = run(play(4), 2000);
-    const restored = applyProgress(
-      createHeroPongState(4),
-      JSON.parse(JSON.stringify(takeProgress(state))),
-      TUNING,
-    );
-    expect(restored.letters).toEqual(state.letters);
-    expect(restored.playedMs).toBe(state.playedMs);
-    expect(restored.armed).toBe(state.armed);
-    expect(restored.phase).toBe('idle');
-  });
-
-  it('descarta el progreso si cambió la cantidad de letras', () => {
-    const progress = takeProgress(run(play(4), 2000));
-    const base = createHeroPongState(6);
-    expect(applyProgress(base, progress, TUNING)).toBe(base);
-  });
-
-  it('descarta basura sin explotar', () => {
-    const base = createHeroPongState(3);
-    expect(applyProgress(base, null, TUNING)).toBe(base);
-    expect(applyProgress(base, 'nope', TUNING)).toBe(base);
-    expect(applyProgress(base, { letters: ['wat', 'wat', 'wat'] }, TUNING)).toBe(base);
-    expect(applyProgress(base, { letters: ['dodging', 'rigid', 'destroyed'], cycle: 'x' }, TUNING)).toBe(base);
-  });
-
-  it('reconstruye el desbloqueo de dígitos desde los resets guardados', () => {
-    const restored = applyProgress(
-      createHeroPongState(2),
-      { letters: ['dodging', 'dodging'], playedMs: 0, armed: 0, resets: 3, cycle: 'arming', cycleTimerMs: 0, restoreQueue: [] },
-      TUNING,
-    );
-    expect(restored.digitsDestructible).toBe(true);
-  });
-
-  it('filtra índices inválidos de la cola de restauración', () => {
-    const restored = applyProgress(
-      createHeroPongState(2),
-      { letters: ['destroyed', 'destroyed'], playedMs: 0, armed: 0, resets: 0, cycle: 'restoring', cycleTimerMs: 0, restoreQueue: [0, 9, -1, 1] },
-      TUNING,
-    );
-    expect(restored.restoreQueue).toEqual([0, 1]);
-  });
-});
-
 describe('valores de producción', () => {
-  it('arma una letra por minuto', () => {
-    expect(HERO_PONG_TUNING.armIntervalMs).toBe(60_000);
+  it('arma media letra por minuto, sin nada sólido en los primeros 30 s', () => {
+    expect(HERO_PONG_TUNING.armIntervalMs).toBe(30_000);
   });
 
-  it('pide tres resets para los dígitos', () => {
-    expect(HERO_PONG_TUNING.resetsToUnlockDigits).toBe(3);
+  it('desbloquea los dígitos a los tres minutos de partida', () => {
+    expect(HERO_PONG_TUNING.digitsUnlockMs).toBe(180_000);
   });
 });

@@ -30,6 +30,10 @@ const marqueeArg = process.argv.find((a) => a === '--marquee' || a.startsWith('-
 const MARQUEE_SCORES = marqueeArg ? Number(marqueeArg.split('=')[1] ?? 10) : 0;
 /** Cantidad de letras jugables del hero: define el progreso que se puede sembrar. */
 const GLYPH_COUNT = 186;
+/** El ranking a consultar. Se puede apuntar a una function local para probar. */
+const LEADERBOARD_URL =
+  process.env.HEROPONG_LEADERBOARD_URL ??
+  'https://erjyzhefwndkumadlpzr.supabase.co/functions/v1/hero-pong-score';
 
 const failures = [];
 const check = (label, ok, detail = '') => {
@@ -50,12 +54,11 @@ await context.addInitScript(
     try {
       if (marqueeScores > 0) {
         localStorage.setItem(
-          'artifex_hero_pong_top10',
+          'artifex_hero_pong_global',
           JSON.stringify(
             Array.from({ length: marqueeScores }, (_, i) => ({
               initials: 'ABC',
               score: (marqueeScores - i) * 100,
-              ts: 1,
             })),
           ),
         );
@@ -65,21 +68,11 @@ await context.addInitScript(
       // posiciones corridas, porque el cursor ocupa ancho y el título está
       // centrado — este escenario existe justamente para cazar eso.
       if (!firstVisit) sessionStorage.setItem('artifex_system_init', 'true');
-      if (cycle) {
-        // Tablero vacío y en pausa: la siguiente fase es la vuelta de las letras.
-        sessionStorage.setItem(
-          'artifex_hero_pong',
-          JSON.stringify({
-            letters: Array.from({ length: count }, () => 'destroyed'),
-            playedMs: 0,
-            armed: count,
-            resets: 0,
-            cycle: 'cleared',
-            cycleTimerMs: 0,
-            restoreQueue: [],
-          }),
-        );
-      }
+      // Antes acá se sembraba un tablero destruido en sessionStorage. Esa
+      // persistencia se retiró: cada partida arranca con el tablero entero y
+      // los relojes en cero, para que el ranking global compare partidas
+      // comparables. `--cycle` ahora usa el turbo y juega de verdad.
+      void count;
     } catch {
       /* ignore */
     }
@@ -113,6 +106,48 @@ await context.addInitScript(
 );
 
 const page = await context.newPage();
+
+// El check NO puede escribir en el ranking de PRODUCCIÓN: cada corrida dejaría
+// una marca basura en la tabla que ven los visitantes. Se intercepta solo el
+// alta y se responde con lo que el servidor real respondería; la lectura sigue
+// yendo de verdad, que es lo que interesa verificar.
+const seededTop = Array.from({ length: MARQUEE_SCORES }, (_, i) => ({
+  initials: 'ABC',
+  score: (MARQUEE_SCORES - i) * 100,
+}));
+
+await page.route('**/hero-pong-score', async (route) => {
+  const request = route.request();
+  if (request.method() !== 'POST') {
+    // Con `--marquee` el ranking también se simula: si no, la consulta real
+    // devolvería la tabla vacía y pisaría los scores sembrados, que es
+    // justamente lo que el ticker tiene que mostrar.
+    if (MARQUEE_SCORES > 0) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ top: seededTop }),
+      });
+    }
+    return route.continue();
+  }
+  let initials = 'AAA';
+  let score = 0;
+  try {
+    const body = JSON.parse(request.postData() ?? '{}');
+    initials = body.initials ?? initials;
+    score = body.score ?? score;
+  } catch {
+    /* cuerpo ilegible: se responde igual */
+  }
+  await route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    body: JSON.stringify({ top: [{ initials, score }], rank: 0 }),
+  });
+});
 const consoleErrors = [];
 page.on('pageerror', (e) => consoleErrors.push(e.message));
 page.on('console', (m) => {
@@ -219,7 +254,7 @@ if (MARQUEE_SCORES > 0) {
   }));
   check('el toque arranca la partida y el ticker desaparece', playing.canvas && !playing.marquee);
 
-  await page.evaluate(() => localStorage.removeItem('artifex_hero_pong_top10'));
+  await page.evaluate(() => localStorage.removeItem('artifex_hero_pong_global'));
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(700);
   const withoutScores = await sectionTop();
@@ -260,14 +295,19 @@ const started = await page.evaluate(() => {
     // Letras rotas al ARRANCAR: tiene que ser cero siempre, incluso si la
     // sesión anterior dejó el tablero hecho pedazos.
     hiddenAtStart: spans.filter((s) => s.style.visibility === 'hidden').length,
+    // Letras ARMADAS al arrancar: también tiene que ser cero. Una letra sólida
+    // en el primer frame no se ve distinta, pero mata la partida antes de que
+    // la pelota tome velocidad.
+    armedAtStart: window.__last?.armed ?? -1,
     titleColor: painted?.style.color ?? '',
     titleText: document.querySelector('#root h1')?.textContent ?? '',
   };
 });
+const startedArmed = started.armedAtStart;
 check(
-  'el tablero arranca entero',
-  started.hiddenAtStart === 0,
-  `${started.hiddenAtStart} letras rotas al empezar`,
+  'el tablero arranca entero y sin nada armado',
+  started.hiddenAtStart === 0 && startedArmed === 0,
+  `${started.hiddenAtStart} rotas, ${startedArmed} armadas al empezar`,
 );
 check('aparece el canvas', started.canvas);
 check('el texto se duplica en letras jugables', started.glyphs > 100, `${started.glyphs} letras`);
@@ -464,24 +504,24 @@ if (!shotArg && !CYCLE) {
         { timeout: 15000 },
       )
       .catch(() => {});
-    const stored = await page.evaluate(() => {
-      let parsed = null;
-      try {
-        parsed = JSON.parse(localStorage.getItem('artifex_hero_pong_top10') ?? 'null');
-      } catch {
-        /* ignore */
-      }
-      const rows = document.querySelectorAll('[data-hero-pong="gameover"] .justify-between');
-      const best = document.querySelector('[data-hero-pong="local-best"]');
-      return { parsed, rows: rows.length, best: best?.textContent ?? '' };
-    });
+    const stored = await page.evaluate(() => ({
+      best: Number(localStorage.getItem('artifex_hero_pong_best') ?? 0),
+      initials: localStorage.getItem('artifex_hero_pong_initials') ?? '',
+      rows: document.querySelectorAll('[data-hero-pong="gameover"] .justify-between').length,
+      bestRow: document.querySelector('[data-hero-pong="local-best"]')?.textContent ?? '',
+    }));
     check(
-      'el registro queda en localStorage con las iniciales elegidas',
-      Array.isArray(stored.parsed) && stored.parsed[0]?.initials === 'BAA' && stored.parsed[0]?.score > 0,
-      JSON.stringify(stored.parsed?.[0] ?? null),
+      'la marca personal queda guardada',
+      stored.best > 0,
+      `mejor ${stored.best}`,
     );
-    check('la tabla muestra la fila registrada', stored.rows >= 1, `${stored.rows} filas`);
-    check('destaca tu mejor marca aparte del ranking', stored.best.includes('TU MEJOR'), stored.best);
+    check(
+      'recuerda las iniciales para el próximo intento',
+      stored.initials === 'BAA',
+      stored.initials,
+    );
+    check('la pantalla muestra alguna fila', stored.rows >= 1, `${stored.rows} filas`);
+    check('destaca tu mejor marca aparte del ranking', stored.bestRow.includes('TU MEJOR'), stored.bestRow);
 
     // Cualquier toque cierra la tabla y la franja vuelve al reposo.
     await page.touchscreen.tap(195, 100);
@@ -492,19 +532,21 @@ if (!shotArg && !CYCLE) {
       marquee: document.querySelector('[data-hero-pong="marquee"]')?.textContent ?? '',
     }));
     check('el overlay se cierra y la franja queda lista para otra partida', !closed.overlay && closed.band);
+    // El ticker muestra el ranking global y, aparte, TU MEJOR. La partida de un
+    // bot dura menos de dos segundos, así que no llega al global (el servidor la
+    // descarta por implausible): lo que tiene que aparecer es la marca propia.
     check(
-      'el ticker arranca con el score recién registrado',
-      closed.marquee.includes('BAA'),
-      closed.marquee.slice(0, 40),
+      'el ticker arranca con tu mejor marca',
+      closed.marquee.includes('TU MEJOR'),
+      closed.marquee.slice(0, 48),
     );
   }
 }
 
 if (CYCLE) {
-  // Este escenario siembra la sesión con el tablero DESTRUIDO entero. Desde que
-  // cada partida repone las letras, ya no sirve para mirar la ola de letras
-  // volviendo (eso pasa dentro de una partida y lo cubren los tests del
-  // reducer): ahora es el guard de que un tablero roto guardado no se arrastra.
+  // Con el turbo (?heropong=turbo) el ciclo corre en segundos, así que este
+  // escenario juega de verdad en vez de sembrar estado. Verifica lo que el
+  // ranking global necesita: que toda partida arranque igual.
   console.log('\ntablero entre partidas:');
   const final = await page.evaluate(() => {
     const spans = [...document.querySelectorAll('[data-hero-pong="glyphs"] span')];
@@ -525,12 +567,12 @@ if (CYCLE) {
     final.total > 0 && final.hidden < final.total / 4,
     `${final.hidden}/${final.total} ocultas`,
   );
-  // Lo que SÍ sobrevive es la dificultad: el reloj de armado no se reinicia, o
-  // vaciar el tablero pediría 186 minutos seguidos.
+  // El armado tiene que haber ocurrido DURANTE la partida, no venir puesto de
+  // antes: con turbo, unos segundos de juego alcanzan para que arme varias.
   check(
-    'la dificultad acumulada sobrevive al reset del tablero',
-    final.armed >= 1,
-    `${final.armed} letras armadas, cycle=${final.cycle}`,
+    'la dificultad se construye dentro de la partida',
+    final.armed >= 1 && startedArmed === 0,
+    `${startedArmed} al empezar → ${final.armed} tras jugar, cycle=${final.cycle}`,
   );
 }
 
@@ -539,23 +581,20 @@ if (CYCLE) {
 // la edge function se REPORTA en vez de romper la corrida: mientras no esté
 // desplegada, sus 404 son el comportamiento esperado y no ruido a esconder.
 console.log('\nranking global:');
-const leaderboard = await page.evaluate(async () => {
+const leaderboard = await page.evaluate(async (endpoint) => {
   try {
-    const response = await fetch(
-      'https://erjyzhefwndkumadlpzr.supabase.co/functions/v1/hero-pong-score',
-    );
+    const response = await fetch(endpoint);
     return { status: response.status, body: await response.text() };
   } catch (error) {
     return { status: 0, body: String(error) };
   }
-});
+}, LEADERBOARD_URL);
 if (leaderboard.status === 200) {
   check('la edge function responde el top 10', leaderboard.body.includes('top'), leaderboard.body.slice(0, 80));
-  // Que el top salga vacío acá NO es un bug: la partida que juega este script
-  // dura menos de dos segundos y el servidor la descarta por implausible, que
-  // es exactamente su trabajo. El alta real está cubierta por los tests de
-  // src/utils/heroPongRun.parity.test.ts.
-  console.log('  · el registro global no se ejercita acá: una partida de bot es demasiado corta para ser creíble');
+  // El alta contra el servidor real no se ejercita acá a propósito: se
+  // intercepta para no ensuciar el ranking que ven los visitantes. La validación
+  // del servidor está cubierta por src/utils/heroPongRun.parity.test.ts.
+  console.log('  · el alta se intercepta: este check no escribe en el ranking real');
 } else {
   console.log(`  · sin desplegar todavía (HTTP ${leaderboard.status}) — el juego cae a la tabla local`);
 }

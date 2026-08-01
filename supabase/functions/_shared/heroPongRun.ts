@@ -30,6 +30,8 @@ export const LETTERS_PER_BOARD = 200;
 export const MAX_BOARDS_CLEARED = 5;
 export const MIN_ELAPSED_MS = 2000;
 export const MAX_ELAPSED_MS = 4 * 60 * 60 * 1000;
+/** Cuántos puestos tiene la tabla. Lo comparten el cliente y el servidor. */
+export const TOP_LIMIT = 10;
 
 export const INITIALS_PATTERN = /^[A-Z]{3}$/;
 
@@ -40,10 +42,31 @@ export interface HeroPongRun {
   lettersDestroyed: number;
   boardsCleared: number;
   elapsedMs: number;
+  /** Identificador de la partida, para no registrarla dos veces. Opcional. */
+  runId: string | null;
 }
 
+/** Contadores del juego: enteros y acotados. El tope corta cualquier disparate. */
 const isCount = (value: unknown): value is number =>
   typeof value === 'number' && Number.isInteger(value) && value >= 0 && value < 1e7;
+
+/**
+ * La duración NO es un contador: el cronómetro del juego suma los `dtMs` que
+ * entrega requestAnimationFrame, que son decimales, así que llega fraccionada
+ * (42318.399…). Exigirle ser entero rechazaba el 100% de las partidas reales.
+ *
+ * El redondeo del lado del servidor es TOLERANCIA a los clientes ya cacheados,
+ * no el contrato: el cliente manda el valor ya redondeado.
+ */
+const asDuration = (value: unknown): number | null => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
+  const ms = Math.floor(value);
+  return ms >= MIN_ELAPSED_MS && ms <= MAX_ELAPSED_MS ? ms : null;
+};
+
+/** Id de partida: se acepta cualquier token corto, o su ausencia. */
+const asRunId = (value: unknown): string | null =>
+  typeof value === 'string' && /^[A-Za-z0-9-]{8,64}$/.test(value) ? value : null;
 
 /**
  * Score máximo que una traza permite. Romper dígitos del contador solo puede
@@ -66,12 +89,14 @@ export function validateRun(body: unknown): HeroPongRun | null {
   const initials = typeof raw.initials === 'string' ? raw.initials.toUpperCase() : '';
   if (!INITIALS_PATTERN.test(initials)) return null;
 
-  const { score, ceilingHits, lettersDestroyed, boardsCleared, elapsedMs } = raw;
+  const { score, ceilingHits, lettersDestroyed, boardsCleared } = raw;
   // Uno por uno y no con un `.every`: así TypeScript los estrecha a number.
   if (!isCount(score) || !isCount(ceilingHits) || !isCount(lettersDestroyed)) return null;
-  if (!isCount(boardsCleared) || !isCount(elapsedMs)) return null;
+  if (!isCount(boardsCleared)) return null;
   if (score <= 0) return null;
-  if (elapsedMs < MIN_ELAPSED_MS || elapsedMs > MAX_ELAPSED_MS) return null;
+
+  const elapsedMs = asDuration(raw.elapsedMs);
+  if (elapsedMs === null) return null;
 
   const seconds = elapsedMs / 1000;
   if (ceilingHits > seconds * MAX_HITS_PER_SECOND) return null;
@@ -83,5 +108,26 @@ export function validateRun(body: unknown): HeroPongRun | null {
   const run = { ceilingHits, lettersDestroyed, boardsCleared };
   if (score > maxScoreForRun(run)) return null;
 
-  return { initials, score, ceilingHits, lettersDestroyed, boardsCleared, elapsedMs };
+  return {
+    initials,
+    score,
+    ceilingHits,
+    lettersDestroyed,
+    boardsCleared,
+    elapsedMs,
+    // Ausente se acepta a propósito: los bundles ya cacheados en los teléfonos
+    // postean sin id, y exigirlo los dejaría a todos afuera.
+    runId: asRunId(raw.runId),
+  };
+}
+
+/** ¿Este score entra al top? Empatar al último NO desplaza a nadie. */
+export function qualifiesForTop(
+  top: readonly { score: number }[],
+  score: number,
+  limit = TOP_LIMIT,
+): boolean {
+  if (score <= 0) return false;
+  if (top.length < limit) return true;
+  return score > top[top.length - 1].score;
 }

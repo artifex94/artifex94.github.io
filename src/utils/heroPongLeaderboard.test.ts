@@ -1,10 +1,12 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
+  buildRunPayload,
   fetchGlobalTop,
+  newRunId,
   qualifiesGlobal,
   submitGlobalScore,
-  type GlobalScore,
 } from './heroPongLeaderboard';
+import type { GlobalScore } from './heroPongHighScores';
 import type { HeroPongSummary } from './heroPongState';
 
 const summary: HeroPongSummary = {
@@ -69,7 +71,7 @@ describe('submitGlobalScore', () => {
     const fetchMock = vi.fn().mockResolvedValue(ok({ top: [], rank: -1 }));
     vi.stubGlobal('fetch', fetchMock);
 
-    await submitGlobalScore('RAM', summary);
+    await submitGlobalScore('RAM', summary, 'run-1234-abcd');
 
     const [, init] = fetchMock.mock.calls[0];
     expect(init.method).toBe('POST');
@@ -80,12 +82,25 @@ describe('submitGlobalScore', () => {
       lettersDestroyed: 4,
       boardsCleared: 0,
       elapsedMs: 42_000,
+      runId: 'run-1234-abcd',
     });
+  });
+
+  it('redondea el cronómetro fraccionario que produce el rAF', () => {
+    // El servidor descartaba enteras las partidas por este decimal.
+    const payload = buildRunPayload('RAM', { ...summary, elapsedMs: 42318.399999 }, 'run-x');
+    expect(payload.elapsedMs).toBe(42_318);
+    expect(Number.isInteger(payload.elapsedMs)).toBe(true);
+  });
+
+  it('newRunId devuelve algo que el servidor acepta', () => {
+    expect(newRunId()).toMatch(/^[A-Za-z0-9-]{8,64}$/);
+    expect(newRunId()).not.toBe(newRunId());
   });
 
   it('devuelve la tabla actualizada y el puesto', async () => {
     mockFetch(() => Promise.resolve(ok({ top: [{ initials: 'RAM', score: 450 }], rank: 0 })));
-    expect(await submitGlobalScore('RAM', summary)).toEqual({
+    expect(await submitGlobalScore('RAM', summary, 'run-1234-abcd')).toEqual({
       top: [{ initials: 'RAM', score: 450 }],
       rank: 0,
     });
@@ -93,12 +108,12 @@ describe('submitGlobalScore', () => {
 
   it('trata un rank ausente como "no clasificó"', async () => {
     mockFetch(() => Promise.resolve(ok({ top: [] })));
-    expect(await submitGlobalScore('RAM', summary)).toEqual({ top: [], rank: -1 });
+    expect(await submitGlobalScore('RAM', summary, 'run-1234-abcd')).toEqual({ top: [], rank: -1 });
   });
 
   it('devuelve null si el ranking no está disponible', async () => {
     mockFetch(() => Promise.reject(new Error('offline')));
-    expect(await submitGlobalScore('RAM', summary)).toBeNull();
+    expect(await submitGlobalScore('RAM', summary, 'run-1234-abcd')).toBeNull();
   });
 });
 

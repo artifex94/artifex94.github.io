@@ -4,7 +4,7 @@ import { createRef } from 'react';
 import * as framer from 'framer-motion';
 import { HeroPongBand } from './HeroPongBand';
 import { mockMobileViewport } from '../../test/media';
-import { HIGH_SCORES_KEY } from '../../utils/heroPongHighScores';
+import { GLOBAL_SCORES_KEY } from '../../utils/heroPongHighScores';
 import { marqueeCopies, MARQUEE_CHAR_WIDTH, MARQUEE_COVER_WIDTH } from './heroPongConfig';
 
 // El ticker del top-10 vive en localStorage, así que estos tests van aparte de
@@ -15,15 +15,12 @@ import { marqueeCopies, MARQUEE_CHAR_WIDTH, MARQUEE_COVER_WIDTH } from './heroPo
 // (src/test/setup.ts), igual que en Home.reduced.test.tsx: re-mockear el módulo
 // con importActual traería el framer real, que necesita IntersectionObserver.
 
+/** Siembra el espejo del ranking global, que es lo que el ticker muestra. */
 const seedScores = (count: number): void => {
   localStorage.setItem(
-    HIGH_SCORES_KEY,
+    GLOBAL_SCORES_KEY,
     JSON.stringify(
-      Array.from({ length: count }, (_, i) => ({
-        initials: 'ABC',
-        score: (count - i) * 100,
-        ts: 1,
-      })),
+      Array.from({ length: count }, (_, i) => ({ initials: 'ABC', score: (count - i) * 100 })),
     ),
   );
 };
@@ -62,7 +59,7 @@ describe('ticker del top-10 en la franja', () => {
     const marquee = band.querySelector('[data-hero-pong="marquee"]') as HTMLElement;
 
     expect(marquee).not.toBeNull();
-    expect(marquee.textContent).toContain('TOP 10');
+    expect(marquee.textContent).toContain('TOP 10 GLOBAL');
     expect(marquee.textContent).toContain('1 ABC 1000');
     // No puede robarle el toque a la franja, que es la que arranca la partida.
     expect(marquee.className).toContain('pointer-events-none');

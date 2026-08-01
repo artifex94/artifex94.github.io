@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  insertScore,
-  localBestScore,
-  qualifies,
+  readBestScore,
   readGlobalScores,
-  readHighScores,
   readLastInitials,
+  saveBestScore,
   writeGlobalScores,
-  writeHighScores,
   writeLastInitials,
-  type HighScoreEntry,
+  type GlobalScore,
 } from '../../utils/heroPongHighScores';
 import {
   fetchGlobalTop,
+  isSubmittable,
+  newRunId,
   qualifiesGlobal,
   submitGlobalScore,
-  type GlobalScore,
 } from '../../utils/heroPongLeaderboard';
 import type { HeroPongSummary } from '../../utils/heroPongState';
 
@@ -30,17 +28,13 @@ import type { HeroPongSummary } from '../../utils/heroPongState';
 // El acento naranja aparece SOLO en la marca propia, que es lo único que el
 // jugador tiene que poder encontrar de un vistazo.
 //
-// El ranking global puede no estar (función fría, sin red, sin desplegar): en
-// ese caso todo cae a la tabla local sin ningún estado de error a la vista, que
-// es exactamente lo que el juego era antes de tener ranking.
+// El ranking global puede no estar (función fría, sin red): en ese caso se dice,
+// y NO se muestran datos locales haciéndolos pasar por el ranking.
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const cycleLetter = (letter: string, delta: number): string =>
   LETTERS[(LETTERS.indexOf(letter) + delta + LETTERS.length) % LETTERS.length];
-
-const toRows = (entries: readonly { initials: string; score: number }[]) =>
-  entries.map((entry) => ({ initials: entry.initials, score: entry.score }));
 
 interface HeroPongGameOverProps {
   summary: HeroPongSummary;
@@ -48,69 +42,65 @@ interface HeroPongGameOverProps {
 }
 
 export const HeroPongGameOver: React.FC<HeroPongGameOverProps> = ({ summary, onClose }) => {
-  const [local, setLocal] = useState<HighScoreEntry[]>(readHighScores);
-  /** `null` hasta saber si hay ranking; el espejo del storage evita la espera. */
-  const [global, setGlobal] = useState<GlobalScore[] | null>(() => {
-    const cached = readGlobalScores();
-    return cached.length ? toRows(cached) : null;
-  });
-  const [best, setBest] = useState(localBestScore);
-  // La vista se decide SIN esperar al servidor: si arrancara en la tabla y
-  // saltara a las iniciales cuando llega la respuesta, lo primero que ve el
-  // jugador sería un parpadeo. Alcanza con lo que ya está en el navegador —
-  // la tabla local y el espejo del ranking— y el efecto de abajo solo puede
-  // ASCENDER a iniciales, nunca sacarlas de la pantalla.
-  const [view, setView] = useState<'initials' | 'table'>(() => {
-    const cached = readGlobalScores();
-    const entersGlobal = cached.length ? qualifiesGlobal(toRows(cached), summary.score) : false;
-    return entersGlobal || qualifies(readHighScores(), summary.score) ? 'initials' : 'table';
-  });
-  // Ya vienen puestas las últimas que usó: en un reintento se toca OK y listo.
+  /** `null` = el ranking nunca se pudo consultar. `[]` = está vacío de verdad. */
+  const [global, setGlobal] = useState<GlobalScore[] | null>(readGlobalScores);
+  const [best, setBest] = useState(readBestScore);
   const [initials, setInitials] = useState<string[]>(() => readLastInitials().split(''));
   const [ownRank, setOwnRank] = useState(-1);
   const [saving, setSaving] = useState(false);
 
-  // Se pregunta el ranking al abrir: la partida ya terminó y el engine murió,
-  // así que la espera no le saca frames a nadie.
+  // Un id por partida, generado en el PRIMER render y no dentro de `confirm`:
+  // si se generara al confirmar, dos envíos llevarían ids distintos y el
+  // candado de unicidad del servidor no serviría para nada.
+  const runIdRef = useRef<string | null>(null);
+  if (runIdRef.current == null) runIdRef.current = newRunId();
+
+  // Una vez confirmado, nada de lo que llegue tarde puede tocar la pantalla.
+  const submittedRef = useRef(false);
+
+  // La vista se decide SIN esperar al servidor: si arrancara en la tabla y
+  // saltara a las iniciales cuando llega la respuesta, lo primero que vería el
+  // jugador sería un parpadeo.
+  const [view, setView] = useState<'initials' | 'table'>(() => {
+    if (!isSubmittable(summary)) return 'table';
+    const cached = readGlobalScores();
+    const entersGlobal = cached ? qualifiesGlobal(cached, summary.score) : true;
+    return entersGlobal || summary.score > readBestScore() ? 'initials' : 'table';
+  });
+
   useEffect(() => {
     let cancelled = false;
     void fetchGlobalTop().then((top) => {
-      if (cancelled || !top) return;
+      // `submittedRef` corta el efecto ENTERO, no solo el cambio de vista: esta
+      // respuesta salió antes del registro, así que su tabla ya está vieja y
+      // pisaría la recién actualizada dejando `ownRank` apuntando a otra fila.
+      if (cancelled || submittedRef.current || !top) return;
       setGlobal(top);
       writeGlobalScores(top);
-      // Solo puede abrir la puerta: si el ranking resulta más flojo de lo que
-      // decía el espejo, el jugador gana la chance de registrarse. Nunca al
-      // revés, que sería arrancarle la pantalla de las manos.
-      if (qualifiesGlobal(top, summary.score)) setView((current) => (current === 'table' ? 'initials' : current));
+      // Solo puede ABRIR la puerta: si el ranking resulta más flojo de lo que
+      // decía el espejo, el jugador gana la chance de registrarse.
+      if (isSubmittable(summary) && qualifiesGlobal(top, summary.score)) {
+        setView((current) => (current === 'table' ? 'initials' : current));
+      }
     });
     return () => {
       cancelled = true;
     };
-  }, [summary.score]);
+  }, [summary]);
 
   const spin = (slot: number, delta: number): void => {
     setInitials((current) => current.map((l, i) => (i === slot ? cycleLetter(l, delta) : l)));
   };
 
   const confirm = (): void => {
-    if (saving) return;
+    if (saving || submittedRef.current) return;
+    submittedRef.current = true;
     setSaving(true);
     const chosen = initials.join('');
     writeLastInitials(chosen);
+    setBest(saveBestScore(summary.score));
 
-    // La marca local se guarda siempre y al instante: es del navegador y no
-    // depende de nadie.
-    const { list: nextLocal } = insertScore(local, {
-      initials: chosen,
-      score: summary.score,
-      ts: Date.now(),
-    });
-    writeHighScores(nextLocal);
-    setLocal(nextLocal);
-    setBest(nextLocal[0]?.score ?? 0);
-
-    // Al global se manda la traza entera; el servidor decide qué score acepta.
-    void submitGlobalScore(chosen, summary).then((result) => {
+    void submitGlobalScore(chosen, summary, runIdRef.current ?? '').then((result) => {
       if (result) {
         setGlobal(result.top);
         writeGlobalScores(result.top);
@@ -120,8 +110,6 @@ export const HeroPongGameOver: React.FC<HeroPongGameOverProps> = ({ summary, onC
       setView('table');
     });
   };
-
-  const rows = global ?? toRows(local);
 
   return createPortal(
     <div
@@ -180,17 +168,26 @@ export const HeroPongGameOver: React.FC<HeroPongGameOverProps> = ({ summary, onC
           </>
         ) : (
           <div className="mt-4 min-w-40">
-            {rows.map((entry, index) => (
-              <div
-                key={`${entry.initials}-${entry.score}-${index}`}
-                className={`flex justify-between gap-6${index === ownRank ? ' text-primary' : ''}`}
-              >
-                <span>
-                  {String(index + 1).padStart(2, ' ')} {entry.initials}
-                </span>
-                <span>{entry.score}</span>
-              </div>
-            ))}
+            <div className="mb-2 border-b border-line pb-1 text-[10px] tracking-widest">
+              TOP 10 GLOBAL
+            </div>
+            {global?.length ? (
+              global.map((entry, index) => (
+                <div
+                  key={`${entry.initials}-${entry.score}-${index}`}
+                  className={`flex justify-between gap-6${index === ownRank ? ' text-primary' : ''}`}
+                >
+                  <span>
+                    {String(index + 1).padStart(2, ' ')} {entry.initials}
+                  </span>
+                  <span>{entry.score}</span>
+                </div>
+              ))
+            ) : (
+              // Sin filas se DICE. Antes se rellenaba con la tabla local y el
+              // jugador veía sus propios scores creyendo que era el ranking.
+              <div className="text-[10px]">{global ? 'todavía sin marcas' : 'sin conexión'}</div>
+            )}
             {best > 0 && (
               <div
                 data-hero-pong="local-best"

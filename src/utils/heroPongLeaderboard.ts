@@ -11,6 +11,8 @@
 import { FUNCTIONS_URL } from '../data/supabaseFunctions';
 import { writeGlobalScores } from './heroPongHighScores';
 import type { HeroPongSummary } from './heroPongState';
+// El espejo del servidor: mismas reglas de un solo lado.
+import { qualifiesForTop, MIN_ELAPSED_MS } from '../../supabase/functions/_shared/heroPongRun';
 
 const ENDPOINT = `${FUNCTIONS_URL}/hero-pong-score`;
 /** Una partida terminada no puede quedar esperando a un servidor dormido. */
@@ -57,6 +59,45 @@ export async function fetchGlobalTop(): Promise<GlobalScore[] | null> {
 }
 
 /**
+ * El cuerpo que viaja al servidor. Vive exportado y aparte para que el test de
+ * paridad valide EL PAYLOAD REAL: armarlo a mano en el test fue lo que dejó
+ * pasar el bug que rechazaba todas las partidas.
+ *
+ * `elapsedMs` se redondea acá: el cronómetro del juego suma los `dtMs` de
+ * requestAnimationFrame y llega fraccionado.
+ */
+export function buildRunPayload(initials: string, summary: HeroPongSummary, runId: string) {
+  return {
+    initials,
+    score: summary.score,
+    ceilingHits: summary.ceilingHits,
+    lettersDestroyed: summary.lettersDestroyed,
+    boardsCleared: summary.boardsCleared,
+    elapsedMs: Math.round(summary.elapsedMs),
+    runId,
+  };
+}
+
+/**
+ * ¿Esta partida es siquiera enviable? El servidor descarta las de menos de dos
+ * segundos por implausibles, así que no tiene sentido pedirle iniciales a quien
+ * perdió al instante: escribiría tres letras para que no pase nada.
+ */
+export const isSubmittable = (summary: HeroPongSummary): boolean =>
+  summary.score > 0 && Math.round(summary.elapsedMs) >= MIN_ELAPSED_MS;
+
+/** Id de partida, para que un doble envío no registre dos veces. */
+export function newRunId(): string {
+  const uuid = globalThis.crypto?.randomUUID;
+  // randomUUID no existe fuera de un contexto seguro ni en Safari < 15.4, y si
+  // esto tirara la pantalla de iniciales quedaría trabada.
+  if (typeof uuid === 'function') return uuid.call(globalThis.crypto);
+  const bytes = new Uint8Array(16);
+  globalThis.crypto?.getRandomValues?.(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * Registra la partida. Devuelve la tabla ya actualizada y el puesto obtenido
  * (`-1` si no clasificó), o `null` si el ranking no está disponible.
  *
@@ -67,18 +108,12 @@ export async function fetchGlobalTop(): Promise<GlobalScore[] | null> {
 export async function submitGlobalScore(
   initials: string,
   summary: HeroPongSummary,
+  runId: string,
 ): Promise<{ top: GlobalScore[]; rank: number } | null> {
   const payload = await request({
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      initials,
-      score: summary.score,
-      ceilingHits: summary.ceilingHits,
-      lettersDestroyed: summary.lettersDestroyed,
-      boardsCleared: summary.boardsCleared,
-      elapsedMs: summary.elapsedMs,
-    }),
+    body: JSON.stringify(buildRunPayload(initials, summary, runId)),
   });
 
   const top = parseTop(payload);
@@ -94,12 +129,13 @@ export async function submitGlobalScore(
  */
 export async function refreshGlobalScores(): Promise<void> {
   const top = await fetchGlobalTop();
-  if (top?.length) writeGlobalScores(top);
+  // `top` vacío también se guarda: si no, un ranking que quedó en cero se
+  // seguiría mostrando lleno para siempre.
+  if (top) writeGlobalScores(top);
 }
 
-/** ¿Este score entra al top global? Empatar al último NO desplaza a nadie. */
-export function qualifiesGlobal(top: readonly GlobalScore[], score: number): boolean {
-  if (score <= 0) return false;
-  if (top.length < 10) return true;
-  return score > top[top.length - 1].score;
-}
+/**
+ * ¿Este score entra al top global? La regla vive en el módulo compartido con la
+ * edge function: el servidor decide lo mismo con el mismo código.
+ */
+export const qualifiesGlobal = qualifiesForTop;
