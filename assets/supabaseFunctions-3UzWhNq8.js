@@ -1,0 +1,1 @@
+var e=`https://erjyzhefwndkumadlpzr.supabase.co/functions/v1`;export{e as t};
