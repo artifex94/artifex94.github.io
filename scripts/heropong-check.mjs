@@ -551,6 +551,11 @@ const leaderboard = await page.evaluate(async () => {
 });
 if (leaderboard.status === 200) {
   check('la edge function responde el top 10', leaderboard.body.includes('top'), leaderboard.body.slice(0, 80));
+  // Que el top salga vacío acá NO es un bug: la partida que juega este script
+  // dura menos de dos segundos y el servidor la descarta por implausible, que
+  // es exactamente su trabajo. El alta real está cubierta por los tests de
+  // src/utils/heroPongRun.parity.test.ts.
+  console.log('  · el registro global no se ejercita acá: una partida de bot es demasiado corta para ser creíble');
 } else {
   console.log(`  · sin desplegar todavía (HTTP ${leaderboard.status}) — el juego cae a la tabla local`);
 }

@@ -55,29 +55,33 @@ export const HeroPongGameOver: React.FC<HeroPongGameOverProps> = ({ summary, onC
     return cached.length ? toRows(cached) : null;
   });
   const [best, setBest] = useState(localBestScore);
-  const [view, setView] = useState<'initials' | 'table'>('table');
+  // La vista se decide SIN esperar al servidor: si arrancara en la tabla y
+  // saltara a las iniciales cuando llega la respuesta, lo primero que ve el
+  // jugador sería un parpadeo. Alcanza con lo que ya está en el navegador —
+  // la tabla local y el espejo del ranking— y el efecto de abajo solo puede
+  // ASCENDER a iniciales, nunca sacarlas de la pantalla.
+  const [view, setView] = useState<'initials' | 'table'>(() => {
+    const cached = readGlobalScores();
+    const entersGlobal = cached.length ? qualifiesGlobal(toRows(cached), summary.score) : false;
+    return entersGlobal || qualifies(readHighScores(), summary.score) ? 'initials' : 'table';
+  });
   // Ya vienen puestas las últimas que usó: en un reintento se toca OK y listo.
   const [initials, setInitials] = useState<string[]>(() => readLastInitials().split(''));
   const [ownRank, setOwnRank] = useState(-1);
   const [saving, setSaving] = useState(false);
 
   // Se pregunta el ranking al abrir: la partida ya terminó y el engine murió,
-  // así que la espera no le saca frames a nadie. Mientras tanto se decide con
-  // lo que haya en el espejo, y se corrige cuando llega la respuesta.
+  // así que la espera no le saca frames a nadie.
   useEffect(() => {
     let cancelled = false;
     void fetchGlobalTop().then((top) => {
-      if (cancelled) return;
-      const reference = top ?? (readGlobalScores().length ? toRows(readGlobalScores()) : null);
-      if (top) {
-        setGlobal(top);
-        writeGlobalScores(top);
-      }
-      const entersGlobal = reference ? qualifiesGlobal(reference, summary.score) : false;
-      const entersLocal = qualifies(readHighScores(), summary.score);
-      // Sin ranking disponible manda la tabla local: el rito de las iniciales
-      // no puede depender de que el servidor conteste.
-      if (entersGlobal || (!reference && entersLocal)) setView('initials');
+      if (cancelled || !top) return;
+      setGlobal(top);
+      writeGlobalScores(top);
+      // Solo puede abrir la puerta: si el ranking resulta más flojo de lo que
+      // decía el espejo, el jugador gana la chance de registrarse. Nunca al
+      // revés, que sería arrancarle la pantalla de las manos.
+      if (qualifiesGlobal(top, summary.score)) setView((current) => (current === 'table' ? 'initials' : current));
     });
     return () => {
       cancelled = true;

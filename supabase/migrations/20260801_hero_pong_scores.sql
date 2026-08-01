@@ -1,10 +1,13 @@
 -- Ranking global del hero-pong.
 --
--- La tabla NO se expone a PostgREST: RLS queda activo y SIN ninguna policy, así
--- que ni anon ni authenticated pueden leerla ni escribirla. El único camino es
--- la edge function `hero-pong-score`, que usa la service role key (que saltea
--- RLS) y es la que valida. Con esto el sitio no necesita ninguna clave de
--- Supabase en el bundle.
+-- La tabla NO se expone a PostgREST. Dos candados, porque RLS sola no alcanza:
+-- con RLS activo y sin policies una consulta anónima igual responde 200 con
+-- lista vacía, así que además se le revocan los privilegios a `anon` y
+-- `authenticated` y la consulta directa pasa a ser "permission denied".
+--
+-- El único camino es la edge function `hero-pong-score`, que usa la service
+-- role key (que saltea RLS) y es la que valida. Con esto el sitio no necesita
+-- ninguna clave de Supabase en el bundle.
 
 create table if not exists public.hero_pong_scores (
   id uuid primary key default gen_random_uuid(),
@@ -34,3 +37,4 @@ alter table public.hero_pong_scores enable row level security;
 
 -- Sin policies a propósito: ver el comentario de cabecera. `service_role`
 -- saltea RLS, y es la única identidad que toca esta tabla.
+revoke all on table public.hero_pong_scores from anon, authenticated;
