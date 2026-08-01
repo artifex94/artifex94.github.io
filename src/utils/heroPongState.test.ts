@@ -3,11 +3,14 @@ import {
   createHeroPongState,
   reduceHeroPong,
   scoreOf,
-  incrementScore,
+  addScore,
   destroyDigit,
   takeProgress,
+  takeSummary,
   applyProgress,
   HERO_PONG_TUNING,
+  SCORE_LETTER,
+  SCORE_CLEAR_BONUS,
   type HeroPongState,
   type HeroPongTuning,
 } from './heroPongState';
@@ -76,12 +79,19 @@ describe('score por dígitos', () => {
     expect(scoreOf([0])).toBe(0);
   });
 
-  it('suma uno y re-normaliza', () => {
-    expect(incrementScore([1, 7])).toEqual([1, 8]);
-    expect(incrementScore([9])).toEqual([1, 0]);
-    expect(incrementScore([])).toEqual([1]);
+  it('suma y re-normaliza', () => {
+    expect(addScore([1, 7], 1)).toEqual([1, 8]);
+    expect(addScore([9], 1)).toEqual([1, 0]);
+    expect(addScore([], 1)).toEqual([1]);
     // Sin ceros a la izquierda: 07 + 1 = 8.
-    expect(incrementScore([0, 7])).toEqual([8]);
+    expect(addScore([0, 7], 1)).toEqual([8]);
+  });
+
+  it('suma montos grandes, incluso después de perder un dígito', () => {
+    expect(addScore([4, 2], 100)).toEqual([1, 4, 2]);
+    expect(addScore([0], 10_000)).toEqual([1, 0, 0, 0, 0]);
+    // destroyDigit([1,2,7], 1) = 17; 17 + 100 = 117.
+    expect(addScore(destroyDigit([1, 2, 7], 1), 100)).toEqual([1, 1, 7]);
   });
 
   it('al romper un dígito deja el número que forman los que quedan', () => {
@@ -93,21 +103,93 @@ describe('score por dígitos', () => {
 
   it('sigue contando desde el número nuevo', () => {
     const reduced = destroyDigit([1, 2, 7], 1); // 17
-    expect(scoreOf(incrementScore(reduced))).toBe(18);
+    expect(scoreOf(addScore(reduced, 1))).toBe(18);
   });
 });
 
 describe('golpes al techo', () => {
-  it('suma uno por golpe', () => {
+  it('suma un punto y un golpe por rebote', () => {
     let state = play(4);
     state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
     state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
     expect(scoreOf(state.scoreDigits)).toBe(2);
+    expect(state.ceilingHits).toBe(2);
   });
 
   it('no cuenta fuera de partida', () => {
     const idle = createHeroPongState(4);
-    expect(scoreOf(reduceHeroPong(idle, { t: 'ceilingHit' }, TUNING).scoreDigits)).toBe(0);
+    const hit = reduceHeroPong(idle, { t: 'ceilingHit' }, TUNING);
+    expect(scoreOf(hit.scoreDigits)).toBe(0);
+    expect(hit.ceilingHits).toBe(0);
+  });
+
+  it('los golpes se reinician con cada partida, junto con el score', () => {
+    let state = play(4);
+    state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
+    state = reduceHeroPong(state, { t: 'lose' }, TUNING);
+    state = reduceHeroPong(state, { t: 'start' }, TUNING);
+    expect(state.ceilingHits).toBe(0);
+    expect(scoreOf(state.scoreDigits)).toBe(0);
+  });
+});
+
+describe('puntaje por letras', () => {
+  it('cada letra destruida vale SCORE_LETTER', () => {
+    let state = run(play(3), 1000);
+    const rigid = state.letters.indexOf('rigid');
+    const before = scoreOf(state.scoreDigits);
+    state = reduceHeroPong(state, { t: 'letterHit', index: rigid }, TUNING);
+    expect(scoreOf(state.scoreDigits)).toBe(before + SCORE_LETTER);
+  });
+
+  it('golpear una letra que esquiva no suma', () => {
+    let state = run(play(3), 1000);
+    const dodging = state.letters.indexOf('dodging');
+    const before = scoreOf(state.scoreDigits);
+    state = reduceHeroPong(state, { t: 'letterHit', index: dodging }, TUNING);
+    expect(scoreOf(state.scoreDigits)).toBe(before);
+  });
+
+  it('vaciar el tablero paga el bonus una sola vez', () => {
+    let state = play(2);
+    state = run(state, 2000); // las dos armadas
+    const before = scoreOf(state.scoreDigits);
+    state = reduceHeroPong(state, { t: 'letterHit', index: 0 }, TUNING);
+    state = reduceHeroPong(state, { t: 'letterHit', index: 1 }, TUNING);
+    expect(state.cycle).toBe('cleared');
+    expect(scoreOf(state.scoreDigits)).toBe(before + 2 * SCORE_LETTER + SCORE_CLEAR_BONUS);
+    // Ticks posteriores en `cleared` no re-otorgan nada.
+    state = run(state, 500);
+    expect(scoreOf(state.scoreDigits)).toBe(before + 2 * SCORE_LETTER + SCORE_CLEAR_BONUS);
+  });
+
+  it('paga el bonus al restaurar un tablero ya vacío en arming, una sola vez', () => {
+    const restored = applyProgress(
+      createHeroPongState(2),
+      { letters: ['destroyed', 'destroyed'], playedMs: 0, armed: 2, resets: 0, cycle: 'arming', cycleTimerMs: 0, restoreQueue: [] },
+      TUNING,
+    );
+    let state = reduceHeroPong(restored, { t: 'start' }, TUNING);
+    state = tick(state, 16);
+    expect(state.cycle).toBe('cleared');
+    expect(scoreOf(state.scoreDigits)).toBe(SCORE_CLEAR_BONUS);
+    state = tick(state, 16);
+    expect(scoreOf(state.scoreDigits)).toBe(SCORE_CLEAR_BONUS);
+  });
+
+  it('perder no toca el score y el resumen lo refleja', () => {
+    let state = play(3);
+    state = reduceHeroPong(state, { t: 'ceilingHit' }, TUNING);
+    state = run(state, 1000);
+    const rigid = state.letters.indexOf('rigid');
+    state = reduceHeroPong(state, { t: 'letterHit', index: rigid }, TUNING);
+    const before = scoreOf(state.scoreDigits);
+    state = reduceHeroPong(state, { t: 'lose' }, TUNING);
+    expect(scoreOf(state.scoreDigits)).toBe(before);
+    const summary = takeSummary(state);
+    expect(summary.score).toBe(before);
+    expect(summary.ceilingHits).toBe(1);
+    expect(summary.elapsedMs).toBeGreaterThan(0);
   });
 });
 

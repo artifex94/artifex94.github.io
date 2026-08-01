@@ -6,6 +6,7 @@ import {
   type DodgeConfig,
 } from '../../utils/heroDodge';
 import {
+  ceilingSpeed,
   circleRectHit,
   clampPaddleX,
   digitBoxes,
@@ -21,10 +22,12 @@ import {
   reduceHeroPong,
   scoreOf,
   takeProgress,
+  takeSummary,
   HERO_PONG_TUNING,
   type GamePhase,
   type HeroPongProgress,
   type HeroPongState,
+  type HeroPongSummary,
   type HeroPongTuning,
 } from '../../utils/heroPongState';
 import { measureNavBottom } from '../../utils/layout';
@@ -66,6 +69,8 @@ export interface EngineDeps {
   tuning?: HeroPongTuning;
   savedProgress?: unknown;
   onProgress?: (progress: HeroPongProgress) => void;
+  /** Resumen de la partida perdida. Se dispara ANTES que `onPhase('gameover')`. */
+  onSummary?: (summary: HeroPongSummary) => void;
   onPhase?: (phase: GamePhase) => void;
 }
 
@@ -171,6 +176,7 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
   const debugFrame = {
     ballLocalX: 0,
     ballLocalY: 0,
+    speed: START_SPEED,
     state: state as HeroPongState,
     lines: metrics.lines,
     activeLines: [] as number[],
@@ -339,13 +345,14 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
   const step = (dtSeconds: number): void => {
     ball = { ...ball, x: ball.x + ball.vx * dtSeconds, y: ball.y + ball.vy * dtSeconds };
 
-    // Techo: el único rebote que acelera.
+    // Techo: el único rebote que acelera, y solo cuando el total de golpes
+    // alcanza el siguiente número Fibonacci (la velocidad se deriva del contador).
     if (ball.y - ball.r <= geometry.ceiling) {
       ball = { ...ball, y: geometry.ceiling + ball.r, vy: Math.abs(ball.vy) };
-      speed = Math.min(speed * SPEED_STEP, MAX_SPEED);
+      state = reduceHeroPong(state, { t: 'ceilingHit' }, tuning);
+      speed = ceilingSpeed(state.ceilingHits, START_SPEED, SPEED_STEP, MAX_SPEED);
       const factor = speed / Math.max(Math.hypot(ball.vx, ball.vy), 0.001);
       ball = { ...ball, vx: ball.vx * factor, vy: ball.vy * factor };
-      state = reduceHeroPong(state, { t: 'ceilingHit' }, tuning);
     }
 
     // Paredes laterales de la pista: rebotan sin acelerar.
@@ -527,6 +534,7 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
       // al juego. Los agregados los hace quien la consume.
       debugFrame.ballLocalX = ball.x - geometry.originLeft;
       debugFrame.ballLocalY = ball.y - geometry.originTop;
+      debugFrame.speed = speed;
       debugFrame.state = state;
       debugFrame.activeLines = activeLines;
       debugSink(debugFrame);
@@ -535,6 +543,9 @@ export function createHeroPongEngine(deps: EngineDeps): Engine {
     if (state.phase !== lastPhase) {
       lastPhase = state.phase;
       deps.onProgress?.(takeProgress(state));
+      // Solo las derrotas reales llevan resumen: la salida por staleGeometry
+      // (arriba) no pasa por acá y no debe registrar score.
+      if (state.phase === 'gameover') deps.onSummary?.(takeSummary(state));
       deps.onPhase?.(state.phase);
     }
   };

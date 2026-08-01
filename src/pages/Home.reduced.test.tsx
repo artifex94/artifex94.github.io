@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import * as framer from 'framer-motion';
 import { renderWithProviders } from '../test/render';
+import { mockMobileViewport } from '../test/media';
 import { Home } from './Home';
 
 // Con prefers-reduced-motion el hero-pong no debe existir: una pelota rebotando
@@ -17,14 +18,7 @@ describe('Home con movimiento reducido', () => {
     vi.spyOn(framer, 'useReducedMotion').mockReturnValue(true);
     // Viewport móvil: el otro gate del juego, para que el único motivo por el
     // que no aparece sea el movimiento reducido.
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query.includes('max-width'),
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    mockMobileViewport();
   });
 
   afterEach(() => {

@@ -102,6 +102,30 @@ export function paddleBounce(ball: Ball, paddle: Rect, maxAngleRad: number, spee
 }
 
 /**
+ * Cuántos términos de la serie Fibonacci (1, 2, 3, 5, 8, 13, ...) caben en el
+ * total de golpes acumulados. Es el nivel de velocidad: cada subida siguiente
+ * exige más golpes que la anterior.
+ */
+export function fibLevel(hits: number): number {
+  let a = 1;
+  let b = 2;
+  let level = 0;
+  while (a <= hits) {
+    level += 1;
+    [a, b] = [b, a + b];
+  }
+  return level;
+}
+
+/**
+ * Velocidad que corresponde a un total de golpes al techo. Se deriva del
+ * contador en vez de acumular multiplicaciones: mismo total, misma velocidad.
+ */
+export function ceilingSpeed(hits: number, start: number, step: number, max: number): number {
+  return Math.min(start * step ** fibLevel(hits), max);
+}
+
+/**
  * Sub-pasos necesarios para que la pelota no atraviese el obstáculo más chico
  * de un salto. Con la velocidad creciendo en cada golpe al techo, integrar en
  * un solo paso terminaría en tunneling.

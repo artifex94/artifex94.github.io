@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../test/render';
+import { mockMobileViewport } from '../test/media';
 import { Home } from './Home';
 import { services } from '../data/services';
 
@@ -68,14 +69,7 @@ describe('Home en reposo (el juego no debe existir)', () => {
   });
 
   it('en móvil agrega la franja de juego sin tocar el texto del hero', () => {
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query.includes('max-width'),
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    mockMobileViewport();
 
     const { container } = renderWithProviders(<Home />);
     const hero = container.querySelector('section')!;
@@ -93,6 +87,8 @@ describe('Home en reposo (el juego no debe existir)', () => {
     expect(container.querySelector('canvas')).toBeNull();
     expect(band!.querySelectorAll('span').length).toBe(0);
     expect(band!.children.length).toBe(2);
+    // Primera visita, sin scores guardados: cero movimiento nuevo en el home.
+    expect(band!.querySelector('[data-hero-pong="marquee"]')).toBeNull();
     expect(hero.querySelector('h1 span')!.getAttribute('style')).toBeNull();
   });
 

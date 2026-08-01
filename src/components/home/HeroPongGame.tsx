@@ -8,7 +8,12 @@ import {
   HERO_PONG_TURBO,
   type GamePhase,
   type HeroPongProgress,
+  type HeroPongSummary,
 } from '../../utils/heroPongState';
+
+// La pantalla de game over comparte chunk con la partida: quien pierde ya lo
+// tiene descargado.
+export { HeroPongGameOver } from './HeroPongGameOver';
 
 // La partida. Este módulo entra por import() dinámico: nada de acá pesa en la
 // carga inicial del home ni existe en desktop.
@@ -53,7 +58,8 @@ interface HeroPongGameProps {
   /** Posición del dedo que inició la partida. */
   startX: number | null;
   onEngine: (engine: Engine | null) => void;
-  onFinish: () => void;
+  /** `null` cuando la partida se corta sin derrota real (medición fallida, reflow). */
+  onFinish: (summary: HeroPongSummary | null) => void;
 }
 
 export const HeroPongGame: React.FC<HeroPongGameProps> = ({
@@ -67,6 +73,9 @@ export const HeroPongGame: React.FC<HeroPongGameProps> = ({
   const [metrics, setMetrics] = useState<HeroMetrics | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<Engine | null>(null);
+  // El engine emite el resumen ANTES del cambio de fase: acá solo se retiene
+  // hasta que onPhase('gameover') lo entrega junto con el cierre.
+  const summaryRef = useRef<HeroPongSummary | null>(null);
   // En un ref para que el efecto de medición no dependa de la identidad del
   // callback (y no vuelva a medir si el padre re-renderiza).
   const finishRef = useRef(onFinish);
@@ -81,7 +90,7 @@ export const HeroPongGame: React.FC<HeroPongGameProps> = ({
     void measureHero(origin, blocks, { allowWarm: true }).then((result) => {
       if (cancelled) return;
       // Sin medición confiable no hay juego: se sale y el hero queda intacto.
-      if (!result) finishRef.current();
+      if (!result) finishRef.current(null);
       else setMetrics(result);
     });
     return () => {
@@ -103,8 +112,11 @@ export const HeroPongGame: React.FC<HeroPongGameProps> = ({
         tuning: isTurbo() ? HERO_PONG_TURBO : HERO_PONG_TUNING,
         savedProgress: readProgress(),
         onProgress: writeProgress,
+        onSummary: (summary) => {
+          summaryRef.current = summary;
+        },
         onPhase: (phase: GamePhase) => {
-          if (phase === 'gameover') finishRef.current();
+          if (phase === 'gameover') finishRef.current(summaryRef.current);
         },
       });
       engineRef.current = engine;

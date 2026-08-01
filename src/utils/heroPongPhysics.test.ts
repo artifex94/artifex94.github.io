@@ -6,6 +6,8 @@ import {
   subStepCount,
   digitBoxes,
   clampPaddleX,
+  fibLevel,
+  ceilingSpeed,
   MAX_SUBSTEPS,
   type Ball,
   type Rect,
@@ -124,6 +126,52 @@ describe('paddleBounce', () => {
   it('sube la pelota por encima de la paleta', () => {
     const out = paddleBounce(ball({ x: 132, y: 502 }), paddle, MAX_ANGLE, 400);
     expect(out.y).toBeLessThan(paddle.y);
+  });
+});
+
+describe('fibLevel', () => {
+  it('cuenta los términos Fibonacci alcanzados', () => {
+    expect(fibLevel(0)).toBe(0);
+    expect(fibLevel(1)).toBe(1);
+    expect(fibLevel(2)).toBe(2);
+    expect(fibLevel(3)).toBe(3);
+    expect(fibLevel(5)).toBe(4);
+    expect(fibLevel(8)).toBe(5);
+    expect(fibLevel(13)).toBe(6);
+    expect(fibLevel(233)).toBe(12);
+    expect(fibLevel(377)).toBe(13);
+  });
+
+  it('se queda plano entre términos', () => {
+    expect(fibLevel(4)).toBe(3);
+    expect(fibLevel(6)).toBe(4);
+    expect(fibLevel(7)).toBe(4);
+    expect(fibLevel(12)).toBe(5);
+    expect(fibLevel(232)).toBe(11);
+  });
+});
+
+describe('ceilingSpeed', () => {
+  const at = (hits: number) => ceilingSpeed(hits, 300, 1.12, 1300);
+
+  it('arranca en la velocidad inicial y sube por nivel', () => {
+    expect(at(0)).toBe(300);
+    expect(at(1)).toBeCloseTo(300 * 1.12);
+    expect(at(3)).toBeCloseTo(300 * 1.12 ** 3);
+  });
+
+  it('es monótona y plana entre números Fibonacci', () => {
+    for (let hits = 1; hits <= 400; hits += 1) {
+      expect(at(hits)).toBeGreaterThanOrEqual(at(hits - 1));
+    }
+    expect(at(4)).toBe(at(3));
+    expect(at(20)).toBe(at(13));
+    expect(at(232)).toBe(at(144));
+  });
+
+  it('respeta el techo de velocidad', () => {
+    expect(at(377)).toBe(1300);
+    expect(at(10_000)).toBe(1300);
   });
 });
 

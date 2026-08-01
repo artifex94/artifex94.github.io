@@ -55,6 +55,13 @@ export const HERO_PONG_TURBO: HeroPongTuning = {
   resetsToUnlockDigits: 3,
 };
 
+/** Puntos por golpe al borde del header. */
+export const SCORE_CEILING_HIT = 1;
+/** Puntos por letra destruida. */
+export const SCORE_LETTER = 100;
+/** Bonus por vaciar el tablero entero. */
+export const SCORE_CLEAR_BONUS = 10_000;
+
 export interface HeroPongState {
   phase: GamePhase;
   cycle: CyclePhase;
@@ -68,6 +75,8 @@ export interface HeroPongState {
   digitsDestructible: boolean;
   /** El score se guarda dígito por dígito porque los dígitos se pueden romper. */
   scoreDigits: number[];
+  /** Golpes al techo de la partida actual: alimentan la velocidad, no el score. */
+  ceilingHits: number;
   /** Cronómetro de la partida actual. */
   elapsedMs: number;
   /** Acumulador de la pausa/ola en curso. */
@@ -88,9 +97,9 @@ export type HeroPongEvent =
 export const scoreOf = (digits: readonly number[]): number =>
   digits.length ? Number(digits.join('')) : 0;
 
-/** Suma uno y re-normaliza (así `[0,7]` + 1 queda `[8]`, sin ceros a la izquierda). */
-export const incrementScore = (digits: readonly number[]): number[] =>
-  String(scoreOf(digits) + 1)
+/** Suma sobre el número que forman los dígitos y re-normaliza (sin ceros a la izquierda). */
+export const addScore = (digits: readonly number[], amount: number): number[] =>
+  String(scoreOf(digits) + amount)
     .split('')
     .map(Number);
 
@@ -107,6 +116,7 @@ export const createHeroPongState = (letterCount: number): HeroPongState => ({
   resets: 0,
   digitsDestructible: false,
   scoreDigits: [0],
+  ceilingHits: 0,
   elapsedMs: 0,
   cycleTimerMs: 0,
   restoreQueue: [],
@@ -114,6 +124,14 @@ export const createHeroPongState = (letterCount: number): HeroPongState => ({
 
 const allDestroyed = (letters: readonly LetterPhase[]): boolean =>
   letters.length > 0 && letters.every((l) => l === 'destroyed');
+
+/** Única puerta a `cleared`: el bonus se otorga en la transición, nunca dos veces. */
+const enterCleared = (state: HeroPongState): HeroPongState => ({
+  ...state,
+  cycle: 'cleared',
+  cycleTimerMs: 0,
+  scoreDigits: addScore(state.scoreDigits, SCORE_CLEAR_BONUS),
+});
 
 const shuffled = (values: number[], rng: () => number): number[] => {
   const out = [...values];
@@ -150,7 +168,7 @@ const advanceCycle = (state: HeroPongState, dtMs: number, rng: () => number, tun
         next = { ...next, letters, armed: next.armed + 1 };
       }
       if (allDestroyed(next.letters)) {
-        next = { ...next, cycle: 'cleared', cycleTimerMs: 0 };
+        next = enterCleared(next);
       }
       return next;
     }
@@ -206,7 +224,7 @@ export function reduceHeroPong(
   switch (event.t) {
     case 'start':
       if (state.phase === 'playing') return state;
-      return { ...state, phase: 'playing', elapsedMs: 0, scoreDigits: [0] };
+      return { ...state, phase: 'playing', elapsedMs: 0, scoreDigits: [0], ceilingHits: 0 };
 
     case 'tick': {
       if (state.phase !== 'playing') return state;
@@ -220,7 +238,11 @@ export function reduceHeroPong(
 
     case 'ceilingHit':
       if (state.phase !== 'playing') return state;
-      return { ...state, scoreDigits: incrementScore(state.scoreDigits) };
+      return {
+        ...state,
+        ceilingHits: state.ceilingHits + 1,
+        scoreDigits: addScore(state.scoreDigits, SCORE_CEILING_HIT),
+      };
 
     case 'letterHit': {
       const current = state.letters[event.index];
@@ -233,9 +255,9 @@ export function reduceHeroPong(
         current === 'falling' && state.cycle === 'restoring'
           ? [...state.restoreQueue, event.index]
           : state.restoreQueue;
-      const next = { ...state, letters, restoreQueue };
+      const next = { ...state, letters, restoreQueue, scoreDigits: addScore(state.scoreDigits, SCORE_LETTER) };
       if (next.cycle === 'arming' && allDestroyed(letters)) {
-        return { ...next, cycle: 'cleared', cycleTimerMs: 0 };
+        return enterCleared(next);
       }
       return next;
     }
@@ -258,6 +280,19 @@ export function reduceHeroPong(
       return { ...state, phase: 'gameover' };
   }
 }
+
+/** Resumen de la partida que terminó, para la pantalla de game over. */
+export interface HeroPongSummary {
+  score: number;
+  ceilingHits: number;
+  elapsedMs: number;
+}
+
+export const takeSummary = (state: HeroPongState): HeroPongSummary => ({
+  score: scoreOf(state.scoreDigits),
+  ceilingHits: state.ceilingHits,
+  elapsedMs: state.elapsedMs,
+});
 
 /** Lo que sobrevive entre partidas de la misma sesión (el progreso del tablero). */
 export interface HeroPongProgress {

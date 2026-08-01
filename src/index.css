@@ -127,6 +127,58 @@
     }
   }
 
+  /* Ticker del top-10 del hero-pong: transform puro, sin JS por frame.
+     El track lleva la secuencia DUPLICADA y viaja -50%: como el porcentaje es
+     del propio track, la costura es exacta aunque los anchos sean fraccionarios.
+     A diferencia de la grilla de arriba, acá NO se anima background-position:
+     eso cuesta un paint por frame, y esto vive en el compositor. */
+  @keyframes hero-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .hero-marquee {
+    overflow: hidden;
+    /* Los bordes se disuelven en vez de cortar en seco. Un degradado sólido al
+       color de fondo no serviría: taparía la grilla, que está en un ::before
+       con z-index -1. El prefijo -webkit- cubre iOS Safari < 15.4. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 24px,
+      #000 calc(100% - 24px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 24px,
+      #000 calc(100% - 24px),
+      transparent 100%
+    );
+  }
+
+  .hero-marquee-track {
+    display: flex;
+    width: max-content;
+    /* La duración real la fija la franja inline, según el largo del texto, para
+       que la velocidad sea constante en px/s con cualquier cantidad de scores. */
+    animation: hero-marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  /* Redundante con el gate de HeroPongBand (que ni siquiera monta la franja),
+     igual que `md:hidden`: el CSS no depende de que el JS haya corrido. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-marquee-track {
+      animation: none;
+    }
+  }
+
   /* Fondos de las páginas artísticas (sin grilla blueprint) */
   .bg-gallery-photo {
     background-color: var(--color-base);

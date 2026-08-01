@@ -3,13 +3,20 @@ import { useReducedMotion } from 'framer-motion';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { Engine } from './heroPongEngine';
 import type { HeroBlockInput } from './measureHero';
+import type { HeroPongSummary } from '../../utils/heroPongState';
 import {
   BALL_SIZE,
   BAND_HEIGHT,
+  MARQUEE_FONT_SIZE,
+  MARQUEE_HEIGHT,
+  MARQUEE_TOP,
+  marqueeCopies,
+  marqueeDuration,
   PADDLE_HEIGHT,
   PADDLE_TOP,
   PADDLE_WIDTH,
 } from './heroPongConfig';
+import { useHighScoresMarquee } from '../../hooks/useHighScoresMarquee';
 
 // La franja del hero-pong: una paleta y una pelota, nada más.
 //
@@ -23,6 +30,12 @@ import {
 //
 // En reposo son dos <div> y nada más: sin canvas, sin rAF, sin listeners y sin
 // el chunk del juego descargado. Todo eso aparece con el primer toque.
+//
+// La excepción es el ticker del top-10, que desfila debajo de la paleta como el
+// "attract mode" de una recreativa. Solo existe si alguien ya jugó y registró un
+// score: para quien llega por primera vez no hay ni un nodo de más. Es una
+// animación en loop, así que su escape de WCAG 2.2.2 es prefers-reduced-motion,
+// que acá no la pausa: directamente no monta la franja entera.
 
 /** Solo tipo: no genera ningún import en runtime. */
 type GameModule = typeof import('./HeroPongGame');
@@ -57,8 +70,12 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
   const isMobile = useIsMobile();
   const reduceMotion = useReducedMotion();
   const [engine, setEngine] = useState<Engine | null>(null);
-  const [Game, setGame] = useState<GameModule['HeroPongGame'] | null>(null);
+  /** El chunk del juego, con la partida y la pantalla de fin: llegan juntos. */
+  const [game, setGame] = useState<GameModule | null>(null);
   const [setup, setSetup] = useState<GameSetup | null>(null);
+  /** Resumen de la última derrota real: mientras exista, se muestra el top-10. */
+  const [summary, setSummary] = useState<HeroPongSummary | null>(null);
+  const marquee = useHighScoresMarquee();
 
   const enabled = isMobile && !reduceMotion && ready;
   const playing = setup !== null;
@@ -103,10 +120,16 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
     };
   }, [enabled, originRef, blockRefs]);
 
-  const handleFinish = useCallback(() => setSetup(null), []);
+  const handleFinish = useCallback((result: HeroPongSummary | null) => {
+    setSetup(null);
+    if (result) setSummary(result);
+  }, []);
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
+      // Con el top-10 abierto la franja no arranca partidas: primero se cierra.
+      if (summary) return;
+
       const host = event.currentTarget;
       host.setPointerCapture(event.pointerId);
 
@@ -125,9 +148,9 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
       if (!blocks.length) return;
 
       setSetup({ host, origin, blocks, startX: event.clientX });
-      void loadGame().then((module) => setGame(() => module.HeroPongGame));
+      void loadGame().then(setGame);
     },
-    [playing, engine, originRef, blockRefs],
+    [playing, engine, originRef, blockRefs, summary],
   );
 
   const handlePointerMove = useCallback(
@@ -144,6 +167,8 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
   }, []);
 
   if (!enabled) return null;
+
+  const copies = marqueeCopies(marquee.length);
 
   return (
     <div
@@ -194,8 +219,37 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
         </>
       )}
 
-      {setup && Game && (
-        <Game
+      {/* El top-10 desfilando debajo de la paleta. pointer-events-none lo saca
+          del hit-test: el toque lo sigue recibiendo la franja, que es la que
+          arranca la partida y la que define el touch-action. */}
+      {!playing && !summary && copies > 0 && (
+        <div
+          data-hero-pong="marquee"
+          className="hero-marquee pointer-events-none absolute left-0 right-0 text-secondary/60"
+          style={{
+            top: MARQUEE_TOP,
+            height: MARQUEE_HEIGHT,
+            fontSize: MARQUEE_FONT_SIZE,
+            lineHeight: `${MARQUEE_HEIGHT}px`,
+          }}
+        >
+          <div
+            className="hero-marquee-track"
+            style={{ animationDuration: `${marqueeDuration(marquee.length)}s` }}
+          >
+            {Array.from({ length: copies * 2 }, (_, i) => (
+              // whitespace-pre: la secuencia termina en ' · ' y HTML colapsaría
+              // ese espacio justo en la junta entre copias.
+              <div key={i} className="whitespace-pre">
+                {marquee}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {setup && game && (
+        <game.HeroPongGame
           host={setup.host}
           origin={setup.origin}
           blocks={setup.blocks}
@@ -203,6 +257,10 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
           onEngine={setEngine}
           onFinish={handleFinish}
         />
+      )}
+
+      {summary && game && (
+        <game.HeroPongGameOver summary={summary} onClose={() => setSummary(null)} />
       )}
     </div>
   );
