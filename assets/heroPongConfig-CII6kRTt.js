@@ -1,1 +1,0 @@
-var e=1.07,t=1300,n=Math.PI/3;export{t as n,e as r,n as t};
