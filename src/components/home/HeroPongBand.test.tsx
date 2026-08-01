@@ -5,6 +5,7 @@ import * as framer from 'framer-motion';
 import { HeroPongBand } from './HeroPongBand';
 import { mockMobileViewport } from '../../test/media';
 import { HIGH_SCORES_KEY } from '../../utils/heroPongHighScores';
+import { marqueeCopies, MARQUEE_CHAR_WIDTH, MARQUEE_COVER_WIDTH } from './heroPongConfig';
 
 // El ticker del top-10 vive en localStorage, así que estos tests van aparte de
 // Home.test.tsx: ahí el contrato es "primera visita = franja intacta", y sembrar
@@ -74,9 +75,14 @@ describe('ticker del top-10 en la franja', () => {
     seedScores(1);
     const { container } = renderBand();
     const track = container.querySelector('.hero-marquee-track')!;
-    // El track es la secuencia DUPLICADA: la mitad tiene que cubrir la franja.
-    expect(track.children.length).toBeGreaterThanOrEqual(12);
-    expect(track.children.length % 2).toBe(0);
+    const text = track.children[0].textContent ?? '';
+
+    // El track es la secuencia DUPLICADA, y la mitad tiene que ser más ancha
+    // que cualquier franja posible o se ve un hueco al final de cada vuelta.
+    expect(track.children.length).toBe(marqueeCopies(text.length) * 2);
+    expect(marqueeCopies(text.length) * text.length * MARQUEE_CHAR_WIDTH).toBeGreaterThanOrEqual(
+      MARQUEE_COVER_WIDTH,
+    );
     expect((track as HTMLElement).style.animationDuration).not.toBe('');
   });
 

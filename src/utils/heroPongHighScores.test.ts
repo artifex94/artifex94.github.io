@@ -5,8 +5,13 @@ import {
   insertScore,
   formatHighScoresMarquee,
   highScoresMarquee,
+  localBestScore,
+  readLastInitials,
   subscribeHighScores,
+  writeGlobalScores,
   writeHighScores,
+  writeLastInitials,
+  DEFAULT_INITIALS,
   HIGH_SCORES_KEY,
   HIGH_SCORES_LIMIT,
   type HighScoreEntry,
@@ -105,9 +110,46 @@ describe('insertScore', () => {
   });
 });
 
+describe('iniciales recordadas', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('arranca en AAA y después recuerda las últimas usadas', () => {
+    expect(readLastInitials()).toBe(DEFAULT_INITIALS);
+    writeLastInitials('RAM');
+    expect(readLastInitials()).toBe('RAM');
+  });
+
+  it('ignora cualquier cosa que no sean tres letras', () => {
+    writeLastInitials('RAM');
+    writeLastInitials('ram');
+    writeLastInitials('RAMI');
+    writeLastInitials('');
+    expect(readLastInitials()).toBe('RAM');
+  });
+});
+
+describe('mejor marca local', () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it('es cero sin partidas y después el score más alto', () => {
+    expect(localBestScore()).toBe(0);
+    writeHighScores([entry(700, 'ABC'), entry(200, 'XYZ')]);
+    expect(localBestScore()).toBe(700);
+  });
+});
+
 describe('formatHighScoresMarquee', () => {
-  it('sin scores no hay ticker', () => {
+  it('sin nada que mostrar no hay ticker', () => {
     expect(formatHighScoresMarquee([])).toBe('');
+    expect(formatHighScoresMarquee([], 0)).toBe('');
+  });
+
+  it('muestra la marca propia aunque no haya ranking', () => {
+    expect(formatHighScoresMarquee([], 320)).toBe('TU MEJOR 320 · ');
   });
 
   it('arma la vuelta completa y la cierra con el separador', () => {
@@ -137,19 +179,25 @@ describe('store del ticker', () => {
     localStorage.clear();
   });
 
-  it('devuelve el mismo valor mientras la tabla no cambia', () => {
+  it('sin ranking global muestra la tabla local y la marca propia', () => {
     writeHighScores([entry(500, 'ABC')]);
     const first = highScoresMarquee();
-    expect(first).toBe('TOP 10 · 1 ABC 500 · ');
+    expect(first).toBe('TOP 10 · 1 ABC 500 · TU MEJOR 500 · ');
     // Idéntico por referencia: React lo compara en cada render.
     expect(highScoresMarquee()).toBe(first);
+  });
+
+  it('con ranking global manda el global, y la marca propia sigue siendo local', () => {
+    writeHighScores([entry(500, 'ABC')]);
+    writeGlobalScores([{ initials: 'ZZZ', score: 9000 }]);
+    expect(highScoresMarquee()).toBe('TOP 10 · 1 ZZZ 9000 · TU MEJOR 500 · ');
   });
 
   it('refleja un cambio del storage aunque nadie haya emitido evento', () => {
     writeHighScores([entry(500, 'ABC')]);
     highScoresMarquee();
     localStorage.setItem(HIGH_SCORES_KEY, JSON.stringify([entry(900, 'XYZ')]));
-    expect(highScoresMarquee()).toBe('TOP 10 · 1 XYZ 900 · ');
+    expect(highScoresMarquee()).toBe('TOP 10 · 1 XYZ 900 · TU MEJOR 900 · ');
   });
 
   it('vuelve a vacío si se borra la tabla', () => {

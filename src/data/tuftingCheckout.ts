@@ -11,17 +11,10 @@ import type { Shape } from './tuftingCalculator';
 // Un área falsificada abarataría el precio igual de bien que un total
 // falsificado, así que ninguno de los dos viaja.
 
-const DEFAULT_FUNCTIONS_URL = 'https://erjyzhefwndkumadlpzr.supabase.co/functions/v1';
-
-/**
- * Base de las edge functions.
- *
- * Se puede sobreescribir con VITE_SUPABASE_FUNCTIONS_URL en el build. Ojo: todo
- * lo que empieza con VITE_ termina en el bundle y es público por definición —
- * ahí solo puede ir la URL, nunca una credencial.
- */
-export const FUNCTIONS_URL =
-  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL ?? DEFAULT_FUNCTIONS_URL;
+// Se re-exporta además de importarse: `tuftingStore` y los tests ya la piden
+// desde acá, y no hay motivo para moverlos de lugar.
+import { FUNCTIONS_URL } from './supabaseFunctions';
+export { FUNCTIONS_URL };
 
 /**
  * Formas que se pueden pagar online.

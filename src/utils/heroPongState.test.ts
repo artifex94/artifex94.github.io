@@ -163,7 +163,9 @@ describe('puntaje por letras', () => {
     expect(scoreOf(state.scoreDigits)).toBe(before + 2 * SCORE_LETTER + SCORE_CLEAR_BONUS);
   });
 
-  it('paga el bonus al restaurar un tablero ya vacío en arming, una sola vez', () => {
+  it('un tablero vacío guardado no paga el bonus: la partida nueva lo repone', () => {
+    // El progreso viejo puede traer todo destruido, pero `start` repone el
+    // tablero, así que nadie cobra 10000 por una partida que no jugó.
     const restored = applyProgress(
       createHeroPongState(2),
       { letters: ['destroyed', 'destroyed'], playedMs: 0, armed: 2, resets: 0, cycle: 'arming', cycleTimerMs: 0, restoreQueue: [] },
@@ -171,10 +173,9 @@ describe('puntaje por letras', () => {
     );
     let state = reduceHeroPong(restored, { t: 'start' }, TUNING);
     state = tick(state, 16);
-    expect(state.cycle).toBe('cleared');
-    expect(scoreOf(state.scoreDigits)).toBe(SCORE_CLEAR_BONUS);
-    state = tick(state, 16);
-    expect(scoreOf(state.scoreDigits)).toBe(SCORE_CLEAR_BONUS);
+    expect(state.cycle).toBe('arming');
+    expect(scoreOf(state.scoreDigits)).toBe(0);
+    expect(state.boardsCleared).toBe(0);
   });
 
   it('perder no toca el score y el resumen lo refleja', () => {
@@ -224,12 +225,36 @@ describe('armado de letras', () => {
     expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
   });
 
-  it('reinicia el cronómetro de la partida pero no el progreso', () => {
+  it('cada partida arranca con el tablero entero', () => {
+    // Se arma una letra y se destruye: el tablero queda tocado.
+    let state = run(play(5), 1000);
+    const rigid = state.letters.indexOf('rigid');
+    state = reduceHeroPong(state, { t: 'letterHit', index: rigid }, TUNING);
+    expect(state.letters).toContain('destroyed');
+
+    state = reduceHeroPong(state, { t: 'lose' }, TUNING);
+    state = reduceHeroPong(state, { t: 'start' }, TUNING);
+
+    expect(state.letters.every((l) => l === 'dodging')).toBe(true);
+    expect(state.armed).toBe(0);
+    expect(state.cycle).toBe('arming');
+    expect(state.restoreQueue).toEqual([]);
+    expect(state.elapsedMs).toBe(0);
+    expect(scoreOf(state.scoreDigits)).toBe(0);
+    expect(state.ceilingHits).toBe(0);
+    expect(state.lettersDestroyed).toBe(0);
+  });
+
+  it('el tablero vuelve entero pero la dificultad acumulada no se pierde', () => {
+    // Un minuto jugado deja el reloj de armado en 1.
     let state = run(play(5), 1000);
     state = reduceHeroPong(state, { t: 'lose' }, TUNING);
     state = reduceHeroPong(state, { t: 'start' }, TUNING);
-    expect(state.elapsedMs).toBe(0);
-    expect(scoreOf(state.scoreDigits)).toBe(0);
+    // Recién empezada no hay ninguna armada...
+    expect(state.letters.every((l) => l === 'dodging')).toBe(true);
+    // ...pero el reloj sobrevivió, así que vuelve a armar enseguida. Sin esto
+    // haría falta jugar 186 minutos seguidos para vaciar el tablero.
+    state = tick(state, 16);
     expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
   });
 

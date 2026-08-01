@@ -77,6 +77,12 @@ export interface HeroPongState {
   scoreDigits: number[];
   /** Golpes al techo de la partida actual: alimentan la velocidad, no el score. */
   ceilingHits: number;
+  /** Letras destruidas en la partida. Con los golpes y los tableros, es la
+   *  traza cruda que el servidor usa para recalcular el score sin creerle al
+   *  browser (misma regla que el checkout de tufting). */
+  lettersDestroyed: number;
+  /** Tableros vaciados en la partida. */
+  boardsCleared: number;
   /** Cronómetro de la partida actual. */
   elapsedMs: number;
   /** Acumulador de la pausa/ola en curso. */
@@ -117,6 +123,8 @@ export const createHeroPongState = (letterCount: number): HeroPongState => ({
   digitsDestructible: false,
   scoreDigits: [0],
   ceilingHits: 0,
+  lettersDestroyed: 0,
+  boardsCleared: 0,
   elapsedMs: 0,
   cycleTimerMs: 0,
   restoreQueue: [],
@@ -130,6 +138,7 @@ const enterCleared = (state: HeroPongState): HeroPongState => ({
   ...state,
   cycle: 'cleared',
   cycleTimerMs: 0,
+  boardsCleared: state.boardsCleared + 1,
   scoreDigits: addScore(state.scoreDigits, SCORE_CLEAR_BONUS),
 });
 
@@ -224,7 +233,29 @@ export function reduceHeroPong(
   switch (event.t) {
     case 'start':
       if (state.phase === 'playing') return state;
-      return { ...state, phase: 'playing', elapsedMs: 0, scoreDigits: [0], ceilingHits: 0 };
+      // Cada partida arranca con el TABLERO entero: las letras rotas vuelven y
+      // ninguna queda armada, así el jugador siempre empieza parejo.
+      //
+      // `playedMs` NO se reinicia a propósito: es el reloj que arma una letra
+      // por minuto jugado, o sea la dificultad acumulada de la sesión. Si se
+      // reiniciara con cada partida habría que jugar 186 minutos SEGUIDOS para
+      // vaciar el tablero, y el bonus de 10000 quedaría fuera de alcance. Como
+      // una letra armada se ve igual que una que esquiva, el tablero igual se
+      // ve entero: lo que sobrevive es la dificultad, no el destrozo.
+      return {
+        ...state,
+        phase: 'playing',
+        elapsedMs: 0,
+        scoreDigits: [0],
+        ceilingHits: 0,
+        lettersDestroyed: 0,
+        boardsCleared: 0,
+        letters: state.letters.map(() => 'dodging' as LetterPhase),
+        cycle: 'arming',
+        cycleTimerMs: 0,
+        restoreQueue: [],
+        armed: 0,
+      };
 
     case 'tick': {
       if (state.phase !== 'playing') return state;
@@ -255,7 +286,13 @@ export function reduceHeroPong(
         current === 'falling' && state.cycle === 'restoring'
           ? [...state.restoreQueue, event.index]
           : state.restoreQueue;
-      const next = { ...state, letters, restoreQueue, scoreDigits: addScore(state.scoreDigits, SCORE_LETTER) };
+      const next = {
+        ...state,
+        letters,
+        restoreQueue,
+        lettersDestroyed: state.lettersDestroyed + 1,
+        scoreDigits: addScore(state.scoreDigits, SCORE_LETTER),
+      };
       if (next.cycle === 'arming' && allDestroyed(letters)) {
         return enterCleared(next);
       }
@@ -281,18 +318,41 @@ export function reduceHeroPong(
   }
 }
 
-/** Resumen de la partida que terminó, para la pantalla de game over. */
+/**
+ * Resumen de la partida que terminó. Además del score lleva la traza cruda de
+ * lo que pasó: el ranking global no le cree al número, lo recalcula con estos
+ * contadores y rechaza cualquier score que no cierre con ellos.
+ */
 export interface HeroPongSummary {
   score: number;
   ceilingHits: number;
+  lettersDestroyed: number;
+  boardsCleared: number;
   elapsedMs: number;
 }
 
 export const takeSummary = (state: HeroPongState): HeroPongSummary => ({
   score: scoreOf(state.scoreDigits),
   ceilingHits: state.ceilingHits,
+  lettersDestroyed: state.lettersDestroyed,
+  boardsCleared: state.boardsCleared,
   elapsedMs: state.elapsedMs,
 });
+
+/**
+ * Techo del score que una traza permite: cada golpe suma 1, cada letra 100 y
+ * cada tablero 10000. Romper dígitos del contador solo puede BAJAR el score,
+ * nunca subirlo, así que un score legítimo nunca supera este techo — y eso es
+ * lo único que el servidor necesita para descartar un número inventado.
+ */
+export const maxScoreFor = (run: {
+  ceilingHits: number;
+  lettersDestroyed: number;
+  boardsCleared: number;
+}): number =>
+  run.ceilingHits * SCORE_CEILING_HIT +
+  run.lettersDestroyed * SCORE_LETTER +
+  run.boardsCleared * SCORE_CLEAR_BONUS;
 
 /** Lo que sobrevive entre partidas de la misma sesión (el progreso del tablero). */
 export interface HeroPongProgress {

@@ -102,6 +102,7 @@ await context.addInitScript(
         activeLines: [...frame.activeLines],
         cycle: frame.state.cycle,
         resets: frame.state.resets,
+        armed: frame.state.armed,
         digitsDestructible: frame.state.digitsDestructible,
         speed: frame.speed,
         ceilingHits: frame.state.ceilingHits,
@@ -115,7 +116,9 @@ const page = await context.newPage();
 const consoleErrors = [];
 page.on('pageerror', (e) => consoleErrors.push(e.message));
 page.on('console', (m) => {
-  if (m.type() === 'error') consoleErrors.push(m.text());
+  // Con la URL: "Failed to load resource" a secas no dice QUÉ falló, y hace
+  // falta para distinguir el ranking sin desplegar de un error real.
+  if (m.type() === 'error') consoleErrors.push(`${m.text()} ${m.location()?.url ?? ''}`.trim());
 });
 
 await page.goto(URL + (CYCLE ? '?heropong=turbo' : ''), { waitUntil: 'networkidle' });
@@ -250,13 +253,22 @@ await page
 console.log('\npartida:');
 const started = await page.evaluate(() => {
   const painted = document.querySelector('#root h1 span');
+  const spans = [...document.querySelectorAll('[data-hero-pong="glyphs"] span')];
   return {
     canvas: !!document.querySelector('canvas'),
-    glyphs: document.querySelectorAll('[data-hero-pong="glyphs"] span').length,
+    glyphs: spans.length,
+    // Letras rotas al ARRANCAR: tiene que ser cero siempre, incluso si la
+    // sesión anterior dejó el tablero hecho pedazos.
+    hiddenAtStart: spans.filter((s) => s.style.visibility === 'hidden').length,
     titleColor: painted?.style.color ?? '',
     titleText: document.querySelector('#root h1')?.textContent ?? '',
   };
 });
+check(
+  'el tablero arranca entero',
+  started.hiddenAtStart === 0,
+  `${started.hiddenAtStart} letras rotas al empezar`,
+);
 check('aparece el canvas', started.canvas);
 check('el texto se duplica en letras jugables', started.glyphs > 100, `${started.glyphs} letras`);
 check('el original queda transparente', started.titleColor === 'transparent');
@@ -443,6 +455,15 @@ if (!shotArg && !CYCLE) {
     // B-A-A: un toque en la flecha de arriba del primer slot, y OK.
     await page.locator('[aria-label="Letra 1 siguiente"]').tap();
     await page.locator('[data-hero-pong="gameover"] button', { hasText: 'OK' }).tap();
+    // El registro ahora pasa por el ranking global: la tabla aparece cuando el
+    // servidor contesta (o cuando se confirma que no está disponible).
+    await page
+      .waitForFunction(
+        () => document.querySelectorAll('[data-hero-pong="gameover"] .justify-between').length > 0,
+        null,
+        { timeout: 15000 },
+      )
+      .catch(() => {});
     const stored = await page.evaluate(() => {
       let parsed = null;
       try {
@@ -450,15 +471,17 @@ if (!shotArg && !CYCLE) {
       } catch {
         /* ignore */
       }
-      const rows = document.querySelectorAll('[data-hero-pong="gameover"] .flex.justify-between');
-      return { parsed, rows: rows.length };
+      const rows = document.querySelectorAll('[data-hero-pong="gameover"] .justify-between');
+      const best = document.querySelector('[data-hero-pong="local-best"]');
+      return { parsed, rows: rows.length, best: best?.textContent ?? '' };
     });
     check(
       'el registro queda en localStorage con las iniciales elegidas',
       Array.isArray(stored.parsed) && stored.parsed[0]?.initials === 'BAA' && stored.parsed[0]?.score > 0,
       JSON.stringify(stored.parsed?.[0] ?? null),
     );
-    check('la tabla muestra la fila registrada', stored.rows === 1, `${stored.rows} filas`);
+    check('la tabla muestra la fila registrada', stored.rows >= 1, `${stored.rows} filas`);
+    check('destaca tu mejor marca aparte del ranking', stored.best.includes('TU MEJOR'), stored.best);
 
     // Cualquier toque cierra la tabla y la franja vuelve al reposo.
     await page.touchscreen.tap(195, 100);
@@ -478,22 +501,63 @@ if (!shotArg && !CYCLE) {
 }
 
 if (CYCLE) {
-  console.log('\nendgame:');
+  // Este escenario siembra la sesión con el tablero DESTRUIDO entero. Desde que
+  // cada partida repone las letras, ya no sirve para mirar la ola de letras
+  // volviendo (eso pasa dentro de una partida y lo cubren los tests del
+  // reducer): ahora es el guard de que un tablero roto guardado no se arrastra.
+  console.log('\ntablero entre partidas:');
   const final = await page.evaluate(() => {
     const spans = [...document.querySelectorAll('[data-hero-pong="glyphs"] span')];
     return {
       hidden: spans.filter((s) => s.style.visibility === 'hidden').length,
       total: spans.length,
-      resets: window.__last?.resets ?? -1,
+      armed: window.__last?.armed ?? -1,
       cycle: window.__last?.cycle ?? '?',
     };
   });
-  check('las letras volvieron a su lugar', final.total > 0 && final.hidden < final.total / 4, `${final.hidden}/${final.total} ocultas`);
-  check('el ciclo se reinició', final.resets >= 1, `resets=${final.resets}, cycle=${final.cycle}`);
+  check(
+    'la sesión anterior no arrastra letras rotas',
+    started.hiddenAtStart === 0,
+    `${started.hiddenAtStart} rotas al empezar`,
+  );
+  check(
+    'la mayoría sigue en pie después de jugar',
+    final.total > 0 && final.hidden < final.total / 4,
+    `${final.hidden}/${final.total} ocultas`,
+  );
+  // Lo que SÍ sobrevive es la dificultad: el reloj de armado no se reinicia, o
+  // vaciar el tablero pediría 186 minutos seguidos.
+  check(
+    'la dificultad acumulada sobrevive al reset del tablero',
+    final.armed >= 1,
+    `${final.armed} letras armadas, cycle=${final.cycle}`,
+  );
+}
+
+// --- Ranking global ---
+// El juego anda con o sin ranking (cae a la tabla local), así que el estado de
+// la edge function se REPORTA en vez de romper la corrida: mientras no esté
+// desplegada, sus 404 son el comportamiento esperado y no ruido a esconder.
+console.log('\nranking global:');
+const leaderboard = await page.evaluate(async () => {
+  try {
+    const response = await fetch(
+      'https://erjyzhefwndkumadlpzr.supabase.co/functions/v1/hero-pong-score',
+    );
+    return { status: response.status, body: await response.text() };
+  } catch (error) {
+    return { status: 0, body: String(error) };
+  }
+});
+if (leaderboard.status === 200) {
+  check('la edge function responde el top 10', leaderboard.body.includes('top'), leaderboard.body.slice(0, 80));
+} else {
+  console.log(`  · sin desplegar todavía (HTTP ${leaderboard.status}) — el juego cae a la tabla local`);
 }
 
 console.log('\nconsola:');
-check('sin errores de página', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
+const noise = consoleErrors.filter((message) => !message.includes('hero-pong-score'));
+check('sin errores de página', noise.length === 0, noise.slice(0, 3).join(' | '));
 
 await browser.close();
 

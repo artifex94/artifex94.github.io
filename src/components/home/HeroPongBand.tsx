@@ -17,6 +17,7 @@ import {
   PADDLE_WIDTH,
 } from './heroPongConfig';
 import { useHighScoresMarquee } from '../../hooks/useHighScoresMarquee';
+import { refreshGlobalScores } from '../../utils/heroPongLeaderboard';
 
 // La franja del hero-pong: una paleta y una pelota, nada más.
 //
@@ -101,6 +102,11 @@ export const HeroPongBand: React.FC<HeroPongBandProps> = ({ originRef, blockRefs
     let cancelled = false;
     idle(
       () => {
+        // El ranking global viaja acá, en el mismo tiempo muerto: el ticker
+        // muestra lo que haya en el espejo y se pone al día cuando contesta.
+        // Si falla no pasa nada, sigue mostrando lo local.
+        void refreshGlobalScores();
+
         void Promise.all([loadGame(), loadMeasure()]).then(([, measure]) => {
           if (cancelled) return;
           const origin = originRef.current;
