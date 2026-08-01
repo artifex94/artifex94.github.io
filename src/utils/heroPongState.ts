@@ -26,8 +26,10 @@ export type LetterPhase = 'dodging' | 'rigid' | 'destroyed' | 'falling';
 export type CyclePhase = 'arming' | 'cleared' | 'restoring' | 'cooldown';
 
 export interface HeroPongTuning {
-  /** Cada cuánto tiempo del ciclo en curso se vuelve rígida una letra al azar. */
+  /** Cuánto tarda en endurecerse la PRIMERA letra del ciclo. */
   armIntervalMs: number;
+  /** Y cuánto tarda la siguiente en reemplazar a una que acaba de caer. */
+  rearmDelayMs: number;
   /** Pausa larga con el tablero vacío antes de que las letras vuelvan. */
   clearedPauseMs: number;
   /** Espera entre una letra que empieza a caer y la siguiente. */
@@ -39,9 +41,12 @@ export interface HeroPongTuning {
 }
 
 export const HERO_PONG_TUNING: HeroPongTuning = {
-  // Media letra por minuto: nada sólido en los primeros 30 s, así la pelota
-  // toma velocidad antes de que aparezca el primer blanco.
+  // Medio minuto sin nada sólido, para que la pelota tome velocidad antes de
+  // que aparezca el primer blanco...
   armIntervalMs: 30_000,
+  // ...y a partir de ahí el ritmo lo marca el jugador: cada letra que rompe
+  // endurece a la siguiente un segundo después. Siempre hay una sola presa.
+  rearmDelayMs: 1_000,
   clearedPauseMs: 20_000,
   restoreStaggerMs: 260,
   cooldownMs: 10_000,
@@ -51,6 +56,7 @@ export const HERO_PONG_TUNING: HeroPongTuning = {
 /** Versión comprimida para poder verificar el ciclo completo sin jugar horas. */
 export const HERO_PONG_TURBO: HeroPongTuning = {
   armIntervalMs: 900,
+  rearmDelayMs: 100,
   clearedPauseMs: 2_500,
   restoreStaggerMs: 90,
   cooldownMs: 1_500,
@@ -72,6 +78,12 @@ export interface HeroPongState {
   cycleMs: number;
   /** Letras armadas en el ciclo actual. */
   armed: number;
+  /**
+   * Momento del ciclo (en `cycleMs`) en que se endurece la próxima letra, o
+   * `null` si no hay ninguna en camino. Arranca en `armIntervalMs` y después lo
+   * reprograma cada letra rota: el ritmo lo marca el jugador, no un reloj.
+   */
+  nextArmAtMs: number | null;
   /** Ciclos completados (vaciar el tablero y recuperarlo cuenta uno). */
   resets: number;
   digitsDestructible: boolean;
@@ -121,6 +133,7 @@ export const createHeroPongState = (letterCount: number): HeroPongState => ({
   letters: Array.from({ length: letterCount }, () => 'dodging' as LetterPhase),
   cycleMs: 0,
   armed: 0,
+  nextArmAtMs: null,
   resets: 0,
   digitsDestructible: false,
   scoreDigits: [0],
@@ -168,15 +181,19 @@ const advanceCycle = (state: HeroPongState, dtMs: number, rng: () => number, tun
 
   switch (next.cycle) {
     case 'arming': {
-      // Contra el reloj del ciclo, que arranca en cero con cada partida: media
-      // letra por minuto, y nada sólido hasta pasado el primer intervalo.
-      const target = Math.floor(next.cycleMs / tuning.armIntervalMs);
-      while (next.armed < target) {
+      // Una sola presa por vez: se endurece la que está agendada, y la próxima
+      // no se agenda hasta que el jugador rompa esta (ver `letterHit`). Así el
+      // ritmo lo marca él y no un reloj que corre solo.
+      if (next.nextArmAtMs !== null && next.cycleMs >= next.nextArmAtMs) {
         const index = pickDodging(next.letters, rng);
-        if (index < 0) break;
-        const letters = [...next.letters];
-        letters[index] = 'rigid';
-        next = { ...next, letters, armed: next.armed + 1 };
+        if (index >= 0) {
+          const letters = [...next.letters];
+          letters[index] = 'rigid';
+          next = { ...next, letters, armed: next.armed + 1, nextArmAtMs: null };
+        } else {
+          // No queda ninguna esquivando: nada que endurecer.
+          next = { ...next, nextArmAtMs: null };
+        }
       }
       if (allDestroyed(next.letters)) {
         next = enterCleared(next);
@@ -218,8 +235,9 @@ const advanceCycle = (state: HeroPongState, dtMs: number, rng: () => number, tun
         resets: next.resets + 1,
         letters: next.letters.map(() => 'dodging' as LetterPhase),
         armed: 0,
-        // El reloj del armado arranca de nuevo con el ciclo.
+        // El ciclo nuevo vuelve a esperar los 30 s de la primera.
         cycleMs: 0,
+        nextArmAtMs: tuning.armIntervalMs,
       };
     }
   }
@@ -251,6 +269,9 @@ export function reduceHeroPong(
         restoreQueue: [],
         armed: 0,
         cycleMs: 0,
+        // La primera letra sólida recién a los 30 s; de ahí en más las agenda
+        // el propio jugador al romperlas.
+        nextArmAtMs: tuning.armIntervalMs,
         resets: 0,
         // Los dígitos rotos son un castigo (romperlos solo baja el score):
         // arrastrarlos haría que el que vuelve a jugar juegue peor.
@@ -298,6 +319,12 @@ export function reduceHeroPong(
         restoreQueue,
         lettersDestroyed: state.lettersDestroyed + 1,
         scoreDigits: addScore(state.scoreDigits, SCORE_LETTER),
+        // Romper una endurece a la siguiente un segundo después. El jugador
+        // marca el ritmo: si no rompe nada, no aparecen más blancos.
+        nextArmAtMs:
+          state.cycle === 'arming' && state.nextArmAtMs === null
+            ? state.cycleMs + tuning.rearmDelayMs
+            : state.nextArmAtMs,
       };
       if (next.cycle === 'arming' && allDestroyed(letters)) {
         return enterCleared(next);

@@ -15,6 +15,7 @@ import {
 
 const TUNING: HeroPongTuning = {
   armIntervalMs: 1000,
+  rearmDelayMs: 100,
   clearedPauseMs: 2000,
   restoreStaggerMs: 100,
   cooldownMs: 500,
@@ -62,6 +63,23 @@ const runUntil = (
     if (onFrame) current = onFrame(current);
   }
   throw new Error('runUntil: la condición no se cumplió dentro del límite');
+};
+
+/**
+ * Espera a que se endurezca una letra y la rompe, tantas veces como se pida.
+ * Es el ritmo real del juego: la siguiente no aparece hasta romper la anterior.
+ */
+const smash = (state: HeroPongState, times = 1): HeroPongState => {
+  let current = state;
+  for (let i = 0; i < times; i += 1) {
+    current = runUntil(current, (s) => s.letters.includes('rigid'));
+    current = reduceHeroPong(
+      current,
+      { t: 'letterHit', index: current.letters.indexOf('rigid') },
+      TUNING,
+    );
+  }
+  return current;
 };
 
 /** Aterriza la letra que esté cayendo, si hay alguna. */
@@ -149,11 +167,9 @@ describe('puntaje por letras', () => {
   });
 
   it('vaciar el tablero paga el bonus una sola vez', () => {
-    let state = play(2);
-    state = run(state, 2000); // las dos armadas
-    const before = scoreOf(state.scoreDigits);
-    state = reduceHeroPong(state, { t: 'letterHit', index: 0 }, TUNING);
-    state = reduceHeroPong(state, { t: 'letterHit', index: 1 }, TUNING);
+    const started = play(2);
+    const before = scoreOf(started.scoreDigits);
+    let state = smash(started, 2);
     expect(state.cycle).toBe('cleared');
     expect(scoreOf(state.scoreDigits)).toBe(before + 2 * SCORE_LETTER + SCORE_CLEAR_BONUS);
     // Ticks posteriores en `cleared` no re-otorgan nada.
@@ -193,12 +209,29 @@ describe('puntaje por letras', () => {
 });
 
 describe('armado de letras', () => {
-  it('vuelve rígida una letra por intervalo de tiempo jugado', () => {
-    let state = play(5);
-    state = run(state, 1000);
+  it('endurece UNA sola letra y no agrega más hasta que se rompa', () => {
+    let state = run(play(5), TUNING.armIntervalMs);
     expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
-    state = run(state, 1000);
-    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(2);
+
+    // Pase el tiempo que pase, sigue habiendo una sola presa.
+    state = run(state, TUNING.armIntervalMs * 3);
+    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
+  });
+
+  it('romper una endurece a la siguiente tras el delay, no antes', () => {
+    let state = smash(run(play(5), TUNING.armIntervalMs));
+    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(0);
+
+    state = run(state, TUNING.rearmDelayMs - 32);
+    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(0);
+
+    state = run(state, 48);
+    expect(state.letters.filter((l) => l === 'rigid')).toHaveLength(1);
+  });
+
+  it('el ritmo lo marca el jugador: sin romper nada no aparecen más blancos', () => {
+    const state = run(play(5), TUNING.armIntervalMs * 10);
+    expect(state.armed).toBe(1);
   });
 
   it('no arma nada antes del primer intervalo', () => {
@@ -266,12 +299,10 @@ describe('armado de letras', () => {
   });
 
   it('no arma más letras si no queda ninguna esquivando', () => {
-    let state = play(2);
-    state = run(state, 1000);
-    state = run(state, 1000);
-    expect(state.letters.every((l) => l === 'rigid')).toBe(true);
+    // Con una sola letra: se endurece, se rompe, y ya no hay a quién endurecer.
+    let state = smash(play(1));
     const armedBefore = state.armed;
-    state = run(state, 3000);
+    state = run(state, TUNING.rearmDelayMs * 5);
     expect(state.armed).toBe(armedBefore);
   });
 });
@@ -290,26 +321,12 @@ describe('destrucción de letras', () => {
   });
 
   it('pasa a la pausa larga cuando no queda ninguna letra', () => {
-    let state = play(2);
-    state = run(state, 2000); // las dos armadas
-    state.letters.forEach((_, i) => {
-      state = reduceHeroPong(state, { t: 'letterHit', index: i }, TUNING);
-    });
-    expect(state.cycle).toBe('cleared');
+    expect(smash(play(2), 2).cycle).toBe('cleared');
   });
 });
 
 describe('ciclo completo', () => {
-  const clearBoard = (letters: number): HeroPongState => {
-    let state = play(letters);
-    // Arma y destruye todas.
-    for (let i = 0; i < letters; i += 1) {
-      state = run(state, TUNING.armIntervalMs);
-      const rigid = state.letters.indexOf('rigid');
-      if (rigid >= 0) state = reduceHeroPong(state, { t: 'letterHit', index: rigid }, TUNING);
-    }
-    return state;
-  };
+  const clearBoard = (letters: number): HeroPongState => smash(play(letters), letters);
 
   it('mantiene el tablero vacío durante la pausa larga', () => {
     let state = clearBoard(3);
